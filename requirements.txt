@@ -1,0 +1,9 @@
+# AI Research Orchestrator
+# Core dependencies
+PyYAML>=6.0
+
+# Development dependencies (install with: pip install -e ".[dev]")
+# See pyproject.toml for the full list
+
+# For users who prefer requirements.txt style installation:
+# pip install pytest pytest-cov mypy black isort flake8 pylint

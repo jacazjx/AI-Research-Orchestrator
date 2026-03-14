@@ -1,0 +1,22 @@
+# Codex MCP Agent Configuration
+# Used for cross-model review in ARIS workflows
+
+name: codex-mcp
+description: External LLM reviewer via Codex MCP for cross-model review
+
+# MCP Server Configuration
+mcp:
+  server: codex
+  tools:
+    - mcp__codex__codex
+    - mcp__codex__codex-reply
+
+# Default model settings
+model: gpt-5.4
+reasoning_effort: xhigh
+
+# Usage
+# This agent is used by:
+# - auto-review-loop: Multi-round research review
+# - research-review: Critical feedback on ideas
+# - auto-paper-improvement-loop: Paper quality review

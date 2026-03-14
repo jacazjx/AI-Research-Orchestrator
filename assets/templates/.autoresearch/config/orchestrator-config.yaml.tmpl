@@ -1,0 +1,45 @@
+languages:
+  process_docs: {{PROCESS_LANGUAGE}}
+  paper_docs: {{PAPER_LANGUAGE}}
+loop_limits:
+  survey_critic: 3
+  pilot_code_adviser: 3
+  experiment_code_adviser: 3
+  writer_reviewer: 3
+  reflector_curator: 2
+runtime:
+  stale_after_minutes: 30
+  auto_discover_gpu: true
+backends:
+  local: enabled
+  ssh: enabled
+remote_defaults:
+  ssh:
+    host: ""
+    project_root: ""
+
+# ARIS Integration: Automation and cross-model review settings
+aris:
+  # Automation mode
+  auto_proceed: false           # false = human gates required, true = auto-advance
+
+  # GPU protection for pilot experiments (enforcement in v1.13.0)
+  pilot_max_hours: 2            # Max hours per pilot experiment
+  pilot_timeout_hours: 3        # Hard timeout for pilots
+  max_pilot_ideas: 3            # Max parallel pilots
+  max_total_gpu_hours: 8        # Total GPU budget for idea discovery
+
+  # Cross-model review (Codex MCP)
+  reviewer:
+    enabled: false              # Enable external LLM review
+    model: gpt-5.4              # Reviewer model (gpt-5.4, o3, gpt-4o)
+    reasoning_effort: xhigh     # Reasoning intensity (low/medium/high/xhigh)
+
+  # Loop control
+  max_review_rounds: 4          # Max auto-review rounds
+  positive_score_threshold: 6.0 # Score threshold for positive assessment
+
+  # Notifications (optional)
+  feishu:
+    enabled: false
+    mode: off                   # off / push / interactive
