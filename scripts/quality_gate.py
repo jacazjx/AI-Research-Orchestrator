@@ -10,8 +10,8 @@ from orchestrator_common import (
     PHASE_TO_REVIEW,
     ensure_project_structure,
     load_state,
-    validate_structured_signals,
     validate_deliverable_content,
+    validate_structured_signals,
 )
 
 
@@ -38,7 +38,11 @@ def evaluate_quality_gate(project_root: Path, phase: str | None = None) -> dict[
         else:
             missing.append(relative_path)
 
-    completeness = int(round((len(existing) / len(required_deliverables)) * 100)) if required_deliverables else 100
+    completeness = (
+        int(round((len(existing) / len(required_deliverables)) * 100))
+        if required_deliverables
+        else 100
+    )
     review_status = state["phase_reviews"][review_key]
     gate_status = state["approval_status"][gate_key]
     loop_count = int(state["loop_counts"].get(_phase_loop_key(phase_name), 0))
@@ -48,7 +52,13 @@ def evaluate_quality_gate(project_root: Path, phase: str | None = None) -> dict[
 
     if review_status == "pivot" or pivot_candidates:
         decision = "pivot"
-    elif review_status == "approved" and not missing and not placeholder and not signal_errors and gate_status == "approved":
+    elif (
+        review_status == "approved"
+        and not missing
+        and not placeholder
+        and not signal_errors
+        and gate_status == "approved"
+    ):
         decision = "advance"
     elif loop_count >= loop_limit and review_status != "approved":
         decision = "escalate_to_user"
@@ -111,7 +121,9 @@ def _phase_loop_key(phase_name: str) -> str:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Evaluate the scored quality gate for a project phase.")
+    parser = argparse.ArgumentParser(
+        description="Evaluate the scored quality gate for a project phase."
+    )
     parser.add_argument("--project-root", required=True)
     parser.add_argument("--phase", choices=sorted(PHASE_REQUIRED_DELIVERABLES))
     parser.add_argument("--json", action="store_true")

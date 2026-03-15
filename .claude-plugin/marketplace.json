@@ -1,0 +1,49 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "autoresearch",
+  "description": "Five-phase AI research workflow orchestration — from idea through paper with Survey, Pilot, Experiments, Paper Writing, and Reflection phases with explicit human gates",
+  "owner": {
+    "name": "AI Research Orchestrator Team",
+    "email": "autoresearch@example.com"
+  },
+  "metadata": {
+    "description": "Turn a research IDEA into a controlled five-phase project with fixed directories, scored gate checks, visible progress artifacts, and explicit human approval between phases"
+  },
+  "plugins": [
+    {
+      "name": "autoresearch",
+      "source": "./",
+      "description": "Initialize and run a gated five-phase AI research project from idea through paper. Includes 40+ skills for literature survey, pilot validation, experiments, paper writing, and reflection.",
+      "version": "1.0.0",
+      "author": {
+        "name": "AI Research Orchestrator Team",
+        "email": "autoresearch@example.com"
+      },
+      "homepage": "https://github.com/jacazjx/AI-Research-Orchestrator",
+      "repository": "https://github.com/jacazjx/AI-Research-Orchestrator",
+      "license": "MIT",
+      "keywords": [
+        "ai",
+        "research",
+        "orchestration",
+        "workflow",
+        "automation",
+        "paper-writing",
+        "experiment",
+        "survey",
+        "scientific-research",
+        "academic"
+      ],
+      "category": "workflow",
+      "tags": [
+        "research",
+        "academic",
+        "paper-writing",
+        "experiment",
+        "survey",
+        "workflow"
+      ],
+      "strict": false
+    }
+  ]
+}

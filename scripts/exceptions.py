@@ -4,6 +4,7 @@ Custom exceptions for the AI Research Orchestrator.
 This module defines a hierarchy of exceptions to provide clear error
 classification and enable precise error handling throughout the codebase.
 """
+
 from __future__ import annotations
 
 

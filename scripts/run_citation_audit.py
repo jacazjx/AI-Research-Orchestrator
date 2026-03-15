@@ -8,39 +8,50 @@ import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
-from exceptions import CommandExecutionError, DependencyError
 from generate_dashboard import generate_dashboard
-from orchestrator_common import DEFAULT_DELIVERABLES, append_state_log, ensure_project_structure, load_state, save_state
 
+from orchestrator_common import (
+    DEFAULT_DELIVERABLES,
+    append_state_log,
+    ensure_project_structure,
+    load_state,
+    save_state,
+)
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 SKILL_DIR = SCRIPT_DIR.parent
+CITATION_SCRIPTS_DIR = SCRIPT_DIR / "citation"
 
 
 def _get_latex_citation_skill_path() -> Path | None:
     """Get the path to the latex-citation-curator skill.
 
     Priority:
-    1. LATEX_CITATION_SKILL environment variable
-    2. Relative path from this skill (../latex-citation-curator)
-    3. Common installation directories
+    1. Internal citation scripts directory (scripts/citation/)
+    2. LATEX_CITATION_SKILL environment variable
+    3. Relative path from this skill (../latex-citation-curator)
+    4. Common installation directories
 
     Returns:
         Path to the skill directory or None if not found.
     """
-    # 1. Environment variable
+    # 1. Internal citation scripts (built-in)
+    if (CITATION_SCRIPTS_DIR / "fetch_verified_bibtex.py").exists():
+        return CITATION_SCRIPTS_DIR
+
+    # 2. Environment variable
     env_path = os.environ.get("LATEX_CITATION_SKILL")
     if env_path:
         path = Path(env_path)
         if path.exists():
             return path
 
-    # 2. Relative path (sibling skill)
+    # 3. Relative path (sibling skill)
     sibling_path = SKILL_DIR.parent / "latex-citation-curator"
     if sibling_path.exists():
         return sibling_path
 
-    # 3. Common installation directories
+    # 4. Common installation directories
     common_paths = [
         Path.home() / ".codex" / "skills" / "latex-citation-curator",
         Path.home() / ".claude" / "skills" / "latex-citation-curator",
@@ -75,7 +86,8 @@ def run_citation_audit(
     detected_claims = _extract_claims(draft_file)
     requested_claims = claims or []
     all_claims = _dedupe_preserve_order(
-        requested_claims + [item["clean_claim"] for item in detected_claims if item.get("clean_claim")]
+        requested_claims
+        + [item["clean_claim"] for item in detected_claims if item.get("clean_claim")]
     )
 
     verification_results: list[dict[str, object]] = []
@@ -117,16 +129,21 @@ def run_citation_audit(
         "",
         "## Gap scan",
         "",
-        f"- Detected citation gaps: {_render_counted_items(_render_detected_claims(detected_claims))}",
-        f"- Claims queued for verification: {_render_counted_items(all_claims)}",
+        f"- Detected citation gaps: "
+        f"{_render_counted_items(_render_detected_claims(detected_claims))}",
+        f"- Claims queued for verification: " f"{_render_counted_items(all_claims)}",
         "",
         "## Authenticity checks",
         "",
-        f"- DOI-verified citations: {_render_counted_items(citation_audit['verified_keys'])}",
-        f"- Trusted-source citations without DOI: {_render_counted_items(citation_audit['trusted_no_doi_keys'])}",
-        f"- Preprints that should be replaced by formal publications: {_render_counted_items(citation_audit['preprint_keys'])}",
-        f"- Citations that require manual second checking: {_render_counted_items(citation_audit['manual_check_keys'])}",
-        f"- Missing cited keys in available BibTeX: {_render_counted_items(citation_audit['missing_keys'])}",
+        f"- DOI-verified citations: " f"{_render_counted_items(citation_audit['verified_keys'])}",
+        f"- Trusted-source citations without DOI: "
+        f"{_render_counted_items(citation_audit['trusted_no_doi_keys'])}",
+        f"- Preprints that should be replaced by formal publications: "
+        f"{_render_counted_items(citation_audit['preprint_keys'])}",
+        f"- Citations that require manual second checking: "
+        f"{_render_counted_items(citation_audit['manual_check_keys'])}",
+        f"- Missing cited keys in available BibTeX: "
+        f"{_render_counted_items(citation_audit['missing_keys'])}",
         "",
         "## Verification results",
         "",
@@ -143,7 +160,9 @@ def run_citation_audit(
     else:
         report_lines.append("- No online claim verification was run.")
         if all_claims:
-            report_lines.append("- Existing claims remain blocked until verification is run or manually resolved.")
+            report_lines.append(
+                "- Existing claims remain blocked until verification is run or manually resolved."
+            )
         else:
             report_lines.append("- No citation-gap claims were queued for online verification.")
     report_lines.extend(
@@ -190,7 +209,11 @@ def _extract_claims(draft_file: Path) -> list[dict[str, object]]:
     skill_path = _get_latex_citation_skill_path()
     if skill_path is None:
         return []
-    script = skill_path / "scripts" / "extract_citation_needs.py"
+    # Check if scripts are directly in skill_path (internal) or in scripts/ subdirectory
+    if (skill_path / "extract_citation_needs.py").exists():
+        script = skill_path / "extract_citation_needs.py"
+    else:
+        script = skill_path / "scripts" / "extract_citation_needs.py"
     if not draft_file.exists() or not script.exists():
         return []
     try:
@@ -222,10 +245,17 @@ def _verify_claim(
             "claim": claim,
             "status": "failed",
             "output_file": "",
-            "error": "latex-citation-curator skill not found. Set LATEX_CITATION_SKILL environment variable.",
+            "error": (
+                "latex-citation-curator skill not found. "
+                "Set LATEX_CITATION_SKILL environment variable."
+            ),
         }
 
-    script = skill_path / "scripts" / "fetch_verified_bibtex.py"
+    # Check if scripts are directly in skill_path (internal) or in scripts/ subdirectory
+    if (skill_path / "fetch_verified_bibtex.py").exists():
+        script = skill_path / "fetch_verified_bibtex.py"
+    else:
+        script = skill_path / "scripts" / "fetch_verified_bibtex.py"
     if not script.exists():
         return {
             "claim": claim,
@@ -265,7 +295,9 @@ def _verify_claim(
         return {
             "claim": claim,
             "status": "failed",
-            "output_file": output_path.relative_to(project_root).as_posix() if output_path.exists() else "",
+            "output_file": (
+                output_path.relative_to(project_root).as_posix() if output_path.exists() else ""
+            ),
             "error": "Claim verification timed out after 120 seconds",
         }
     except OSError as exc:
@@ -277,7 +309,9 @@ def _verify_claim(
         }
 
 
-def _resolve_bib_files(project_root: Path, *, existing_bib: str | None, append_bib: str | None) -> list[Path]:
+def _resolve_bib_files(
+    project_root: Path, *, existing_bib: str | None, append_bib: str | None
+) -> list[Path]:
     candidates: list[Path] = []
     for raw_path in (existing_bib, append_bib):
         if not raw_path:
@@ -295,7 +329,11 @@ def _resolve_bib_files(project_root: Path, *, existing_bib: str | None, append_b
 
 
 def _audit_existing_citations(draft_file: Path, bib_paths: list[Path]) -> dict[str, list[str]]:
-    citation_keys = _extract_citation_keys(draft_file.read_text(encoding="utf-8")) if draft_file.exists() else []
+    citation_keys = (
+        _extract_citation_keys(draft_file.read_text(encoding="utf-8"))
+        if draft_file.exists()
+        else []
+    )
     entries = _load_bib_entries(bib_paths)
     keys_to_audit = citation_keys or list(entries.keys())
 
@@ -371,10 +409,14 @@ def _load_bib_entries(paths: list[Path]) -> dict[str, dict[str, object]]:
             eprint = _bibtex_field_value(entry, "eprint")
             url = _bibtex_field_value(entry, "url").lower()
             ee = _bibtex_field_value(entry, "ee").lower()
-            manual_check = _bibtex_field_value(entry, "x-secondary-check-required").lower() in {"1", "true", "yes"}
-            is_preprint = bool(archive_prefix == "arxiv" or eprint or "arxiv.org" in url or "arxiv.org" in ee) and not (
-                journal or booktitle
-            )
+            manual_check = _bibtex_field_value(entry, "x-secondary-check-required").lower() in {
+                "1",
+                "true",
+                "yes",
+            }
+            is_preprint = bool(
+                archive_prefix == "arxiv" or eprint or "arxiv.org" in url or "arxiv.org" in ee
+            ) and not (journal or booktitle)
             entries[key] = {
                 "doi": doi,
                 "verification_status": verification_status,

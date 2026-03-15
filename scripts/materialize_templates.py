@@ -4,8 +4,13 @@ import argparse
 import json
 from pathlib import Path
 
-from orchestrator_common import DEFAULT_DELIVERABLES, build_template_variables, ensure_project_structure, load_state, render_template_tree
-
+from orchestrator_common import (
+    DEFAULT_DELIVERABLES,
+    build_template_variables,
+    ensure_project_structure,
+    load_state,
+    render_template_tree,
+)
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 SKILL_DIR = SCRIPT_DIR.parent
@@ -16,7 +21,9 @@ def materialize_project_templates(project_root: Path, overwrite: bool = False) -
     project_root = project_root.resolve()
     state = load_state(project_root)
     variables = build_template_variables(project_root, state)
-    rendered_files = render_template_tree(TEMPLATE_ROOT, project_root, variables, overwrite=overwrite)
+    rendered_files = render_template_tree(
+        TEMPLATE_ROOT, project_root, variables, overwrite=overwrite
+    )
     return {
         "project_root": str(project_root),
         "state_path": DEFAULT_DELIVERABLES["research_state"],
@@ -26,7 +33,9 @@ def materialize_project_templates(project_root: Path, overwrite: bool = False) -
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Materialize the standard workspace templates into a project.")
+    parser = argparse.ArgumentParser(
+        description="Materialize the standard workspace templates into a project."
+    )
     parser.add_argument("--project-root", required=True)
     parser.add_argument("--overwrite", action="store_true", help="Rewrite existing template files.")
     parser.add_argument("--json", action="store_true", help="Print a JSON summary.")

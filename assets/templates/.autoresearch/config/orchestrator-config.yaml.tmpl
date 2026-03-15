@@ -43,3 +43,106 @@ aris:
   feishu:
     enabled: false
     mode: off                   # off / push / interactive
+
+# Phase configuration with Agent-Skill Coupling
+# Each phase has multiple substeps with primary/reviewer agent pairs
+phases:
+  survey:
+    agents:
+      primary: survey
+      reviewer: critic
+    substeps:
+      - name: literature_survey
+        primary_skill: research-lit
+        reviewer_skill: audit-survey
+        required_artifacts:
+          - docs/reports/survey/literature-review.md
+      - name: idea_definition
+        primary_skill: define-idea
+        reviewer_skill: novelty-check
+        required_artifacts:
+          - docs/reports/survey/idea-definition.md
+      - name: research_plan
+        primary_skill: research-plan
+        reviewer_skill: audit-plan
+        required_artifacts:
+          - docs/reports/survey/research-readiness-report.md
+
+  pilot:
+    agents:
+      primary: code
+      reviewer: adviser
+    substeps:
+      - name: problem_analysis
+        primary_skill: analyze-problem
+        reviewer_skill: audit-analysis
+        required_artifacts:
+          - docs/reports/pilot/problem-analysis.md
+      - name: pilot_design
+        primary_skill: design-pilot
+        reviewer_skill: audit-design
+        required_artifacts:
+          - docs/reports/pilot/pilot-design.md
+      - name: pilot_execution
+        primary_skill: run-pilot
+        reviewer_skill: audit-pilot
+        required_artifacts:
+          - docs/reports/pilot/pilot-validation-report.md
+
+  experiments:
+    agents:
+      primary: code
+      reviewer: adviser
+    substeps:
+      - name: experiment_design
+        primary_skill: design-exp
+        reviewer_skill: audit-exp-design
+        required_artifacts:
+          - docs/reports/experiments/experiment-spec.md
+      - name: experiment_execution
+        primary_skill: run-experiment
+        reviewer_skill: monitor-experiment
+        required_artifacts:
+          - docs/reports/experiments/run-registry.md
+      - name: results_analysis
+        primary_skill: analyze-results
+        reviewer_skill: audit-results
+        required_artifacts:
+          - docs/reports/experiments/evidence-package-index.md
+
+  paper:
+    agents:
+      primary: writer
+      reviewer: reviewer
+    substeps:
+      - name: paper_planning
+        primary_skill: paper-plan
+        reviewer_skill: audit-paper-plan
+        required_artifacts:
+          - paper/paper-outline.md
+      - name: paper_writing
+        primary_skill: paper-write
+        reviewer_skill: audit-paper
+        required_artifacts:
+          - paper/paper-draft.md
+      - name: citation_curation
+        primary_skill: curate-citation
+        reviewer_skill: audit-citation
+        required_artifacts:
+          - paper/citation-audit-report.md
+
+  reflection:
+    agents:
+      primary: reflector
+      reviewer: curator
+    substeps:
+      - name: lessons_extraction
+        primary_skill: extract-lessons
+        reviewer_skill: audit-lessons
+        required_artifacts:
+          - docs/reports/reflection/lessons-learned.md
+      - name: overlay_proposal
+        primary_skill: propose-overlay
+        reviewer_skill: audit-overlay
+        required_artifacts:
+          - docs/reports/reflection/runtime-improvement-report.md

@@ -19,7 +19,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 SKILL_DIR = SCRIPT_DIR.parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from orchestrator_common import SYSTEM_VERSION, SYSTEM_VERSION_NAME, VERSION_HISTORY
+from orchestrator_common import SYSTEM_VERSION, SYSTEM_VERSION_NAME, VERSION_HISTORY  # noqa: E402
 
 
 def get_version_info() -> dict:
@@ -44,12 +44,11 @@ def format_version_report(use_color: bool = True) -> str:
     if use_color:
         cyan = "\033[36m"
         green = "\033[32m"
-        yellow = "\033[33m"
         bold = "\033[1m"
         reset = "\033[0m"
         dim = "\033[2m"
     else:
-        cyan = green = yellow = bold = reset = dim = ""
+        cyan = green = bold = reset = dim = ""
 
     lines = [
         "",
@@ -71,11 +70,13 @@ def format_version_report(use_color: bool = True) -> str:
         else:
             lines.append(f"    {dim}○{reset} {version} ({date}) - {description}")
 
-    lines.extend([
-        "",
-        f"{cyan}{'═' * 60}{reset}",
-        "",
-    ])
+    lines.extend(
+        [
+            "",
+            f"{cyan}{'═' * 60}{reset}",
+            "",
+        ]
+    )
 
     return "\n".join(lines)
 

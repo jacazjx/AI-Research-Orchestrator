@@ -15,7 +15,6 @@ import tempfile
 import unittest
 from pathlib import Path
 
-
 SKILL_DIR = Path(__file__).resolve().parents[1]
 SCRIPTS_DIR = SKILL_DIR / "scripts"
 sys.path.insert(0, str(SCRIPTS_DIR))
@@ -98,94 +97,76 @@ class TestUpdatedDeliverablesPaths(unittest.TestCase):
     def test_research_state_uses_autoresearch_path(self) -> None:
         """research_state should be in .autoresearch/state/."""
         self.assertEqual(
-            COMMON.DEFAULT_DELIVERABLES["research_state"],
-            ".autoresearch/state/research-state.yaml"
+            COMMON.DEFAULT_DELIVERABLES["research_state"], ".autoresearch/state/research-state.yaml"
         )
 
     def test_project_config_uses_autoresearch_path(self) -> None:
         """project_config should be in .autoresearch/config/."""
         self.assertEqual(
             COMMON.DEFAULT_DELIVERABLES["project_config"],
-            ".autoresearch/config/orchestrator-config.yaml"
+            ".autoresearch/config/orchestrator-config.yaml",
         )
 
     def test_dashboard_paths_use_autoresearch(self) -> None:
         """Dashboard files should be in .autoresearch/dashboard/."""
         self.assertEqual(
-            COMMON.DEFAULT_DELIVERABLES["dashboard_status"],
-            ".autoresearch/dashboard/status.json"
+            COMMON.DEFAULT_DELIVERABLES["dashboard_status"], ".autoresearch/dashboard/status.json"
         )
         self.assertEqual(
-            COMMON.DEFAULT_DELIVERABLES["dashboard_progress"],
-            ".autoresearch/dashboard/progress.md"
+            COMMON.DEFAULT_DELIVERABLES["dashboard_progress"], ".autoresearch/dashboard/progress.md"
         )
 
     def test_runtime_paths_use_autoresearch(self) -> None:
         """Runtime registry files should be in .autoresearch/runtime/."""
         self.assertEqual(
-            COMMON.DEFAULT_DELIVERABLES["job_registry"],
-            ".autoresearch/runtime/job-registry.yaml"
+            COMMON.DEFAULT_DELIVERABLES["job_registry"], ".autoresearch/runtime/job-registry.yaml"
         )
         self.assertEqual(
-            COMMON.DEFAULT_DELIVERABLES["gpu_registry"],
-            ".autoresearch/runtime/gpu-registry.yaml"
+            COMMON.DEFAULT_DELIVERABLES["gpu_registry"], ".autoresearch/runtime/gpu-registry.yaml"
         )
 
     def test_reference_library_path_updated(self) -> None:
         """reference_library_index should be in .autoresearch/reference-papers/."""
         self.assertEqual(
             COMMON.DEFAULT_DELIVERABLES["reference_library_index"],
-            ".autoresearch/reference-papers/README.md"
+            ".autoresearch/reference-papers/README.md",
         )
 
     def test_idea_brief_in_autoresearch(self) -> None:
         """idea_brief should be in .autoresearch/."""
-        self.assertEqual(
-            COMMON.DEFAULT_DELIVERABLES["idea_brief"],
-            ".autoresearch/idea-brief.md"
-        )
+        self.assertEqual(COMMON.DEFAULT_DELIVERABLES["idea_brief"], ".autoresearch/idea-brief.md")
 
     def test_workspace_manifest_in_autoresearch(self) -> None:
         """workspace_manifest should be in .autoresearch/."""
         self.assertEqual(
-            COMMON.DEFAULT_DELIVERABLES["workspace_manifest"],
-            ".autoresearch/workspace-manifest.md"
+            COMMON.DEFAULT_DELIVERABLES["workspace_manifest"], ".autoresearch/workspace-manifest.md"
         )
 
     def test_paper_draft_in_paper(self) -> None:
         """paper_draft should be in paper/."""
-        self.assertEqual(
-            COMMON.DEFAULT_DELIVERABLES["paper_draft"],
-            "paper/paper-draft.md"
-        )
+        self.assertEqual(COMMON.DEFAULT_DELIVERABLES["paper_draft"], "paper/paper-draft.md")
 
     def test_paper_related_in_paper_dir(self) -> None:
         """Paper-related deliverables should be in paper/."""
         self.assertEqual(
-            COMMON.DEFAULT_DELIVERABLES["citation_audit_report"],
-            "paper/citation-audit-report.md"
+            COMMON.DEFAULT_DELIVERABLES["citation_audit_report"], "paper/citation-audit-report.md"
         )
-        self.assertEqual(
-            COMMON.DEFAULT_DELIVERABLES["rebuttal_log"],
-            "paper/rebuttal-log.md"
-        )
+        self.assertEqual(COMMON.DEFAULT_DELIVERABLES["rebuttal_log"], "paper/rebuttal-log.md")
         # final_acceptance_report is in docs/reports/paper/ per design
         self.assertEqual(
             COMMON.DEFAULT_DELIVERABLES["final_acceptance_report"],
-            "docs/reports/paper/final-acceptance-report.md"
+            "docs/reports/paper/final-acceptance-report.md",
         )
 
     def test_experiment_files_in_code(self) -> None:
         """Experiment-related files should be in code/."""
         # experiment_spec is in code/configs/ per design
         self.assertEqual(
-            COMMON.DEFAULT_DELIVERABLES["experiment_spec"],
-            "code/configs/experiment-spec.md"
+            COMMON.DEFAULT_DELIVERABLES["experiment_spec"], "code/configs/experiment-spec.md"
         )
         # run_registry is in code/checkpoints/ per design
         self.assertEqual(
-            COMMON.DEFAULT_DELIVERABLES["run_registry"],
-            "code/checkpoints/run-registry.md"
+            COMMON.DEFAULT_DELIVERABLES["run_registry"], "code/checkpoints/run-registry.md"
         )
 
 
@@ -194,37 +175,28 @@ class TestHandoffRequirementsSemanticNames(unittest.TestCase):
 
     def test_survey_to_pilot_uses_semantic_name(self) -> None:
         """Next phase from survey should be 'pilot'."""
-        self.assertEqual(
-            COMMON.HANDOFF_REQUIREMENTS["survey-to-pilot"]["next_phase"],
-            "pilot"
-        )
+        self.assertEqual(COMMON.HANDOFF_REQUIREMENTS["survey-to-pilot"]["next_phase"], "pilot")
 
     def test_pilot_to_experiments_uses_semantic_name(self) -> None:
         """Next phase from pilot should be 'experiments'."""
         self.assertEqual(
-            COMMON.HANDOFF_REQUIREMENTS["pilot-to-experiments"]["next_phase"],
-            "experiments"
+            COMMON.HANDOFF_REQUIREMENTS["pilot-to-experiments"]["next_phase"], "experiments"
         )
 
     def test_experiments_to_paper_uses_semantic_name(self) -> None:
         """Next phase from experiments should be 'paper'."""
-        self.assertEqual(
-            COMMON.HANDOFF_REQUIREMENTS["experiments-to-paper"]["next_phase"],
-            "paper"
-        )
+        self.assertEqual(COMMON.HANDOFF_REQUIREMENTS["experiments-to-paper"]["next_phase"], "paper")
 
     def test_paper_to_reflection_uses_semantic_name(self) -> None:
         """Next phase from paper should be 'reflection'."""
         self.assertEqual(
-            COMMON.HANDOFF_REQUIREMENTS["paper-to-reflection"]["next_phase"],
-            "reflection"
+            COMMON.HANDOFF_REQUIREMENTS["paper-to-reflection"]["next_phase"], "reflection"
         )
 
     def test_reflection_closeout_uses_semantic_name(self) -> None:
         """Next phase from reflection should be 'handoff-user'."""
         self.assertEqual(
-            COMMON.HANDOFF_REQUIREMENTS["reflection-closeout"]["next_phase"],
-            "handoff-user"
+            COMMON.HANDOFF_REQUIREMENTS["reflection-closeout"]["next_phase"], "handoff-user"
         )
 
 
@@ -256,14 +228,13 @@ class TestLegacyMappings(unittest.TestCase):
         self.assertIn("00-admin/research-state.yaml", COMMON.OLD_TO_NEW_PATH_MAPPING)
         self.assertEqual(
             COMMON.OLD_TO_NEW_PATH_MAPPING["00-admin/research-state.yaml"],
-            ".autoresearch/state/research-state.yaml"
+            ".autoresearch/state/research-state.yaml",
         )
 
         self.assertIn("00-admin/orchestrator-config.yaml", COMMON.OLD_TO_NEW_PATH_MAPPING)
         self.assertIn("04-paper/paper-draft.md", COMMON.OLD_TO_NEW_PATH_MAPPING)
         self.assertEqual(
-            COMMON.OLD_TO_NEW_PATH_MAPPING["04-paper/paper-draft.md"],
-            "paper/paper-draft.md"
+            COMMON.OLD_TO_NEW_PATH_MAPPING["04-paper/paper-draft.md"], "paper/paper-draft.md"
         )
 
 
@@ -297,17 +268,11 @@ class TestExpectedDeliverablePrefixesUpdated(unittest.TestCase):
 
     def test_research_state_prefix_updated(self) -> None:
         """research_state prefix should be .autoresearch/."""
-        self.assertEqual(
-            COMMON.EXPECTED_DELIVERABLE_PREFIXES["research_state"],
-            ".autoresearch/"
-        )
+        self.assertEqual(COMMON.EXPECTED_DELIVERABLE_PREFIXES["research_state"], ".autoresearch/")
 
     def test_paper_draft_prefix_updated(self) -> None:
         """paper_draft prefix should be paper/."""
-        self.assertEqual(
-            COMMON.EXPECTED_DELIVERABLE_PREFIXES["paper_draft"],
-            "paper/"
-        )
+        self.assertEqual(COMMON.EXPECTED_DELIVERABLE_PREFIXES["paper_draft"], "paper/")
 
 
 class TestEnsureProjectStructure(unittest.TestCase):
@@ -344,17 +309,13 @@ class TestEnsureProjectStructure(unittest.TestCase):
         # Verify all directories now exist
         for dir_path in COMMON.REQUIRED_DIRECTORIES:
             self.assertTrue(
-                (self.project_root / dir_path).exists(),
-                f"Directory should exist: {dir_path}"
+                (self.project_root / dir_path).exists(), f"Directory should exist: {dir_path}"
             )
 
     def test_returns_false_for_empty_project(self) -> None:
         """Return False for empty project when create_if_missing=False."""
         # Empty project - no directories created
-        result = COMMON.ensure_project_structure(
-            self.project_root,
-            create_if_missing=False
-        )
+        result = COMMON.ensure_project_structure(self.project_root, create_if_missing=False)
         self.assertFalse(result)
 
 
@@ -404,9 +365,7 @@ class TestMigrationScript(unittest.TestCase):
         test_file.write_text("test content")
 
         # Run migration in dry-run mode
-        results = self.migrate_module.migrate_project(
-            self.project_root, dry_run=True, backup=True
-        )
+        results = self.migrate_module.migrate_project(self.project_root, dry_run=True, backup=True)
 
         # Verify dry run detected old structure
         self.assertTrue(results["has_old_structure"])
@@ -427,16 +386,12 @@ class TestMigrationScript(unittest.TestCase):
         (self.project_root / "00-admin" / "test.txt").write_text("test")
 
         # Run migration
-        results = self.migrate_module.migrate_project(
-            self.project_root, dry_run=False, backup=True
-        )
+        results = self.migrate_module.migrate_project(self.project_root, dry_run=False, backup=True)
 
         # Verify backup was created
         self.assertIsNotNone(results["backup_path"])
         self.assertTrue(Path(results["backup_path"]).exists())
-        self.assertTrue(
-            (Path(results["backup_path"]) / "00-admin" / "test.txt").exists()
-        )
+        self.assertTrue((Path(results["backup_path"]) / "00-admin" / "test.txt").exists())
 
     def test_migrate_project_creates_new_structure(self) -> None:
         """Migration should create new directory structure."""
@@ -527,9 +482,7 @@ research_state:
         (self.project_root / ".autoresearch" / "state").mkdir(parents=True)
 
         # Run migration
-        results = self.migrate_module.migrate_project(
-            self.project_root, dry_run=False, backup=True
-        )
+        results = self.migrate_module.migrate_project(self.project_root, dry_run=False, backup=True)
 
         # Verify message is set
         self.assertIn("message", results)
@@ -537,9 +490,7 @@ research_state:
 
     def test_create_new_structure_in_dry_run_mode(self) -> None:
         """create_new_structure should report what it would create in dry run."""
-        results = self.migrate_module.create_new_structure(
-            self.project_root, dry_run=True
-        )
+        results = self.migrate_module.create_new_structure(self.project_root, dry_run=True)
 
         # Should return list of what would be created
         self.assertTrue(all("[DRY RUN]" in r for r in results))

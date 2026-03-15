@@ -5,7 +5,12 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from orchestrator_common import DEFAULT_DELIVERABLES, ensure_project_structure, load_state, write_text_if_needed
+from orchestrator_common import (
+    DEFAULT_DELIVERABLES,
+    ensure_project_structure,
+    load_state,
+    write_text_if_needed,
+)
 
 
 def generate_dashboard(project_root: Path) -> dict[str, object]:
@@ -27,7 +32,9 @@ def generate_dashboard(project_root: Path) -> dict[str, object]:
     }
     status_path = project_root / DEFAULT_DELIVERABLES["dashboard_status"]
     status_path.parent.mkdir(parents=True, exist_ok=True)
-    status_path.write_text(json.dumps(status_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    status_path.write_text(
+        json.dumps(status_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
 
     progress_lines = [
         "# Runtime Progress Dashboard",
@@ -79,7 +86,9 @@ def generate_dashboard(project_root: Path) -> dict[str, object]:
     # Keep placeholder runtime registries present for later scripts.
     write_text_if_needed(project_root / DEFAULT_DELIVERABLES["job_registry"], "jobs: []\n")
     write_text_if_needed(project_root / DEFAULT_DELIVERABLES["gpu_registry"], "devices: []\n")
-    write_text_if_needed(project_root / DEFAULT_DELIVERABLES["backend_registry"], "backends:\n- local\n")
+    write_text_if_needed(
+        project_root / DEFAULT_DELIVERABLES["backend_registry"], "backends:\n- local\n"
+    )
     write_text_if_needed(project_root / DEFAULT_DELIVERABLES["sentinel_events"], "")
 
     return {
@@ -91,7 +100,9 @@ def generate_dashboard(project_root: Path) -> dict[str, object]:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Generate the runtime dashboard from research-state.yaml.")
+    parser = argparse.ArgumentParser(
+        description="Generate the runtime dashboard from research-state.yaml."
+    )
     parser.add_argument("--project-root", required=True)
     parser.add_argument("--json", action="store_true")
     return parser

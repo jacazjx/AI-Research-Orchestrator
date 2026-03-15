@@ -1,6 +1,8 @@
 ---
-name: ai-research-orchestrator
-description: Initialize and run a gated five-phase AI research project from idea intake through pilot validation, full experiments, paper development, and reflection/evolution. Use when Codex needs to manage a research workspace around an IDEA plus seed references, coordinate sequential dual-agent phases such as Survey/Critic, Code/Adviser, Paper Writer/Reviewer, and Reflector/Curator, maintain machine-readable project state in `research-state.yaml`, generate runtime dashboards, and enforce explicit user approval gates between every major phase.
+name: autoresearch:orchestrator
+description: "Initialize and run a gated five-phase AI research project from idea through paper. Use when user says 'start research project', '帮我做一个研究', 'research workflow', '五阶段研究流程', 'research orchestrator', or needs structured AI/ML research management with Survey, Pilot, Experiments, Paper, and Reflection phases."
+argument-hint: [research-topic-or-idea]
+allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, Skill, mcp__codex__codex, mcp__codex__codex-reply
 ---
 
 # AI Research Orchestrator
@@ -211,6 +213,71 @@ When searching for literature, use these APIs:
 
 See [references/literature-verification.md](references/literature-verification.md) for detailed API usage.
 
+## Skills Registry
+
+The orchestrator includes 40 skills organized into Primary Skills (workflow execution) and Audit Skills (quality verification).
+
+### Primary Skills (16)
+
+These skills execute the research workflow phases:
+
+| Skill | Agent | Output | Purpose |
+|-------|-------|--------|---------|
+| `define-idea` | Survey | `docs/reports/survey/idea-definition.md` | Formulate research hypothesis |
+| `research-plan` | Survey | `docs/reports/survey/research-readiness-report.md` | Create research execution plan |
+| `research-lit` | Survey | Working notes | Literature survey using academic APIs |
+| `novelty-check` | Survey | Novelty report | Verify novelty against existing work |
+| `analyze-problem` | Code | `docs/reports/pilot/problem-analysis.md` | Analyze research problem |
+| `design-pilot` | Code | `docs/reports/pilot/pilot-design.md` | Design pilot experiment |
+| `run-pilot` | Code | `docs/reports/pilot/pilot-validation-report.md` | Execute pilot experiment |
+| `design-exp` | Code | `docs/reports/experiments/experiment-spec.md` | Design full experiment matrix |
+| `run-experiment` | Code | Experiment logs | Deploy and run ML experiments |
+| `monitor-experiment` | Code | Progress reports | Monitor running experiments |
+| `analyze-results` | Code | Results summary | Analyze experiment results |
+| `paper-plan` | Writer | `paper/PAPER_PLAN.md` | Create paper outline |
+| `paper-write` | Writer | `paper/main.tex` | Write paper sections |
+| `curate-citation` | Writer | `paper/citation-index.md` | Finalize and verify citations |
+| `extract-lessons` | Reflector | `docs/reports/reflection/lessons-learned.md` | Extract lessons learned |
+| `propose-overlay` | Reflector | `docs/reports/reflection/overlay-draft.md` | Propose system improvements |
+
+### Audit Skills (12)
+
+These skills verify quality and provide phase gate assessments:
+
+| Skill | Agent | Purpose |
+|-------|-------|---------|
+| `audit-survey` | Critic | Audit literature completeness and citation authenticity |
+| `audit-plan` | Critic | Audit research plan feasibility and risk coverage |
+| `audit-analysis` | Adviser | Audit problem analysis completeness |
+| `audit-design` | Adviser | Audit pilot design validity and efficiency |
+| `audit-pilot` | Adviser | Audit pilot results and hypothesis validation |
+| `audit-exp-design` | Adviser | Audit experiment design statistical validity |
+| `audit-results` | Adviser | Audit results traceability and negative result handling |
+| `audit-paper-plan` | Reviewer | Audit paper outline claim-evidence alignment |
+| `audit-paper` | Reviewer | Review paper draft for rigor and quality |
+| `audit-citation` | Reviewer | Audit citation authenticity in detail |
+| `audit-lessons` | Curator | Audit lessons transferability and actionability |
+| `audit-overlay` | Curator | Audit proposed system improvements for safety |
+
+### Supporting Skills (12)
+
+Additional workflow automation skills:
+
+| Skill | Purpose |
+|-------|---------|
+| `idea-discovery` | Full idea discovery pipeline |
+| `idea-creator` | Generate research ideas |
+| `research-review` | Review research progress |
+| `research-pipeline` | End-to-end research pipeline |
+| `paper-writing` | Full paper writing pipeline |
+| `paper-figure` | Generate paper figures |
+| `paper-compile` | Compile paper to PDF |
+| `auto-review-loop` | Multi-round autonomous review |
+| `auto-paper-improvement-loop` | Iterative paper improvement |
+| `latex-citation-curator` | Curate LaTeX citations |
+| `feishu-notify` | Send Feishu notifications |
+| `gitmem` | Git memory and commit tracking |
+
 ## ARIS Integration: Standalone Entry Points
 
 This skill now includes ARIS (Auto-Research-In-Sleep) capabilities. You can invoke these workflows independently:
@@ -219,45 +286,45 @@ This skill now includes ARIS (Auto-Research-In-Sleep) capabilities. You can invo
 
 ```bash
 # Full idea discovery pipeline
-/idea-discovery "transformer efficiency optimization"
+/autoresearch:idea-discovery "transformer efficiency optimization"
 
 # Sub-skills (invoked by idea-discovery)
-/research-lit "attention mechanisms"
-/idea-creator "multi-modal reasoning"
-/novelty-check "proposed idea description"
-/research-review "idea with pilot results"
+/autoresearch:research-lit "attention mechanisms"
+/autoresearch:idea-creator "multi-modal reasoning"
+/autoresearch:novelty-check "proposed idea description"
+/autoresearch:research-review "idea with pilot results"
 ```
 
 ### Workflow 2: Auto Review Loop
 
 ```bash
 # Multi-round autonomous review
-/auto-review-loop "experiment results"
+/autoresearch:auto-review-loop "experiment results"
 
 # Supporting skills
-/run-experiment "python train.py --config config.yaml"
-/monitor-experiment "gpu-server-1"
-/analyze-results "results/"
+/autoresearch:run-experiment "python train.py --config config.yaml"
+/autoresearch:monitor-experiment "gpu-server-1"
+/autoresearch:analyze-results "results/"
 ```
 
 ### Workflow 3: Paper Writing
 
 ```bash
 # Full paper writing pipeline
-/paper-writing "NARRATIVE_REPORT.md"
+/autoresearch:paper-writing "NARRATIVE_REPORT.md"
 
 # Sub-skills (invoked by paper-writing)
-/paper-plan "results/"
-/paper-figure "data/"
-/paper-write "PAPER_PLAN.md"
-/paper-compile "paper/"
+/autoresearch:paper-plan "results/"
+/autoresearch:paper-figure "data/"
+/autoresearch:paper-write "PAPER_PLAN.md"
+/autoresearch:paper-compile "paper/"
 ```
 
 ### Full Pipeline
 
 ```bash
 # End-to-end: idea → experiments → submission
-/research-pipeline "multi-modal reasoning"
+/autoresearch:research-pipeline "multi-modal reasoning"
 ```
 
 ### Configuration
@@ -308,6 +375,153 @@ When transitioning between phases:
   Produce `paper/citation-audit-report.md`, `paper/final-acceptance-report.md`, and `paper/phase-scorecard.md`, then stop for Gate 4.
 - Phase 5: `Reflector <-> Curator`
   Produce `docs/reports/reflection/runtime-improvement-report.md` and `docs/reports/reflection/phase-scorecard.md`, then stop for Gate 5 before any overlay or policy change is activated.
+
+## Phase Gate Checklist
+
+Before advancing to the next phase, ALL items in the corresponding gate checklist must be verified.
+
+### Gate 0: Initialization Check
+
+- [ ] `.autoresearch/state/research-state.yaml` exists and is valid
+- [ ] `.autoresearch/config/orchestrator-config.yaml` exists
+- [ ] Required directories created (`paper/`, `code/`, `docs/`, `agents/`)
+- [ ] `AGENTS.md` or `CLAUDE.md` generated at project root
+- [ ] Research topic clarified and recorded
+
+### Gate 1: Survey → Pilot
+
+**Required Deliverables:**
+- [ ] `docs/reports/survey/research-readiness-report.md` exists and contains:
+  - [ ] Problem statement with clear research questions
+  - [ ] Literature review summary (min 10 papers)
+  - [ ] Gap analysis with proposed contribution
+  - [ ] Recommended method/approach
+- [ ] `docs/reports/survey/phase-scorecard.md` exists
+- [ ] Phase score ≥ 3.5 (on 5-point scale)
+
+**Quality Checks:**
+- [ ] All cited papers verified via academic APIs (Semantic Scholar/arXiv/CrossRef)
+- [ ] No fabricated citations
+- [ ] User approval recorded in state file
+
+### Gate 2: Pilot → Experiments
+
+**Required Deliverables:**
+- [ ] `docs/reports/pilot/pilot-validation-report.md` exists and contains:
+  - [ ] Pilot experiment design
+  - [ ] Implementation details
+  - [ ] Preliminary results with error bars
+  - [ ] Go/No-Go recommendation
+- [ ] `docs/reports/pilot/phase-scorecard.md` exists
+- [ ] Phase score ≥ 3.5
+
+**Quality Checks:**
+- [ ] Code runs without errors
+- [ ] Pilot results are reproducible
+- [ ] Method validated on pilot dataset
+- [ ] User approval recorded in state file
+
+### Gate 3: Experiments → Paper
+
+**Required Deliverables:**
+- [ ] `docs/reports/experiments/evidence-package-index.md` exists and contains:
+  - [ ] Complete experiment configurations
+  - [ ] All results with statistical analysis
+  - [ ] Figures and tables for paper
+  - [ ] Ablation studies (if applicable)
+- [ ] `docs/reports/experiments/results-summary.md` exists
+- [ ] `docs/reports/experiments/phase-scorecard.md` exists
+- [ ] Phase score ≥ 3.5
+
+**Quality Checks:**
+- [ ] All claimed experiments actually run
+- [ ] Results are reproducible with logged configs
+- [ ] Checkpoints/saved models exist where claimed
+- [ ] User approval recorded in state file
+
+### Gate 4: Paper → Reflection
+
+**Required Deliverables:**
+- [ ] `paper/main.tex` exists and compiles without errors
+- [ ] `paper/references.bib` exists with all citations
+- [ ] `paper/citation-audit-report.md` exists with:
+  - [ ] All citations verified authentic
+  - [ ] No fabricated references
+- [ ] `docs/reports/paper/final-acceptance-report.md` exists
+- [ ] Phase score ≥ 3.5
+
+**Quality Checks:**
+- [ ] All figures readable and referenced
+- [ ] No placeholder text (e.g., "TODO", "[insert figure]")
+- [ ] Paper compiles to PDF successfully
+- [ ] Citation audit passed (no fake papers)
+- [ ] User approval recorded in state file
+
+### Gate 5: Reflection → Close
+
+**Required Deliverables:**
+- [ ] `docs/reports/reflection/lessons-learned.md` exists and contains:
+  - [ ] What worked well
+  - [ ] What could be improved
+  - [ ] Recommendations for future projects
+- [ ] `docs/reports/reflection/runtime-improvement-report.md` exists
+- [ ] `.autoresearch/archive/archive-index.md` exists
+
+**Final Decisions:**
+- [ ] Overlay activation decision made (yes/no)
+- [ ] If yes: `python3 scripts/apply_overlay.py --project-root <path>`
+- [ ] Project status set to `completed` in state file
+
+### Gate Score Interpretation
+
+| Score | Decision | Action |
+|-------|----------|--------|
+| 4.5-5.0 | Approve | Proceed to next phase immediately |
+| 3.5-4.4 | Advance | Minor fixes needed, proceed after fix |
+| 2.5-3.4 | Revise | Significant revision required, retry phase |
+| 1.5-2.4 | Major Revise | Return to earlier phase, may need pivot |
+| 0.0-1.4 | Pivot | Consider alternative approach or termination |
+
+### Automatic Blockers
+
+The following issues **automatically block gate approval** regardless of score:
+
+**Gate 1 Blockers:**
+- [ ] Any fabricated citation detected
+- [ ] Novelty claim without supporting evidence
+- [ ] Untestable hypothesis
+
+**Gate 2 Blockers:**
+- [ ] Pilot cannot validate hypothesis
+- [ ] No clear recommendation from adviser
+- [ ] Unaddressed failure modes
+
+**Gate 3 Blockers:**
+- [ ] Untraceable results (missing run IDs)
+- [ ] Hidden negative results
+- [ ] Unverified statistical claims
+
+**Gate 4 Blockers:**
+- [ ] Unsupported claims in manuscript
+- [ ] Unverified citations (<90% verified)
+- [ ] Suspected fabrication
+
+**Gate 5 Blockers:**
+- [ ] Silent policy changes proposed
+- [ ] Undocumented overlays
+- [ ] Missing safety rationale
+
+### Scoring Dimensions Reference
+
+Each gate is scored on these dimensions (see `references/gate-rubrics.md` for details):
+
+| Gate | Dimension 1 (25%) | Dimension 2 (25%) | Dimension 3 (25%) | Dimension 4 (25%) |
+|------|-------------------|-------------------|-------------------|-------------------|
+| 1 | Citation Authenticity | Novelty | Literature Coverage | Idea Definition |
+| 2 | Hypothesis Clarity | Pilot Design | Execution Quality | Decision Support |
+| 3 | Result Traceability | Statistical Validity | Baseline Completeness | Negative Handling |
+| 4 | Novelty | Evidence Strength | Theoretical Foundation | Writing Quality |
+| 5 | Lessons Quality | Overlay Safety | Runtime Improvements | Documentation |
 
 ## Hard Rules
 

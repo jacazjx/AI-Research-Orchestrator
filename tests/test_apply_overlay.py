@@ -1,9 +1,10 @@
 import importlib.util
+import json
 import sys
 import tempfile
 import unittest
 from pathlib import Path
-
+from unittest.mock import patch
 
 SKILL_DIR = Path(__file__).resolve().parents[1]
 SCRIPTS_DIR = SKILL_DIR / "scripts"
@@ -41,7 +42,9 @@ class ApplyOverlayTest(unittest.TestCase):
             overlay_path.parent.mkdir(parents=True, exist_ok=True)
             overlay_path.write_text("Prioritize explicit failure analysis.", encoding="utf-8")
 
-            OVERLAY.activate_overlay(project_root, str(overlay_path), scope_roles=["critic"], scope_phases=["survey"])
+            OVERLAY.activate_overlay(
+                project_root, str(overlay_path), scope_roles=["critic"], scope_phases=["survey"]
+            )
             rendered = RENDER.render_agent_prompt(
                 project_root=project_root,
                 role="critic",
@@ -75,6 +78,115 @@ class ApplyOverlayTest(unittest.TestCase):
             with self.assertRaises(Exception) as context:
                 OVERLAY.activate_overlay(project_root, "../outside.md")
             self.assertIn("PathSecurityError", type(context.exception).__name__)
+
+    def test_activate_overlay_without_gate_check(self) -> None:
+        """Test activating overlay without gate approval check."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "no-gate-check"
+            INIT.initialize_research_project(project_root=project_root, topic="No gate check")
+
+            overlay_path = project_root / "paper/overlay-draft.md"
+            overlay_path.parent.mkdir(parents=True, exist_ok=True)
+            overlay_path.write_text("Test overlay content.", encoding="utf-8")
+
+            result = OVERLAY.activate_overlay(project_root, str(overlay_path), require_gate=False)
+            self.assertEqual("active", result["status"])
+
+    def test_activate_overlay_raises_for_missing_file(self) -> None:
+        """Test that activating missing overlay raises FileNotFoundError."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "missing-overlay"
+            INIT.initialize_research_project(project_root=project_root, topic="Missing overlay")
+
+            with self.assertRaises(FileNotFoundError):
+                OVERLAY.activate_overlay(project_root, "nonexistent.md", require_gate=False)
+
+    def test_activate_overlay_raises_without_gate_approval(self) -> None:
+        """Test that activating overlay without gate approval raises error."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "no-approval"
+            INIT.initialize_research_project(project_root=project_root, topic="No approval")
+
+            overlay_path = project_root / "paper/overlay-draft.md"
+            overlay_path.parent.mkdir(parents=True, exist_ok=True)
+            overlay_path.write_text("Test overlay.", encoding="utf-8")
+
+            with self.assertRaises(Exception):
+                OVERLAY.activate_overlay(project_root, str(overlay_path), require_gate=True)
+
+    def test_main_with_json_output(self) -> None:
+        """Test main with --json flag."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "json-output"
+            INIT.initialize_research_project(project_root=project_root, topic="JSON output")
+
+            overlay_path = project_root / "paper/overlay-draft.md"
+            overlay_path.parent.mkdir(parents=True, exist_ok=True)
+            overlay_path.write_text("Test overlay.", encoding="utf-8")
+
+            args = [
+                "--project-root",
+                str(project_root),
+                "--overlay-path",
+                str(overlay_path),
+                "--skip-approval-check",
+                "--json",
+            ]
+            with patch("sys.argv", ["apply_overlay.py"] + args):
+                with patch("builtins.print") as mock_print:
+                    OVERLAY.main()
+                    call_args = mock_print.call_args[0][0]
+                    parsed = json.loads(call_args)
+                    self.assertEqual("active", parsed["status"])
+
+    def test_main_with_scope_options(self) -> None:
+        """Test main with scope role and phase options."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "scope-options"
+            INIT.initialize_research_project(project_root=project_root, topic="Scope options")
+
+            overlay_path = project_root / "paper/overlay-draft.md"
+            overlay_path.parent.mkdir(parents=True, exist_ok=True)
+            overlay_path.write_text("Scoped overlay.", encoding="utf-8")
+
+            args = [
+                "--project-root",
+                str(project_root),
+                "--overlay-path",
+                str(overlay_path),
+                "--skip-approval-check",
+                "--scope-role",
+                "critic",
+                "--scope-phase",
+                "survey",
+            ]
+            with patch("sys.argv", ["apply_overlay.py"] + args):
+                with patch("builtins.print") as mock_print:
+                    result = OVERLAY.main()
+                    self.assertEqual(0, result)
+
+    def test_build_parser_accepts_all_options(self) -> None:
+        """Test that parser accepts all options."""
+        parser = OVERLAY.build_parser()
+        args = parser.parse_args(
+            [
+                "--project-root",
+                "/tmp",
+                "--overlay-path",
+                "/tmp/overlay.md",
+                "--note",
+                "Test note",
+                "--scope-role",
+                "critic",
+                "--scope-phase",
+                "survey",
+                "--skip-approval-check",
+                "--json",
+            ]
+        )
+        self.assertEqual("/tmp", args.project_root)
+        self.assertEqual("Test note", args.note)
+        self.assertTrue(args.skip_approval_check)
 
 
 if __name__ == "__main__":

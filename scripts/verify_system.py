@@ -17,14 +17,12 @@ from typing import Any
 SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from orchestrator_common import (
+from orchestrator_common import (  # noqa: E402
     DEFAULT_DELIVERABLES,
-    PHASE_DIRECTORIES,
-    REQUIRED_DIRECTORIES,
     PHASE_REQUIRED_DELIVERABLES,
-    HANDOFF_REQUIREMENTS,
-    load_state,
+    REQUIRED_DIRECTORIES,
     load_project_config,
+    load_state,
 )
 
 
@@ -39,12 +37,14 @@ def check_directory_structure(project_root: Path) -> dict[str, Any]:
     for dir_name in REQUIRED_DIRECTORIES:
         dir_path = project_root / dir_name
         exists = dir_path.exists() and dir_path.is_dir()
-        results["checks"].append({
-            "type": "directory",
-            "name": dir_name,
-            "exists": exists,
-            "status": "pass" if exists else "fail",
-        })
+        results["checks"].append(
+            {
+                "type": "directory",
+                "name": dir_name,
+                "exists": exists,
+                "status": "pass" if exists else "fail",
+            }
+        )
         if not exists:
             results["passed"] = False
 
@@ -69,12 +69,14 @@ def check_required_files(project_root: Path) -> dict[str, Any]:
         relative_path = DEFAULT_DELIVERABLES[key]
         file_path = project_root / relative_path
         exists = file_path.exists()
-        results["checks"].append({
-            "type": "file",
-            "name": relative_path,
-            "exists": exists,
-            "status": "pass" if exists else "fail",
-        })
+        results["checks"].append(
+            {
+                "type": "file",
+                "name": relative_path,
+                "exists": exists,
+                "status": "pass" if exists else "fail",
+            }
+        )
         if not exists:
             results["passed"] = False
 
@@ -113,12 +115,14 @@ def check_state_integrity(project_root: Path) -> dict[str, Any]:
 
         for field in required_fields:
             has_field = field in state
-            results["checks"].append({
-                "type": "state_field",
-                "name": field,
-                "exists": has_field,
-                "status": "pass" if has_field else "fail",
-            })
+            results["checks"].append(
+                {
+                    "type": "state_field",
+                    "name": field,
+                    "exists": has_field,
+                    "status": "pass" if has_field else "fail",
+                }
+            )
             if not has_field:
                 results["passed"] = False
 
@@ -140,12 +144,14 @@ def check_state_integrity(project_root: Path) -> dict[str, Any]:
         ]
         current_phase = state.get("current_phase", "")
         valid_phase = current_phase in valid_phases
-        results["checks"].append({
-            "type": "state_value",
-            "name": "current_phase validity",
-            "value": current_phase,
-            "status": "pass" if valid_phase else "fail",
-        })
+        results["checks"].append(
+            {
+                "type": "state_value",
+                "name": "current_phase validity",
+                "value": current_phase,
+                "status": "pass" if valid_phase else "fail",
+            }
+        )
         if not valid_phase:
             results["passed"] = False
 
@@ -168,13 +174,15 @@ def check_config_integrity(project_root: Path) -> dict[str, Any]:
 
     if not config_path.exists():
         # Config may not exist yet, use defaults
-        results["checks"].append({
-            "type": "config",
-            "name": "config file",
-            "exists": False,
-            "status": "warn",
-            "message": "Config file does not exist, using defaults",
-        })
+        results["checks"].append(
+            {
+                "type": "config",
+                "name": "config file",
+                "exists": False,
+                "status": "warn",
+                "message": "Config file does not exist, using defaults",
+            }
+        )
         return results
 
     try:
@@ -184,12 +192,14 @@ def check_config_integrity(project_root: Path) -> dict[str, Any]:
         required_sections = ["loop_limits", "languages"]
         for section in required_sections:
             has_section = section in config
-            results["checks"].append({
-                "type": "config_section",
-                "name": section,
-                "exists": has_section,
-                "status": "pass" if has_section else "warn",
-            })
+            results["checks"].append(
+                {
+                    "type": "config_section",
+                    "name": section,
+                    "exists": has_section,
+                    "status": "pass" if has_section else "warn",
+                }
+            )
 
     except Exception as e:
         results["passed"] = False
@@ -206,14 +216,6 @@ def check_phase_deliverables(project_root: Path) -> dict[str, Any]:
         "phase_results": {},
     }
 
-    try:
-        state = load_state(project_root)
-        current_phase = state.get("current_phase", "01-survey")
-    except Exception:
-        results["passed"] = False
-        results["errors"] = ["Cannot load state to check phase deliverables"]
-        return results
-
     # Check each phase's deliverables
     for phase, deliverable_keys in PHASE_REQUIRED_DELIVERABLES.items():
         phase_checks = []
@@ -223,11 +225,13 @@ def check_phase_deliverables(project_root: Path) -> dict[str, Any]:
             relative_path = DEFAULT_DELIVERABLES[key]
             file_path = project_root / relative_path
             exists = file_path.exists()
-            phase_checks.append({
-                "deliverable": key,
-                "path": relative_path,
-                "exists": exists,
-            })
+            phase_checks.append(
+                {
+                    "deliverable": key,
+                    "path": relative_path,
+                    "exists": exists,
+                }
+            )
             if not exists:
                 all_present = False
 
@@ -257,22 +261,32 @@ def check_gate_status(project_root: Path) -> dict[str, Any]:
         return results
 
     gates = ["gate_1", "gate_2", "gate_3", "gate_4", "gate_5"]
-    reviews = ["survey_critic", "pilot_adviser", "experiment_adviser", "paper_reviewer", "reflection_curator"]
+    reviews = [
+        "survey_critic",
+        "pilot_adviser",
+        "experiment_adviser",
+        "paper_reviewer",
+        "reflection_curator",
+    ]
 
     for gate in gates:
         status = approval_status.get(gate, "pending")
         results["gates"][gate] = status
-        results["checks"].append({
-            "gate": gate,
-            "status": status,
-        })
+        results["checks"].append(
+            {
+                "gate": gate,
+                "status": status,
+            }
+        )
 
     for review in reviews:
         status = phase_reviews.get(review, "pending")
-        results["checks"].append({
-            "review": review,
-            "status": status,
-        })
+        results["checks"].append(
+            {
+                "review": review,
+                "status": status,
+            }
+        )
 
     return results
 

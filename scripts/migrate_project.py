@@ -20,19 +20,17 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 SKILL_DIR = SCRIPT_DIR.parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from orchestrator_common import (
-    PHASE_DIRECTORIES,
-    REQUIRED_DIRECTORIES,
+from analyze_project import analyze_project  # noqa: E402
+
+from orchestrator_common import (  # noqa: E402
     DEFAULT_DELIVERABLES,
-    DEFAULT_LOOP_LIMITS,
     DEFAULT_LANGUAGE_POLICY,
-    PHASE_TO_GATE,
+    DEFAULT_LOOP_LIMITS,
+    REQUIRED_DIRECTORIES,
     build_state,
-    write_yaml,
-    yaml_dump,
     ensure_project_structure,
+    write_yaml,
 )
-from analyze_project import analyze_project, estimate_project_phase
 
 
 def create_phase_directories(project_root: Path) -> dict[str, bool]:
@@ -279,7 +277,9 @@ def import_existing_files(
                 except Exception as e:
                     results["errors"].append(f"Failed to copy {bib_file}: {e}")
             else:
-                results["imported"].append(f"[DRY RUN] {bib_file} -> .autoresearch/reference-papers/")
+                results["imported"].append(
+                    f"[DRY RUN] {bib_file} -> .autoresearch/reference-papers/"
+                )
 
     # Import PDFs to reference-papers
     for pdf_file in analysis.get("literature_evidence", {}).get("reference_papers", []):
@@ -294,7 +294,9 @@ def import_existing_files(
                 except Exception as e:
                     results["errors"].append(f"Failed to copy {pdf_file}: {e}")
             else:
-                results["imported"].append(f"[DRY RUN] {pdf_file} -> .autoresearch/reference-papers/")
+                results["imported"].append(
+                    f"[DRY RUN] {pdf_file} -> .autoresearch/reference-papers/"
+                )
 
     return results
 
@@ -335,7 +337,9 @@ def migrate_project(
         results["steps"]["create_manifest"] = {"status": "skipped", "reason": "dry_run"}
         results["steps"]["create_idea"] = {"status": "skipped", "reason": "dry_run"}
         results["steps"]["create_config"] = {"status": "skipped", "reason": "dry_run"}
-        results["steps"]["import_files"] = import_existing_files(project_root, analysis, dry_run=True)
+        results["steps"]["import_files"] = import_existing_files(
+            project_root, analysis, dry_run=True
+        )
     else:
         # Step 2: Create phase directories
         try:
@@ -466,13 +470,23 @@ def format_report(results: dict[str, Any]) -> str:
 
 # Support both new semantic names and legacy numbered names
 VALID_PHASES = [
-    "survey", "pilot", "experiments", "paper", "reflection",
-    "01-survey", "02-pilot-analysis", "03-full-experiments", "04-paper", "05-reflection-evolution",
+    "survey",
+    "pilot",
+    "experiments",
+    "paper",
+    "reflection",
+    "01-survey",
+    "02-pilot-analysis",
+    "03-full-experiments",
+    "04-paper",
+    "05-reflection-evolution",
 ]
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Migrate an existing project to orchestrator format")
+    parser = argparse.ArgumentParser(
+        description="Migrate an existing project to orchestrator format"
+    )
     parser.add_argument("--project-root", required=True, help="Path to project root")
     parser.add_argument("--topic", required=True, help="Research topic or idea")
     parser.add_argument("--project-id", help="Optional project ID")
@@ -482,7 +496,9 @@ def main() -> int:
         choices=VALID_PHASES,
         help="Phase to start the project at. Defaults to auto-detected phase.",
     )
-    parser.add_argument("--dry-run", action="store_true", help="Show what would be done without making changes")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Show what would be done without making changes"
+    )
     parser.add_argument("--json", action="store_true", help="Output as JSON")
     parser.add_argument("--quiet", action="store_true", help="Only output success/failure")
     args = parser.parse_args()

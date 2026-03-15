@@ -1,0 +1,25 @@
+{
+  "name": "autoresearch",
+  "version": "1.0.0",
+  "description": "Initialize and run a gated five-phase AI research project from idea through paper. Supports Survey, Pilot, Experiments, Paper, and Reflection phases with explicit human gates.",
+  "author": {
+    "name": "AI Research Orchestrator Team",
+    "email": "autoresearch@example.com"
+  },
+  "homepage": "https://github.com/jacazjx/AI-Research-Orchestrator",
+  "repository": "https://github.com/jacazjx/AI-Research-Orchestrator",
+  "license": "MIT",
+  "keywords": [
+    "ai",
+    "research",
+    "orchestration",
+    "workflow",
+    "automation",
+    "paper-writing",
+    "experiment",
+    "survey",
+    "scientific-research"
+  ],
+  "commands": "./commands",
+  "skills": "./skills"
+}

@@ -4,7 +4,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
-
+from unittest.mock import patch
 
 SKILL_DIR = Path(__file__).resolve().parents[1]
 SCRIPTS_DIR = SKILL_DIR / "scripts"
@@ -39,6 +39,7 @@ class ShowVersionTest(unittest.TestCase):
     def test_version_format(self) -> None:
         """Test that version follows semver format."""
         import re
+
         version_pattern = r"^\d+\.\d+\.\d+$"
         self.assertRegex(COMMON.SYSTEM_VERSION, version_pattern)
 
@@ -96,6 +97,7 @@ class ShowVersionTest(unittest.TestCase):
         """Test short version output (just version number)."""
         # Import and run the module directly
         import subprocess
+
         result = subprocess.run(
             ["python3", str(SCRIPTS_DIR / "show_version.py"), "--short"],
             capture_output=True,
@@ -107,6 +109,7 @@ class ShowVersionTest(unittest.TestCase):
     def test_json_version_output(self) -> None:
         """Test JSON version output."""
         import subprocess
+
         result = subprocess.run(
             ["python3", str(SCRIPTS_DIR / "show_version.py"), "--json"],
             capture_output=True,
@@ -116,6 +119,78 @@ class ShowVersionTest(unittest.TestCase):
 
         data = json.loads(result.stdout)
         self.assertEqual(data["version"], COMMON.SYSTEM_VERSION)
+
+    def test_check_for_updates(self) -> None:
+        """Test check_for_updates function."""
+        result = VERSION.check_for_updates()
+        self.assertEqual(result["current_version"], COMMON.SYSTEM_VERSION)
+        self.assertFalse(result["update_available"])
+        self.assertIn("message", result)
+
+    def test_main_short_flag(self) -> None:
+        """Test main function with --short flag."""
+        args = ["--short"]
+        with patch("sys.argv", ["show_version.py"] + args):
+            with patch("builtins.print") as mock_print:
+                result = VERSION.main()
+                self.assertEqual(0, result)
+                mock_print.assert_called_with(COMMON.SYSTEM_VERSION)
+
+    def test_main_json_flag(self) -> None:
+        """Test main function with --json flag."""
+        args = ["--json"]
+        with patch("sys.argv", ["show_version.py"] + args):
+            with patch("builtins.print") as mock_print:
+                result = VERSION.main()
+                self.assertEqual(0, result)
+                call_args = mock_print.call_args[0][0]
+                parsed = json.loads(call_args)
+                self.assertIn("version", parsed)
+
+    def test_main_json_with_check_updates(self) -> None:
+        """Test main function with --json and --check-updates flags."""
+        args = ["--json", "--check-updates"]
+        with patch("sys.argv", ["show_version.py"] + args):
+            with patch("builtins.print") as mock_print:
+                result = VERSION.main()
+                self.assertEqual(0, result)
+                call_args = mock_print.call_args[0][0]
+                parsed = json.loads(call_args)
+                self.assertIn("update_check", parsed)
+
+    def test_main_no_color_flag(self) -> None:
+        """Test main function with --no-color flag."""
+        args = ["--no-color"]
+        with patch("sys.argv", ["show_version.py"] + args):
+            with patch("builtins.print") as mock_print:
+                result = VERSION.main()
+                self.assertEqual(0, result)
+
+    def test_main_check_updates_no_update(self) -> None:
+        """Test main function with --check-updates when no update available."""
+        args = ["--check-updates"]
+        with patch("sys.argv", ["show_version.py"] + args):
+            with patch("builtins.print") as mock_print:
+                result = VERSION.main()
+                self.assertEqual(0, result)
+                # Check that "latest version" message was printed
+                calls = [str(call) for call in mock_print.call_args_list]
+                combined = " ".join(calls)
+                self.assertIn("latest version", combined.lower())
+
+    def test_format_version_report_highlights_current(self) -> None:
+        """Test that version report highlights current version."""
+        report = VERSION.format_version_report(use_color=False)
+        # Current version should be marked with bullet
+        self.assertIn(COMMON.SYSTEM_VERSION, report)
+
+    def test_main_default_output(self) -> None:
+        """Test main function with no flags."""
+        args = []
+        with patch("sys.argv", ["show_version.py"] + args):
+            with patch("builtins.print") as mock_print:
+                result = VERSION.main()
+                self.assertEqual(0, result)
 
 
 if __name__ == "__main__":

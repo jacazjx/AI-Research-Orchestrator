@@ -6,10 +6,21 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from generate_dashboard import generate_dashboard
-from orchestrator_common import DEFAULT_DELIVERABLES, PHASE_REQUIRED_DELIVERABLES, ensure_project_structure, load_project_config, load_state, read_yaml, save_state
+
+from orchestrator_common import (
+    DEFAULT_DELIVERABLES,
+    PHASE_REQUIRED_DELIVERABLES,
+    ensure_project_structure,
+    load_project_config,
+    load_state,
+    read_yaml,
+    save_state,
+)
 
 
-def inspect_runtime(project_root: Path, stale_after_minutes: int | None = None) -> dict[str, object]:
+def inspect_runtime(
+    project_root: Path, stale_after_minutes: int | None = None
+) -> dict[str, object]:
     project_root = project_root.resolve()
     state = load_state(project_root)
     config = load_project_config(project_root)
@@ -49,7 +60,9 @@ def inspect_runtime(project_root: Path, stale_after_minutes: int | None = None) 
 
     state["recovery_status"] = "needs-attention" if issues else "idle"
     state["progress"]["active_blocker"] = issues[0]["type"] if issues else "none"
-    state["progress"]["next_action"] = "recover-stage" if issues else state["progress"]["next_action"]
+    state["progress"]["next_action"] = (
+        "recover-stage" if issues else state["progress"]["next_action"]
+    )
     save_state(project_root, state)
     generate_dashboard(project_root)
     return {
@@ -60,7 +73,9 @@ def inspect_runtime(project_root: Path, stale_after_minutes: int | None = None) 
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Inspect runtime registries for missing artifacts or stale jobs.")
+    parser = argparse.ArgumentParser(
+        description="Inspect runtime registries for missing artifacts or stale jobs."
+    )
     parser.add_argument("--project-root", required=True)
     parser.add_argument("--stale-after-minutes", type=int)
     parser.add_argument("--json", action="store_true")

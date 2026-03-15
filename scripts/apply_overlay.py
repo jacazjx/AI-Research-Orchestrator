@@ -5,8 +5,9 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from exceptions import PhaseTransitionError, ValidationError
+from exceptions import PhaseTransitionError
 from generate_dashboard import generate_dashboard
+
 from orchestrator_common import append_state_log, load_state, normalize_relative_path, save_state
 
 
@@ -26,7 +27,10 @@ def activate_overlay(
         raise FileNotFoundError(relative_path)
 
     if require_gate:
-        if state["phase_reviews"]["reflection_curator"] != "approved" or state["approval_status"]["gate_5"] != "approved":
+        if (
+            state["phase_reviews"]["reflection_curator"] != "approved"
+            or state["approval_status"]["gate_5"] != "approved"
+        ):
             raise PhaseTransitionError(
                 "Gate 5 approval and curator approval are required before activating overlays",
                 from_phase="05-reflection-evolution",
@@ -74,7 +78,9 @@ def activate_overlay(
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Activate an approved overlay draft for future prompt rendering.")
+    parser = argparse.ArgumentParser(
+        description="Activate an approved overlay draft for future prompt rendering."
+    )
     parser.add_argument("--project-root", required=True)
     parser.add_argument("--overlay-path", required=True)
     parser.add_argument("--note", default="")

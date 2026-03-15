@@ -5,9 +5,16 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from exceptions import StateError, ValidationError
+from exceptions import StateError
 from generate_dashboard import generate_dashboard
-from orchestrator_common import PHASE_TO_GATE, append_state_log, ensure_project_structure, load_state, save_state
+
+from orchestrator_common import (
+    PHASE_TO_GATE,
+    append_state_log,
+    ensure_project_structure,
+    load_state,
+    save_state,
+)
 
 
 def propose_pivot(
@@ -46,7 +53,9 @@ def propose_pivot(
     }
 
 
-def review_pivot(project_root: Path, pivot_id: str, decision: str, note: str = "") -> dict[str, object]:
+def review_pivot(
+    project_root: Path, pivot_id: str, decision: str, note: str = ""
+) -> dict[str, object]:
     project_root = project_root.resolve()
     state = load_state(project_root)
     serialized = list(state.get("pivot_candidates", []))

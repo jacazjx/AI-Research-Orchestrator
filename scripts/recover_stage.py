@@ -7,7 +7,15 @@ from pathlib import Path
 
 from exceptions import ConfigurationError, StateError, ValidationError
 from generate_dashboard import generate_dashboard
-from orchestrator_common import DEFAULT_DELIVERABLES, ensure_project_structure, load_state, read_yaml, save_state, write_yaml
+
+from orchestrator_common import (
+    DEFAULT_DELIVERABLES,
+    ensure_project_structure,
+    load_state,
+    read_yaml,
+    save_state,
+    write_yaml,
+)
 
 
 def recover_stage(project_root: Path, mode: str, job_id: str = "") -> dict[str, object]:
@@ -55,13 +63,20 @@ def recover_stage(project_root: Path, mode: str, job_id: str = "") -> dict[str, 
     state["progress"]["active_blocker"] = "none"
     save_state(project_root, state)
     generate_dashboard(project_root)
-    return {"project_root": str(project_root), "mode": mode, "job_id": job_id, "status": "completed"}
+    return {
+        "project_root": str(project_root),
+        "mode": mode,
+        "job_id": job_id,
+        "status": "completed",
+    }
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Recover a stale or failed stage runtime.")
     parser.add_argument("--project-root", required=True)
-    parser.add_argument("--mode", required=True, choices=("retry-job", "resume-job", "regen-dashboard"))
+    parser.add_argument(
+        "--mode", required=True, choices=("retry-job", "resume-job", "regen-dashboard")
+    )
     parser.add_argument("--job-id", default="")
     parser.add_argument("--json", action="store_true")
     return parser

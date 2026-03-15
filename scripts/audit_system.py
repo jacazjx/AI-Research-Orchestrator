@@ -52,11 +52,13 @@ def check_scripts_exist() -> dict[str, Any]:
     for script in required_scripts:
         script_path = SCRIPT_DIR / script
         exists = script_path.exists()
-        results["checks"].append({
-            "name": script,
-            "exists": exists,
-            "status": "pass" if exists else "fail",
-        })
+        results["checks"].append(
+            {
+                "name": script,
+                "exists": exists,
+                "status": "pass" if exists else "fail",
+            }
+        )
         if not exists:
             results["passed"] = False
 
@@ -94,11 +96,13 @@ def check_templates_exist() -> dict[str, Any]:
     for template in required_templates:
         template_path = template_root / template
         exists = template_path.exists()
-        results["checks"].append({
-            "name": template,
-            "exists": exists,
-            "status": "pass" if exists else "fail",
-        })
+        results["checks"].append(
+            {
+                "name": template,
+                "exists": exists,
+                "status": "pass" if exists else "fail",
+            }
+        )
         if not exists:
             results["passed"] = False
 
@@ -132,11 +136,13 @@ def check_prompts_exist() -> dict[str, Any]:
     for prompt in required_prompts:
         prompt_path = prompt_root / prompt
         exists = prompt_path.exists()
-        results["checks"].append({
-            "name": prompt,
-            "exists": exists,
-            "status": "pass" if exists else "fail",
-        })
+        results["checks"].append(
+            {
+                "name": prompt,
+                "exists": exists,
+                "status": "pass" if exists else "fail",
+            }
+        )
         if not exists:
             results["passed"] = False
 
@@ -172,11 +178,13 @@ def check_references_exist() -> dict[str, Any]:
     for ref in required_refs:
         ref_path = ref_root / ref
         exists = ref_path.exists()
-        results["checks"].append({
-            "name": ref,
-            "exists": exists,
-            "status": "pass" if exists else "fail",
-        })
+        results["checks"].append(
+            {
+                "name": ref,
+                "exists": exists,
+                "status": "pass" if exists else "fail",
+            }
+        )
         if not exists:
             results["passed"] = False
 
@@ -193,43 +201,53 @@ def check_quality_enforcement() -> dict[str, Any]:
 
     # Check citation audit script
     citation_audit = SCRIPT_DIR / "run_citation_audit.py"
-    results["checks"].append({
-        "name": "citation_audit_script",
-        "exists": citation_audit.exists(),
-        "status": "pass" if citation_audit.exists() else "fail",
-    })
+    results["checks"].append(
+        {
+            "name": "citation_audit_script",
+            "exists": citation_audit.exists(),
+            "status": "pass" if citation_audit.exists() else "fail",
+        }
+    )
 
     # Check quality gate script
     quality_gate = SCRIPT_DIR / "quality_gate.py"
-    results["checks"].append({
-        "name": "quality_gate_script",
-        "exists": quality_gate.exists(),
-        "status": "pass" if quality_gate.exists() else "fail",
-    })
+    results["checks"].append(
+        {
+            "name": "quality_gate_script",
+            "exists": quality_gate.exists(),
+            "status": "pass" if quality_gate.exists() else "fail",
+        }
+    )
 
     # Check validate handoff script
     validate_handoff = SCRIPT_DIR / "validate_handoff.py"
-    results["checks"].append({
-        "name": "validate_handoff_script",
-        "exists": validate_handoff.exists(),
-        "status": "pass" if validate_handoff.exists() else "fail",
-    })
+    results["checks"].append(
+        {
+            "name": "validate_handoff_script",
+            "exists": validate_handoff.exists(),
+            "status": "pass" if validate_handoff.exists() else "fail",
+        }
+    )
 
     # Check for gate rubrics
     gate_rubrics = SKILL_DIR / "references" / "gate-rubrics.md"
-    results["checks"].append({
-        "name": "gate_rubrics_doc",
-        "exists": gate_rubrics.exists(),
-        "status": "pass" if gate_rubrics.exists() else "fail",
-    })
+    results["checks"].append(
+        {
+            "name": "gate_rubrics_doc",
+            "exists": gate_rubrics.exists(),
+            "status": "pass" if gate_rubrics.exists() else "fail",
+        }
+    )
 
     # Check for integrity protocols
     integrity_doc = SKILL_DIR / "references" / "experiment-integrity.md"
-    results["checks"].append({
-        "name": "experiment_integrity_doc",
-        "exists": integrity_doc.exists(),
-        "status": "pass" if integrity_doc.exists() else "fail",
-    })
+    results["checks"].append(
+        {
+            "name": "experiment_integrity_doc",
+            "exists": integrity_doc.exists(),
+            "status": "pass" if integrity_doc.exists() else "fail",
+        }
+    )
 
     for check in results["checks"]:
         if check["status"] == "fail":
@@ -252,26 +270,32 @@ def check_human_gate_enforcement() -> dict[str, Any]:
         from orchestrator_common import HANDOFF_REQUIREMENTS
 
         gates_defined = len(HANDOFF_REQUIREMENTS) >= 5  # 5 gates minimum
-        results["checks"].append({
-            "name": "gate_requirements_defined",
-            "status": "pass" if gates_defined else "fail",
-            "count": len(HANDOFF_REQUIREMENTS),
-        })
+        results["checks"].append(
+            {
+                "name": "gate_requirements_defined",
+                "status": "pass" if gates_defined else "fail",
+                "count": len(HANDOFF_REQUIREMENTS),
+            }
+        )
 
         # Check that each gate requires approval
         for gate_name, requirements in HANDOFF_REQUIREMENTS.items():
             approval_required = "approval_status" in str(requirements.get("statuses", []))
-            results["checks"].append({
-                "name": f"{gate_name}_approval_required",
-                "status": "pass" if approval_required else "warn",
-            })
+            results["checks"].append(
+                {
+                    "name": f"{gate_name}_approval_required",
+                    "status": "pass" if approval_required else "warn",
+                }
+            )
 
     except Exception as e:
-        results["checks"].append({
-            "name": "gate_requirements_check",
-            "status": "fail",
-            "error": str(e),
-        })
+        results["checks"].append(
+            {
+                "name": "gate_requirements_check",
+                "status": "fail",
+                "error": str(e),
+            }
+        )
         results["passed"] = False
 
     for check in results["checks"]:
@@ -306,43 +330,54 @@ def check_test_coverage() -> dict[str, Any]:
 
         # Parse test results
         if "OK" in output:
-            results["checks"].append({
-                "name": "all_tests_pass",
-                "status": "pass",
-                "output": "All tests passed",
-            })
+            results["checks"].append(
+                {
+                    "name": "all_tests_pass",
+                    "status": "pass",
+                    "output": "All tests passed",
+                }
+            )
         else:
-            results["checks"].append({
-                "name": "all_tests_pass",
-                "status": "fail",
-                "output": output[-500:] if len(output) > 500 else output,
-            })
+            results["checks"].append(
+                {
+                    "name": "all_tests_pass",
+                    "status": "fail",
+                    "output": output[-500:] if len(output) > 500 else output,
+                }
+            )
             results["passed"] = False
 
         # Count tests
         import re
+
         match = re.search(r"Ran (\d+) tests", output)
         if match:
             test_count = int(match.group(1))
-            results["checks"].append({
-                "name": "test_count",
-                "status": "pass" if test_count >= 30 else "warn",
-                "count": test_count,
-            })
+            results["checks"].append(
+                {
+                    "name": "test_count",
+                    "status": "pass" if test_count >= 30 else "warn",
+                    "count": test_count,
+                }
+            )
 
     except subprocess.TimeoutExpired:
-        results["checks"].append({
-            "name": "all_tests_pass",
-            "status": "fail",
-            "error": "Tests timed out",
-        })
+        results["checks"].append(
+            {
+                "name": "all_tests_pass",
+                "status": "fail",
+                "error": "Tests timed out",
+            }
+        )
         results["passed"] = False
     except Exception as e:
-        results["checks"].append({
-            "name": "all_tests_pass",
-            "status": "fail",
-            "error": str(e),
-        })
+        results["checks"].append(
+            {
+                "name": "all_tests_pass",
+                "status": "fail",
+                "error": str(e),
+            }
+        )
         results["passed"] = False
 
     return results
@@ -373,9 +408,7 @@ def run_audit() -> dict[str, Any]:
     # Determine delivery readiness
     critical_categories = ["scripts", "quality_enforcement", "human_gates", "tests"]
     critical_passed = all(
-        cat["passed"]
-        for cat in results["categories"]
-        if cat["category"] in critical_categories
+        cat["passed"] for cat in results["categories"] if cat["category"] in critical_categories
     )
 
     if all_passed:
@@ -411,7 +444,9 @@ def format_report(report: dict[str, Any]) -> str:
         lines.append("")
 
         for check in category["checks"]:
-            status_icon = "✅" if check["status"] == "pass" else "⚠️" if check["status"] == "warn" else "❌"
+            status_icon = (
+                "✅" if check["status"] == "pass" else "⚠️" if check["status"] == "warn" else "❌"
+            )
             name = check["name"]
             lines.append(f"- {status_icon} {name}")
             if "error" in check:

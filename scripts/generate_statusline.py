@@ -20,15 +20,11 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 SKILL_DIR = SCRIPT_DIR.parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from orchestrator_common import (
-    PHASE_SEQUENCE,
-    PHASE_TO_GATE,
-    PHASE_LOOP_KEY,
-    PHASE_TO_REVIEW,
-    ensure_project_structure,
-    load_state,
+from orchestrator_common import (  # noqa: E402
     SYSTEM_VERSION,
     SYSTEM_VERSION_NAME,
+    ensure_project_structure,
+    load_state,
 )
 
 # ANSI color codes
@@ -150,8 +146,6 @@ def get_agent_status(
     """Determine agent status: active, pending, completed."""
     current_phase = state.get("current_phase", "01-survey")
     current_agent = state.get("progress", {}).get("current_agent", "orchestrator")
-    phase_reviews = state.get("phase_reviews", {})
-    approval_status = state.get("approval_status", {})
 
     # Check if this phase is completed
     phase_index = PHASE_SEQUENCE.index(phase) if phase in PHASE_SEQUENCE else -1
@@ -235,12 +229,16 @@ def generate_statusline(
     if compact:
         # Compact single-line format
         phase_name = PHASE_NAMES.get(current_phase, current_phase)
-        progress_bar = generate_progress_bar(current_phase, completion_percent, width=10, use_color=use_color)
-        agent_display = colorize(current_agent.upper(), "cyan", use_color) if use_color else current_agent.upper()
-
-        lines.append(
-            f"[{progress_bar}] {phase_name} | {current_gate} | {agent_display}"
+        progress_bar = generate_progress_bar(
+            current_phase, completion_percent, width=10, use_color=use_color
         )
+        agent_display = (
+            colorize(current_agent.upper(), "cyan", use_color)
+            if use_color
+            else current_agent.upper()
+        )
+
+        lines.append(f"[{progress_bar}] {phase_name} | {current_gate} | {agent_display}")
     else:
         # Full format
         lines.append("")
@@ -258,7 +256,9 @@ def generate_statusline(
         lines.append("")
 
         # Progress section
-        progress_bar = generate_progress_bar(current_phase, completion_percent, width=20, use_color=use_color)
+        progress_bar = generate_progress_bar(
+            current_phase, completion_percent, width=20, use_color=use_color
+        )
         phase_name = PHASE_NAMES.get(current_phase, current_phase)
 
         lines.append(f"  Progress: [{progress_bar}] {completion_percent}%")
@@ -285,14 +285,17 @@ def generate_statusline(
                 phase_label = colorize(phase_label, "bold", use_color)
 
             # Build agent line
-            agent_line = f"    {primary_icon} {agents['primary']:10} ↔ {agents['secondary']:10} {secondary_icon}  {phase_label}"
+            agent_line = (
+                f"    {primary_icon} {agents['primary']:10} ↔ "
+                f"{agents['secondary']:10} {secondary_icon}  {phase_label}"
+            )
 
             # Add active task description
             if phase == current_phase and primary_status == "active":
-                task_desc = AGENT_DESCRIPTIONS.get(agents['primary'], "")
+                task_desc = AGENT_DESCRIPTIONS.get(agents["primary"], "")
                 agent_line += f"  {colorize(task_desc, 'dim', use_color)}"
             elif phase == current_phase and secondary_status == "active":
-                task_desc = AGENT_DESCRIPTIONS.get(agents['secondary'], "")
+                task_desc = AGENT_DESCRIPTIONS.get(agents["secondary"], "")
                 agent_line += f"  {colorize(task_desc, 'dim', use_color)}"
 
             lines.append(agent_line)
@@ -304,7 +307,11 @@ def generate_statusline(
         lines.append("")
 
         # Current agent with description
-        agent_display = colorize(current_agent.upper(), "green", use_color) if use_color else current_agent.upper()
+        agent_display = (
+            colorize(current_agent.upper(), "green", use_color)
+            if use_color
+            else current_agent.upper()
+        )
         agent_desc = AGENT_DESCRIPTIONS.get(current_agent, "Working")
         lines.append(f"    Active Agent: {agent_display}")
         lines.append(f"    Task: {agent_desc}")
@@ -340,15 +347,17 @@ def generate_json_status(project_root: Path) -> dict[str, Any]:
         primary_status = get_agent_status(state, phase, "primary")
         secondary_status = get_agent_status(state, phase, "secondary")
 
-        agents_status.append({
-            "phase": phase,
-            "phase_name": PHASE_NAMES.get(phase, phase),
-            "primary_agent": agents["primary"],
-            "primary_status": primary_status,
-            "secondary_agent": agents["secondary"],
-            "secondary_status": secondary_status,
-            "description": agents["description"],
-        })
+        agents_status.append(
+            {
+                "phase": phase,
+                "phase_name": PHASE_NAMES.get(phase, phase),
+                "primary_agent": agents["primary"],
+                "primary_status": primary_status,
+                "secondary_agent": agents["secondary"],
+                "secondary_status": secondary_status,
+                "description": agents["description"],
+            }
+        )
 
     return {
         "project_id": state.get("project_id", "unknown"),
@@ -406,6 +415,7 @@ def main() -> int:
 
     if args.json:
         import json
+
         status = generate_json_status(project_root)
         print(json.dumps(status, indent=2, ensure_ascii=False))
     else:

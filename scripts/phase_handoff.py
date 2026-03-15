@@ -19,7 +19,10 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 SKILL_DIR = SCRIPT_DIR.parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from orchestrator_common import DEFAULT_DELIVERABLES, ensure_project_structure, load_state, save_state, write_yaml
+from orchestrator_common import (  # noqa: E402
+    ensure_project_structure,
+    write_yaml,
+)
 
 
 def get_handoff_dir(project_root: Path) -> Path:
@@ -73,13 +76,12 @@ def load_handoff_summary(
         return None
 
     from orchestrator_common import read_yaml
+
     return read_yaml(filepath)
 
 
 def get_phase_handoff_summaries(project_root: Path, phase: str) -> dict[str, Any]:
     """Get all handoff summaries for a phase."""
-    handoff_dir = get_handoff_dir(project_root)
-
     # Map phase to agent roles
     phase_agents = {
         "01-survey": ["survey", "critic"],
@@ -113,10 +115,12 @@ def list_all_handoff_summaries(project_root: Path) -> dict[str, Any]:
 
     summaries = []
     for filepath in handoff_dir.glob("*.yaml"):
-        summaries.append({
-            "path": str(filepath.relative_to(project_root)),
-            "name": filepath.stem,
-        })
+        summaries.append(
+            {
+                "path": str(filepath.relative_to(project_root)),
+                "name": filepath.stem,
+            }
+        )
 
     return {
         "summaries": summaries,
@@ -192,9 +196,7 @@ def format_handoff_report(handoff_data: dict[str, Any]) -> str:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(
-        description="Manage phase handoff summaries"
-    )
+    parser = argparse.ArgumentParser(description="Manage phase handoff summaries")
     parser.add_argument("--project-root", required=True, help="Path to project root")
     parser.add_argument(
         "--action",

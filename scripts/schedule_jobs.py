@@ -8,8 +8,15 @@ from pathlib import Path
 
 from exceptions import ConfigurationError
 from generate_dashboard import generate_dashboard
-from orchestrator_common import DEFAULT_DELIVERABLES, load_project_config, load_state, read_yaml, save_state, write_yaml
 
+from orchestrator_common import (
+    DEFAULT_DELIVERABLES,
+    load_project_config,
+    load_state,
+    read_yaml,
+    save_state,
+    write_yaml,
+)
 
 IMPLEMENTED_BACKENDS = {"local", "ssh"}
 
@@ -50,7 +57,11 @@ def schedule_job(
         "command": command,
         "backend": backend,
         "phase": phase or state["current_phase"],
-        "cwd": cwd if backend == "ssh" else str((project_root / cwd).resolve()) if not Path(cwd).is_absolute() else cwd,
+        "cwd": (
+            cwd
+            if backend == "ssh"
+            else str((project_root / cwd).resolve()) if not Path(cwd).is_absolute() else cwd
+        ),
         "gpu": assigned_gpu,
         "remote_host": remote_host,
         "status": "scheduled",
@@ -163,7 +174,9 @@ def _discover_gpus() -> dict[str, dict[str, str]]:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Register a runtime job and allocate backend/GPU metadata.")
+    parser = argparse.ArgumentParser(
+        description="Register a runtime job and allocate backend/GPU metadata."
+    )
     parser.add_argument("--project-root", required=True)
     parser.add_argument("--command", required=True)
     parser.add_argument("--backend", default="local")

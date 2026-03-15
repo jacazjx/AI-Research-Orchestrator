@@ -6,7 +6,6 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-
 SKILL_DIR = Path(__file__).resolve().parents[1]
 SCRIPTS_DIR = SKILL_DIR / "scripts"
 sys.path.insert(0, str(SCRIPTS_DIR))
@@ -33,20 +32,16 @@ class CitationAuditTest(unittest.TestCase):
             draft.parent.mkdir(parents=True, exist_ok=True)
             draft.write_text("This claim needs support [cite].\n", encoding="utf-8")
 
-            with patch("subprocess.run") as mocked_run:
-                mocked_run.return_value.returncode = 0
-                mocked_run.return_value.stdout = json.dumps(
-                    [
-                        {
-                            "id": 1,
-                            "start_line": 1,
-                            "end_line": 1,
-                            "text": "This claim needs support [cite].",
-                            "clean_claim": "This claim needs support .",
-                        }
-                    ]
-                )
-                mocked_run.return_value.stderr = ""
+            mock_claims = [
+                {
+                    "id": 1,
+                    "start_line": 1,
+                    "end_line": 1,
+                    "text": "This claim needs support [cite].",
+                    "clean_claim": "This claim needs support .",
+                }
+            ]
+            with patch.object(CITATION, "_extract_claims", return_value=mock_claims):
                 result = CITATION.run_citation_audit(project_root)
 
             self.assertEqual(1, result["detected_claims"])
@@ -62,7 +57,9 @@ class CitationAuditTest(unittest.TestCase):
             INIT.initialize_research_project(project_root=project_root, topic="Citation audit bib")
             draft = project_root / "paper/paper-draft.md"
             draft.parent.mkdir(parents=True, exist_ok=True)
-            draft.write_text("FedAvg remains a baseline in FL. See \\cite{fedavg}.\n", encoding="utf-8")
+            draft.write_text(
+                "FedAvg remains a baseline in FL. See \\cite{fedavg}.\n", encoding="utf-8"
+            )
             bib_path = project_root / "paper" / "refs.bib"
             bib_path.write_text(
                 "\n".join(

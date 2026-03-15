@@ -1,9 +1,10 @@
 import importlib.util
+import json
 import sys
 import tempfile
 import unittest
 from pathlib import Path
-
+from unittest.mock import patch
 
 SKILL_DIR = Path(__file__).resolve().parents[1]
 SCRIPTS_DIR = SKILL_DIR / "scripts"
@@ -54,9 +55,7 @@ class PhaseHandoffTest(unittest.TestCase):
                 "recommendations_for_next_phase": ["Rec 1"],
             }
 
-            result = HANDOFF.save_handoff_summary(
-                project_root, "01-survey", "survey", summary
-            )
+            result = HANDOFF.save_handoff_summary(project_root, "01-survey", "survey", summary)
 
             self.assertEqual(result["status"], "saved")
             self.assertEqual(result["phase"], "01-survey")
@@ -136,6 +135,169 @@ class PhaseHandoffTest(unittest.TestCase):
         self.assertIn("01-survey", report)
         self.assertIn("Finding 1", report)
         self.assertIn("Decision 1", report)
+
+    def test_format_handoff_report_with_context(self) -> None:
+        """Test formatting handoff report with context for resume."""
+        handoff_data = {
+            "phase": "02-pilot-analysis",
+            "agent_role": "code",
+            "metadata": {"timestamp": "2026-03-13T00:00:00Z"},
+            "context_for_resume": "Continue from experiment X",
+        }
+
+        report = HANDOFF.format_handoff_report(handoff_data)
+
+        self.assertIn("Context for Resume", report)
+        self.assertIn("Continue from experiment X", report)
+
+    def test_load_nonexistent_handoff_returns_none(self) -> None:
+        """Test loading a nonexistent handoff summary returns None."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "no-handoff"
+            INIT.initialize_research_project(project_root=project_root, topic="No handoff test")
+
+            result = HANDOFF.load_handoff_summary(project_root, "01-survey", "nonexistent")
+            self.assertIsNone(result)
+
+    def test_get_phase_handoff_summaries_unknown_phase(self) -> None:
+        """Test getting summaries for unknown phase."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "unknown-phase"
+            INIT.initialize_research_project(project_root=project_root, topic="Unknown phase test")
+
+            result = HANDOFF.get_phase_handoff_summaries(project_root, "unknown-phase")
+            self.assertEqual(result["phase"], "unknown-phase")
+            self.assertEqual(result["summaries"], {})
+
+    def test_main_save_action(self) -> None:
+        """Test main with save action."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "main-save"
+            INIT.initialize_research_project(project_root=project_root, topic="Main save test")
+
+            summary_json = json.dumps({"key_findings": ["Test finding"]})
+            args = [
+                "--project-root",
+                str(project_root),
+                "--action",
+                "save",
+                "--phase",
+                "01-survey",
+                "--agent",
+                "survey",
+                "--summary",
+                summary_json,
+            ]
+            with patch("sys.argv", ["phase_handoff.py"] + args):
+                with patch("builtins.print") as mock_print:
+                    result = HANDOFF.main()
+                    self.assertEqual(0, result)
+
+    def test_main_load_action(self) -> None:
+        """Test main with load action."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "main-load"
+            INIT.initialize_research_project(project_root=project_root, topic="Main load test")
+
+            # First save a summary
+            HANDOFF.save_handoff_summary(
+                project_root, "01-survey", "survey", {"key_findings": ["Test"]}
+            )
+
+            args = [
+                "--project-root",
+                str(project_root),
+                "--action",
+                "load",
+                "--phase",
+                "01-survey",
+                "--agent",
+                "survey",
+            ]
+            with patch("sys.argv", ["phase_handoff.py"] + args):
+                with patch("builtins.print") as mock_print:
+                    result = HANDOFF.main()
+                    self.assertEqual(0, result)
+
+    def test_main_list_action(self) -> None:
+        """Test main with list action."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "main-list"
+            INIT.initialize_research_project(project_root=project_root, topic="Main list test")
+
+            args = [
+                "--project-root",
+                str(project_root),
+                "--action",
+                "list",
+            ]
+            with patch("sys.argv", ["phase_handoff.py"] + args):
+                with patch("builtins.print") as mock_print:
+                    result = HANDOFF.main()
+                    self.assertEqual(0, result)
+
+    def test_main_template_action(self) -> None:
+        """Test main with template action."""
+        args = [
+            "--project-root",
+            "/tmp",
+            "--action",
+            "template",
+            "--phase",
+            "01-survey",
+            "--agent",
+            "survey",
+        ]
+        with patch("sys.argv", ["phase_handoff.py"] + args):
+            with patch("builtins.print") as mock_print:
+                result = HANDOFF.main()
+                self.assertEqual(0, result)
+
+    def test_main_get_phase_action(self) -> None:
+        """Test main with get-phase action."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "main-get-phase"
+            INIT.initialize_research_project(project_root=project_root, topic="Main get phase test")
+
+            # Save a summary
+            HANDOFF.save_handoff_summary(
+                project_root, "01-survey", "survey", {"key_findings": ["Test"]}
+            )
+
+            args = [
+                "--project-root",
+                str(project_root),
+                "--action",
+                "get-phase",
+                "--phase",
+                "01-survey",
+            ]
+            with patch("sys.argv", ["phase_handoff.py"] + args):
+                with patch("builtins.print") as mock_print:
+                    result = HANDOFF.main()
+                    self.assertEqual(0, result)
+
+    def test_main_with_json_output(self) -> None:
+        """Test main with --json flag."""
+        args = [
+            "--project-root",
+            "/tmp",
+            "--action",
+            "template",
+            "--phase",
+            "01-survey",
+            "--agent",
+            "survey",
+            "--json",
+        ]
+        with patch("sys.argv", ["phase_handoff.py"] + args):
+            with patch("builtins.print") as mock_print:
+                result = HANDOFF.main()
+                self.assertEqual(0, result)
+                # Check that JSON was printed
+                call_args = mock_print.call_args[0][0]
+                parsed = json.loads(call_args)
+                self.assertIn("phase", parsed)
 
 
 if __name__ == "__main__":

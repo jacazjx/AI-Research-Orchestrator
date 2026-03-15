@@ -19,11 +19,9 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 SKILL_DIR = SCRIPT_DIR.parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from orchestrator_common import (
+from orchestrator_common import (  # noqa: E402
     OLD_TO_NEW_PATH_MAPPING,
-    DEFAULT_DELIVERABLES,
     REQUIRED_DIRECTORIES,
-    ensure_project_structure,
     load_state,
     save_state,
 )
@@ -59,10 +57,7 @@ def has_old_structure(project_root: Path) -> bool:
     Returns:
         True if any old directory exists
     """
-    return any(
-        (project_root / old_dir).exists()
-        for old_dir in LEGACY_PHASE_DIRECTORIES
-    )
+    return any((project_root / old_dir).exists() for old_dir in LEGACY_PHASE_DIRECTORIES)
 
 
 def create_backup(project_root: Path) -> Path:
@@ -317,7 +312,9 @@ def migrate_project(
     # Create backup if requested
     if backup:
         if dry_run:
-            results["backup_path"] = "[DRY RUN] Would create backup in .autoresearch/migration_backup/"
+            results["backup_path"] = (
+                "[DRY RUN] Would create backup in .autoresearch/migration_backup/"
+            )
         else:
             try:
                 backup_path = create_backup(project_root)
@@ -493,6 +490,7 @@ def main() -> int:
 
     if args.json:
         import json
+
         print(json.dumps(results, indent=2, default=str))
     elif args.quiet:
         print("success" if results["success"] else "failed")

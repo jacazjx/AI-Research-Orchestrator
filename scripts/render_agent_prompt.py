@@ -4,8 +4,14 @@ import argparse
 import json
 from pathlib import Path
 
-from orchestrator_common import PHASE_TO_GATE, build_list_section, build_template_variables, ensure_project_structure, load_state, render_template_string
-
+from orchestrator_common import (
+    PHASE_TO_GATE,
+    build_list_section,
+    build_template_variables,
+    ensure_project_structure,
+    load_state,
+    render_template_string,
+)
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 SKILL_DIR = SCRIPT_DIR.parent
@@ -108,7 +114,9 @@ def render_agent_prompt(
     project_root = project_root.resolve()
     state = load_state(project_root)
     effective_phase = phase_override or state["current_phase"]
-    effective_gate = PHASE_TO_GATE.get(effective_phase, "complete" if effective_phase == "06-archive" else state["current_gate"])
+    effective_gate = PHASE_TO_GATE.get(
+        effective_phase, "complete" if effective_phase == "06-archive" else state["current_gate"]
+    )
     template_name = ROLE_TEMPLATE_MAP[role]
     template_path = PROMPT_ROOT / template_name
     template_text = template_path.read_text(encoding="utf-8")
@@ -124,7 +132,8 @@ def render_agent_prompt(
             "CURRENT_PHASE": effective_phase,
             "CURRENT_GATE": effective_gate,
             "TASK_SUMMARY": task_summary,
-            "CURRENT_OBJECTIVE": current_objective or "Follow the current phase objective without inventing scope.",
+            "CURRENT_OBJECTIVE": current_objective
+            or "Follow the current phase objective without inventing scope.",
             "LOOP_LABEL": loop_label or "default",
             "REQUIRED_INPUTS_SECTION": build_list_section(
                 required_inputs,
@@ -154,7 +163,9 @@ def render_agent_prompt(
     }
 
 
-def _build_overlay_section(project_root: Path, state: dict[str, object], role: str, phase_name: str) -> str:
+def _build_overlay_section(
+    project_root: Path, state: dict[str, object], role: str, phase_name: str
+) -> str:
     overlay_paths = state.get("overlay_stack", [])
     sections: list[str] = []
     for raw_entry in overlay_paths:
@@ -185,7 +196,9 @@ def _parse_overlay_entry(raw_entry: object) -> dict[str, object]:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Render a role prompt from the fixed template plus orchestrator context.")
+    parser = argparse.ArgumentParser(
+        description="Render a role prompt from the fixed template plus orchestrator context."
+    )
     parser.add_argument("--project-root", required=True)
     parser.add_argument("--role", required=True, choices=sorted(ROLE_TEMPLATE_MAP))
     parser.add_argument("--task-summary", required=True)

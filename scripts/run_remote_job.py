@@ -9,6 +9,7 @@ from pathlib import Path
 
 from exceptions import CommandExecutionError, PathSecurityError, StateError
 from generate_dashboard import generate_dashboard
+
 from orchestrator_common import DEFAULT_DELIVERABLES, load_state, read_yaml, save_state, write_yaml
 
 
@@ -21,7 +22,7 @@ def _validate_cwd(cwd: Path, project_root: Path) -> Path:
         return resolved_cwd
     except ValueError as exc:
         raise PathSecurityError(
-            f"Working directory must be inside project root",
+            "Working directory must be inside project root",
             path=str(cwd),
             reason="path_traversal",
         ) from exc
@@ -175,7 +176,7 @@ def _execute(job: dict[str, str], project_root: Path) -> subprocess.CompletedPro
             )
         except subprocess.TimeoutExpired as exc:
             raise CommandExecutionError(
-                f"Command timed out after 3600 seconds",
+                "Command timed out after 3600 seconds",
                 command=ssh_command,
             ) from exc
         except FileNotFoundError as exc:
@@ -197,7 +198,7 @@ def _execute(job: dict[str, str], project_root: Path) -> subprocess.CompletedPro
             )
         except subprocess.TimeoutExpired as exc:
             raise CommandExecutionError(
-                f"Command timed out after 3600 seconds",
+                "Command timed out after 3600 seconds",
                 command=command_args,
             ) from exc
         except FileNotFoundError as exc:

@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -19,8 +18,11 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 SKILL_DIR = SCRIPT_DIR.parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from orchestrator_common import PHASE_DIRECTORIES, REQUIRED_DIRECTORIES, DEFAULT_DELIVERABLES
-
+from orchestrator_common import (  # noqa: E402
+    DEFAULT_DELIVERABLES,
+    PHASE_DIRECTORIES,
+    REQUIRED_DIRECTORIES,
+)
 
 # Common patterns for research project detection
 RESEARCH_PATTERNS = {
@@ -46,7 +48,10 @@ def detect_file_patterns(project_root: Path) -> dict[str, list[str]]:
                     relative = match.relative_to(project_root)
                     # Skip hidden directories and common exclusions
                     if not any(part.startswith(".") for part in relative.parts):
-                        if "node_modules" not in relative.parts and "__pycache__" not in relative.parts:
+                        if (
+                            "node_modules" not in relative.parts
+                            and "__pycache__" not in relative.parts
+                        ):
                             matches.append(str(relative))
         results[category] = sorted(set(matches))
 
@@ -146,6 +151,7 @@ def detect_research_state(project_root: Path) -> dict[str, Any]:
 
     try:
         from orchestrator_common import yaml_load
+
         content = state_path.read_text(encoding="utf-8")
         state = yaml_load(content)
 
@@ -345,7 +351,9 @@ def analyze_project(project_root: Path) -> dict[str, Any]:
     }
 
     # Calculate summary stats
-    deliverable_count = sum(1 for d in results["existing_deliverables"].values() if d.get("exists", False))
+    deliverable_count = sum(
+        1 for d in results["existing_deliverables"].values() if d.get("exists", False)
+    )
     results["summary"] = {
         "total_files": results["directory_structure"]["total_files"],
         "total_dirs": results["directory_structure"]["total_dirs"],
@@ -377,7 +385,9 @@ def format_report(analysis: dict[str, Any]) -> str:
     lines.append(f"- **Standard Deliverables Found**: {summary['deliverables_found']}")
     lines.append(f"- **Phase Directories Found**: {summary['phase_dirs_found']}")
     lines.append(f"- **Estimated Phase**: `{summary['estimated_phase']}`")
-    lines.append(f"- **Is Orchestrated Project**: {'Yes' if summary['is_orchestrated_project'] else 'No'}")
+    lines.append(
+        f"- **Is Orchestrated Project**: {'Yes' if summary['is_orchestrated_project'] else 'No'}"
+    )
     lines.append("")
 
     # Phase Estimate
@@ -408,7 +418,7 @@ def format_report(analysis: dict[str, Any]) -> str:
     lines.append("## Research State")
     lines.append("")
     if state["exists"]:
-        lines.append(f"- **State file exists**: Yes")
+        lines.append("- **State file exists**: Yes")
         lines.append(f"- **Valid**: {'Yes' if state['valid'] else 'No'}")
         if state["current_phase"]:
             lines.append(f"- **Current Phase**: `{state['current_phase']}`")

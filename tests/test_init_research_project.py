@@ -1,9 +1,10 @@
 import importlib.util
+import json
 import sys
 import tempfile
 import unittest
 from pathlib import Path
-
+from unittest.mock import patch
 
 SKILL_DIR = Path(__file__).resolve().parents[1]
 SCRIPTS_DIR = SKILL_DIR / "scripts"
@@ -66,21 +67,31 @@ class InitializeResearchProjectTest(unittest.TestCase):
             self.assertTrue((project_root / "AGENTS.md").exists())
             # Note: workspace-manifest is in .autoresearch/ per template location
             self.assertTrue((project_root / ".autoresearch/workspace-manifest.md").exists())
-            self.assertTrue((project_root / ".autoresearch/config/orchestrator-config.yaml").exists())
+            self.assertTrue(
+                (project_root / ".autoresearch/config/orchestrator-config.yaml").exists()
+            )
             self.assertTrue((project_root / ".autoresearch/idea-brief.md").exists())
             self.assertTrue((project_root / ".autoresearch/reference-papers/README.md").exists())
             self.assertTrue((project_root / ".autoresearch/dashboard/progress.md").exists())
-            self.assertTrue((project_root / "docs/reports/pilot/pilot-validation-report.md").exists())
-            self.assertTrue((project_root / "docs/reports/experiments/evidence-package-index.md").exists())
+            self.assertTrue(
+                (project_root / "docs/reports/pilot/pilot-validation-report.md").exists()
+            )
+            self.assertTrue(
+                (project_root / "docs/reports/experiments/evidence-package-index.md").exists()
+            )
             # runtime-improvement-report is now in docs/reports/reflection/
-            self.assertTrue((project_root / "docs/reports/reflection/runtime-improvement-report.md").exists())
+            self.assertTrue(
+                (project_root / "docs/reports/reflection/runtime-improvement-report.md").exists()
+            )
             self.assertTrue((project_root / ".autoresearch/archive/archive-index.md").exists())
 
     def test_existing_client_init_artifact_is_recorded(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             project_root = Path(temp_dir) / "graph-agent"
             project_root.mkdir(parents=True, exist_ok=True)
-            (project_root / "client-bootstrap.md").write_text("# Existing init artifact\n", encoding="utf-8")
+            (project_root / "client-bootstrap.md").write_text(
+                "# Existing init artifact\n", encoding="utf-8"
+            )
 
             INIT.initialize_research_project(
                 project_root=project_root,
@@ -89,7 +100,9 @@ class InitializeResearchProjectTest(unittest.TestCase):
 
             state = COMMON.read_yaml(project_root / ".autoresearch/state/research-state.yaml")
             # Note: workspace-manifest is in .autoresearch/ per template location
-            manifest_text = (project_root / ".autoresearch/workspace-manifest.md").read_text(encoding="utf-8")
+            manifest_text = (project_root / ".autoresearch/workspace-manifest.md").read_text(
+                encoding="utf-8"
+            )
 
             self.assertEqual("client-init", state["init_artifacts"]["source"])
             self.assertEqual(["client-bootstrap.md"], state["init_artifacts"]["detected_paths"])
@@ -185,13 +198,16 @@ class InitializeResearchProjectTest(unittest.TestCase):
                 starting_phase="paper",
             )
 
-            state1 = COMMON.read_yaml(project_root / "project1" / ".autoresearch/state/research-state.yaml")
-            state2 = COMMON.read_yaml(project_root / "project2" / ".autoresearch/state/research-state.yaml")
+            state1 = COMMON.read_yaml(
+                project_root / "project1" / ".autoresearch/state/research-state.yaml"
+            )
+            state2 = COMMON.read_yaml(
+                project_root / "project2" / ".autoresearch/state/research-state.yaml"
+            )
 
             # Later phases should have higher completion percent
             self.assertLess(
-                state1["progress"]["completion_percent"],
-                state2["progress"]["completion_percent"]
+                state1["progress"]["completion_percent"], state2["progress"]["completion_percent"]
             )
 
     def test_normalize_phase_name_helper(self) -> None:
@@ -209,6 +225,154 @@ class InitializeResearchProjectTest(unittest.TestCase):
         self.assertEqual("experiments", INIT.normalize_phase_name("experiments"))
         self.assertEqual("paper", INIT.normalize_phase_name("paper"))
         self.assertEqual("reflection", INIT.normalize_phase_name("reflection"))
+
+    def test_detect_codex_mcp_returns_true_when_configured(self) -> None:
+        """Test that Codex MCP is detected when configured."""
+        with patch.object(Path, "home", return_value=Path("/fake/home")):
+            with patch.object(Path, "exists", return_value=True):
+                with patch.object(
+                    Path, "read_text", return_value=json.dumps({"mcpServers": {"codex": {}}})
+                ):
+                    result = INIT.detect_codex_mcp()
+                    self.assertTrue(result)
+
+    def test_detect_codex_mcp_returns_false_when_not_configured(self) -> None:
+        """Test that Codex MCP returns False when not configured."""
+        with patch.object(Path, "home", return_value=Path("/fake/home")):
+            with patch.object(Path, "exists", return_value=False):
+                result = INIT.detect_codex_mcp()
+                self.assertFalse(result)
+
+    def test_detect_codex_mcp_handles_malformed_config(self) -> None:
+        """Test that malformed config doesn't crash detection."""
+        with patch.object(Path, "home", return_value=Path("/fake/home")):
+            with patch.object(Path, "exists", return_value=True):
+                with patch.object(Path, "read_text", return_value="not valid json"):
+                    result = INIT.detect_codex_mcp()
+                    self.assertFalse(result)
+
+    def test_explicit_init_paths_are_normalized(self) -> None:
+        """Test that explicit init paths are normalized."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "explicit-init"
+            project_root.mkdir(parents=True, exist_ok=True)
+
+            result = INIT.initialize_research_project(
+                project_root=project_root,
+                topic="Explicit init paths",
+                explicit_init_paths=["./docs/notes.md", "./README.md"],
+            )
+
+            # Paths should be normalized (without leading ./)
+            self.assertIn("docs/notes.md", result["init_paths"])
+            self.assertIn("README.md", result["init_paths"])
+
+    def test_main_outputs_json_when_requested(self) -> None:
+        """Test that main outputs JSON when --json flag is used."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "json-output"
+            args = [
+                "--project-root",
+                str(project_root),
+                "--topic",
+                "JSON output test",
+                "--json",
+            ]
+            with patch("sys.argv", ["init_research_project.py"] + args):
+                with patch("builtins.print") as mock_print:
+                    INIT.main()
+                    # Check that JSON was printed
+                    call_args = mock_print.call_args[0][0]
+                    parsed = json.loads(call_args)
+                    # Verify JSON contains expected project_root
+                    self.assertIn("project_root", parsed)
+                    self.assertIn("project_id", parsed)
+
+    def test_main_outputs_human_readable_by_default(self) -> None:
+        """Test that main outputs human-readable text by default."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "human-output"
+            args = [
+                "--project-root",
+                str(project_root),
+                "--topic",
+                "Human readable test",
+            ]
+            with patch("sys.argv", ["init_research_project.py"] + args):
+                with patch("builtins.print") as mock_print:
+                    INIT.main()
+                    calls = [str(call) for call in mock_print.call_args_list]
+                    combined = " ".join(calls)
+                    self.assertIn("Project root", combined)
+
+    def test_main_with_overwrite_templates(self) -> None:
+        """Test that --overwrite-templates flag works."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "overwrite-test"
+            args = [
+                "--project-root",
+                str(project_root),
+                "--topic",
+                "Overwrite test",
+                "--overwrite-templates",
+            ]
+            with patch("sys.argv", ["init_research_project.py"] + args):
+                result = INIT.main()
+                self.assertEqual(0, result)
+
+    def test_main_with_custom_project_id(self) -> None:
+        """Test that custom project ID is used."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "custom-id"
+            args = [
+                "--project-root",
+                str(project_root),
+                "--topic",
+                "Custom ID test",
+                "--project-id",
+                "my-custom-project",
+            ]
+            with patch("sys.argv", ["init_research_project.py"] + args):
+                with patch("builtins.print"):
+                    result = INIT.main()
+                    self.assertEqual(0, result)
+
+            state = COMMON.read_yaml(project_root / ".autoresearch/state/research-state.yaml")
+            self.assertEqual("my-custom-project", state["project_id"])
+
+    def test_main_with_custom_languages(self) -> None:
+        """Test that custom process and paper languages work."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "custom-lang"
+            args = [
+                "--project-root",
+                str(project_root),
+                "--topic",
+                "Custom language test",
+                "--process-language",
+                "en-US",
+                "--paper-language",
+                "zh-CN",
+            ]
+            with patch("sys.argv", ["init_research_project.py"] + args):
+                result = INIT.main()
+                self.assertEqual(0, result)
+
+            state = COMMON.read_yaml(project_root / ".autoresearch/state/research-state.yaml")
+            self.assertEqual("en-US", state["language_policy"]["process_docs"])
+            self.assertEqual("zh-CN", state["language_policy"]["paper_docs"])
+
+    def test_build_parser_accepts_all_valid_phases(self) -> None:
+        """Test that parser accepts both new and legacy phase names."""
+        parser = INIT.build_parser()
+        # Test new semantic names
+        for phase in INIT.VALID_PHASES:
+            args = parser.parse_args(["--project-root", "/tmp", "--starting-phase", phase])
+            self.assertEqual(phase, args.starting_phase)
+        # Test legacy names
+        for phase in INIT.VALID_PHASES_LEGACY:
+            args = parser.parse_args(["--project-root", "/tmp", "--starting-phase", phase])
+            self.assertEqual(phase, args.starting_phase)
 
 
 if __name__ == "__main__":

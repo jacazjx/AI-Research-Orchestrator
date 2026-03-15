@@ -7,17 +7,14 @@ from pathlib import Path
 from orchestrator_common import (
     DEFAULT_DELIVERABLES,
     DEFAULT_LANGUAGE_POLICY,
-    MAIN_DIRECTORIES,
-    AGENT_DIRECTORIES,
-    SYSTEM_DIRECTORIES,
-    REQUIRED_DIRECTORIES,
-    ensure_project_structure,
     PHASE_TO_GATE,
     build_client_instruction_text,
     build_state,
     build_template_variables,
-    detect_client_profile,
     detect_client_init_artifacts,
+    detect_client_profile,
+    ensure_project_structure,
+    gitmem_init,
     normalize_relative_path,
     render_template_tree,
     slugify,
@@ -29,7 +26,13 @@ from orchestrator_common import (
 VALID_PHASES = ["survey", "pilot", "experiments", "paper", "reflection"]
 
 # Legacy phase names for backward compatibility
-VALID_PHASES_LEGACY = ["01-survey", "02-pilot-analysis", "03-full-experiments", "04-paper", "05-reflection-evolution"]
+VALID_PHASES_LEGACY = [
+    "01-survey",
+    "02-pilot-analysis",
+    "03-full-experiments",
+    "04-paper",
+    "05-reflection-evolution",
+]
 
 # Combined valid phases for argument parsing
 ALL_VALID_PHASES = VALID_PHASES + VALID_PHASES_LEGACY
@@ -124,6 +127,9 @@ def initialize_research_project(
     for subdir in MAIN_WORK_SUBDIRECTORIES:
         (project_root / subdir).mkdir(parents=True, exist_ok=True)
 
+    # Initialize GitMem for version tracking
+    gitmem_init(project_root)
+
     if explicit_init_paths is None:
         init_paths = detect_client_init_artifacts(project_root)
     else:
@@ -146,11 +152,15 @@ def initialize_research_project(
     )
 
     variables = build_template_variables(project_root, state)
-    rendered_files = render_template_tree(TEMPLATE_ROOT, project_root, variables, overwrite=overwrite_templates)
+    rendered_files = render_template_tree(
+        TEMPLATE_ROOT, project_root, variables, overwrite=overwrite_templates
+    )
     write_yaml(project_root / DEFAULT_DELIVERABLES["research_state"], state)
     instruction_path = project_root / client_instruction_file
     instruction_text = build_client_instruction_text(client_profile, state)
-    instruction_created = write_text_if_needed(instruction_path, instruction_text, overwrite=overwrite_templates)
+    instruction_created = write_text_if_needed(
+        instruction_path, instruction_text, overwrite=overwrite_templates
+    )
 
     return {
         "project_root": str(project_root),
@@ -169,9 +179,15 @@ def initialize_research_project(
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Initialize a gated AI research workspace.")
-    parser.add_argument("--project-root", required=True, help="Path to the target research project root.")
-    parser.add_argument("--topic", default="TODO: replace with the research idea or problem statement")
-    parser.add_argument("--project-id", help="Optional stable project id. Defaults to the project directory slug.")
+    parser.add_argument(
+        "--project-root", required=True, help="Path to the target research project root."
+    )
+    parser.add_argument(
+        "--topic", default="TODO: replace with the research idea or problem statement"
+    )
+    parser.add_argument(
+        "--project-id", help="Optional stable project id. Defaults to the project directory slug."
+    )
     parser.add_argument(
         "--client-type",
         default="auto",
@@ -180,7 +196,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--process-language", default=DEFAULT_LANGUAGE_POLICY["process_docs"])
     parser.add_argument("--paper-language", default=DEFAULT_LANGUAGE_POLICY["paper_docs"])
-    parser.add_argument("--overwrite-templates", action="store_true", help="Rewrite existing template files.")
+    parser.add_argument(
+        "--overwrite-templates", action="store_true", help="Rewrite existing template files."
+    )
     parser.add_argument(
         "--client-init-path",
         action="append",

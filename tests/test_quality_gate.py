@@ -1,9 +1,10 @@
 import importlib.util
+import json
 import sys
 import tempfile
 import unittest
 from pathlib import Path
-
+from unittest.mock import patch
 
 SKILL_DIR = Path(__file__).resolve().parents[1]
 SCRIPTS_DIR = SKILL_DIR / "scripts"
@@ -75,7 +76,9 @@ class QualityGateTest(unittest.TestCase):
                 "docs/reports/survey/survey-round-summary.md",
                 "docs/reports/survey/critic-round-review.md",
             ):
-                (project_root / relative_path).write_text(f"substantive content for {relative_path}\n", encoding="utf-8")
+                (project_root / relative_path).write_text(
+                    f"substantive content for {relative_path}\n", encoding="utf-8"
+                )
             (project_root / "docs/reports/survey/research-readiness-report.md").write_text(
                 "# Research Readiness Report\n\n- Recommendation: `approve`\n",
                 encoding="utf-8",
@@ -97,6 +100,160 @@ class QualityGateTest(unittest.TestCase):
             self.assertEqual("advance", result["decision"])
             self.assertEqual(100, result["scores"]["evidence_completeness"])
 
+    def test_returns_pivot_when_review_is_pivot(self) -> None:
+        """Test that decision is pivot when review_status is pivot."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "quality-pivot"
+            INIT.initialize_research_project(project_root=project_root, topic="Quality pivot")
 
-if __name__ == "__main__":
-    unittest.main()
+            state_path = project_root / ".autoresearch/state/research-state.yaml"
+            state = COMMON.read_yaml(state_path)
+            state["phase_reviews"]["survey_critic"] = "pivot"
+            COMMON.write_yaml(state_path, state)
+
+            result = QUALITY.evaluate_quality_gate(project_root, phase="survey")
+
+            self.assertEqual("pivot", result["decision"])
+
+    def test_returns_pivot_when_pivot_candidates_exist(self) -> None:
+        """Test that decision is pivot when pivot_candidates exist."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "quality-pivot-candidate"
+            INIT.initialize_research_project(
+                project_root=project_root, topic="Quality pivot candidate"
+            )
+
+            state_path = project_root / ".autoresearch/state/research-state.yaml"
+            state = COMMON.read_yaml(state_path)
+            state["pivot_candidates"] = ["alternative-approach"]
+            COMMON.write_yaml(state_path, state)
+
+            result = QUALITY.evaluate_quality_gate(project_root, phase="survey")
+
+            self.assertEqual("pivot", result["decision"])
+            self.assertEqual(["alternative-approach"], result["pivot_candidates"])
+
+    def test_returns_escalate_when_loop_limit_reached(self) -> None:
+        """Test that decision is escalate_to_user when loop limit reached."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "quality-escalate"
+            INIT.initialize_research_project(project_root=project_root, topic="Quality escalate")
+
+            state_path = project_root / ".autoresearch/state/research-state.yaml"
+            state = COMMON.read_yaml(state_path)
+            state["loop_counts"]["survey_critic"] = 3
+            state["loop_limits"]["survey_critic"] = 3
+            COMMON.write_yaml(state_path, state)
+
+            result = QUALITY.evaluate_quality_gate(project_root, phase="survey")
+
+            self.assertEqual("escalate_to_user", result["decision"])
+            self.assertEqual(3, result["loop_count"])
+            self.assertEqual(3, result["loop_limit"])
+            self.assertIn("loop_limit_reached", result["blockers"])
+
+    def test_phase_loop_key_mapping(self) -> None:
+        """Test _phase_loop_key returns correct mapping."""
+        self.assertEqual("survey_critic", QUALITY._phase_loop_key("survey"))
+        self.assertEqual("pilot_code_adviser", QUALITY._phase_loop_key("pilot"))
+        self.assertEqual("experiment_code_adviser", QUALITY._phase_loop_key("experiments"))
+        self.assertEqual("writer_reviewer", QUALITY._phase_loop_key("paper"))
+        self.assertEqual("reflector_curator", QUALITY._phase_loop_key("reflection"))
+
+    def test_phase_loop_key_legacy_names(self) -> None:
+        """Test _phase_loop_key works with legacy names."""
+        self.assertEqual("survey_critic", QUALITY._phase_loop_key("01-survey"))
+        self.assertEqual("pilot_code_adviser", QUALITY._phase_loop_key("02-pilot-analysis"))
+
+    def test_build_parser(self) -> None:
+        """Test build_parser creates correct parser."""
+        parser = QUALITY.build_parser()
+
+        self.assertIsNotNone(parser)
+        # Check that it has the required arguments
+        args = parser.parse_args(["--project-root", "/tmp", "--phase", "survey"])
+        self.assertEqual("/tmp", args.project_root)
+        self.assertEqual("survey", args.phase)
+        self.assertFalse(args.json)
+
+    def test_main_with_json_output(self) -> None:
+        """Test main function with --json flag."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "main-json"
+            INIT.initialize_research_project(project_root=project_root, topic="Main JSON")
+
+            args = [
+                "--project-root",
+                str(project_root),
+                "--phase",
+                "survey",
+                "--json",
+            ]
+            with patch("sys.argv", ["quality_gate.py"] + args):
+                with patch("builtins.print") as mock_print:
+                    result = QUALITY.main()
+                    # Should return non-zero since decision is not "advance"
+                    self.assertNotEqual(0, result)
+                    call_args = mock_print.call_args[0][0]
+                    parsed = json.loads(call_args)
+                    self.assertIn("decision", parsed)
+
+    def test_main_human_readable_output(self) -> None:
+        """Test main function with human readable output."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "main-human"
+            INIT.initialize_research_project(project_root=project_root, topic="Main human")
+
+            args = [
+                "--project-root",
+                str(project_root),
+                "--phase",
+                "survey",
+            ]
+            with patch("sys.argv", ["quality_gate.py"] + args):
+                with patch("builtins.print") as mock_print:
+                    result = QUALITY.main()
+                    self.assertNotEqual(0, result)
+                    # Check that human readable output is printed
+                    calls = [str(call) for call in mock_print.call_args_list]
+                    combined = " ".join(calls)
+                    self.assertIn("Phase:", combined)
+                    self.assertIn("Decision:", combined)
+
+    def test_main_returns_zero_for_advance(self) -> None:
+        """Test main returns 0 when decision is advance."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "main-advance"
+            INIT.initialize_research_project(project_root=project_root, topic="Main advance")
+
+            # Set up approved state
+            state_path = project_root / ".autoresearch/state/research-state.yaml"
+            state = COMMON.read_yaml(state_path)
+            state["phase_reviews"]["survey_critic"] = "approved"
+            state["approval_status"]["gate_1"] = "approved"
+            COMMON.write_yaml(state_path, state)
+
+            # Create deliverables with proper content
+            for relative_path in (
+                "docs/reports/survey/survey-round-summary.md",
+                "docs/reports/survey/critic-round-review.md",
+                "docs/reports/survey/research-readiness-report.md",
+                "docs/reports/survey/phase-scorecard.md",
+            ):
+                file_path = project_root / relative_path
+                file_path.parent.mkdir(parents=True, exist_ok=True)
+                file_path.write_text(
+                    "- Recommendation: `approve`\n- Gate readiness: `approve`\n", encoding="utf-8"
+                )
+
+            args = [
+                "--project-root",
+                str(project_root),
+                "--phase",
+                "survey",
+                "--json",
+            ]
+            with patch("sys.argv", ["quality_gate.py"] + args):
+                with patch("builtins.print"):
+                    result = QUALITY.main()
+                    self.assertEqual(0, result)

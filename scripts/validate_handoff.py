@@ -7,11 +7,11 @@ from pathlib import Path
 from orchestrator_common import (
     HANDOFF_REQUIREMENTS,
     LOOP_REQUIREMENTS,
+    ensure_project_structure,
     load_state,
-    validate_structured_signals,
     validate_deliverable_content,
     validate_deliverable_location,
-    ensure_project_structure,
+    validate_structured_signals,
 )
 
 
@@ -36,7 +36,9 @@ def validate_handoff(project_root: Path, target: str) -> dict[str, object]:
             "status_group": status_group,
             "gate": status_key,
             "gate_status": approved,
-            "errors": [] if not escalate else [f"{loop_key} reached limit {limit}; escalate to the user."],
+            "errors": (
+                [] if not escalate else [f"{loop_key} reached limit {limit}; escalate to the user."]
+            ),
         }
 
     requirement = HANDOFF_REQUIREMENTS[target]
@@ -55,7 +57,8 @@ def validate_handoff(project_root: Path, target: str) -> dict[str, object]:
         )
         if current_status != "approved":
             errors.append(
-                f"{status_group}.{status_key} must be approved before {target}; current status is {current_status}."
+                f"{status_group}.{status_key} must be approved before {target}; "
+                f"current status is {current_status}."
             )
 
     deliverables: dict[str, str] = state["deliverables"]
@@ -109,7 +112,9 @@ def validate_handoff(project_root: Path, target: str) -> dict[str, object]:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Validate whether a research project can advance to the next gate or phase.")
+    parser = argparse.ArgumentParser(
+        description="Validate whether a research project can advance to the next gate or phase."
+    )
     parser.add_argument("--project-root", required=True)
     parser.add_argument(
         "--target",

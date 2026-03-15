@@ -113,17 +113,52 @@ my-project/
 
 ## 安装
 
-### 本地安装到 Codex
+### 方式一：从 GitHub Marketplace 安装（推荐）
+
+```bash
+# 1. 添加 marketplace
+/plugin marketplace add jacazjx/AI-Research-Orchestrator
+
+# 2. 安装插件
+/plugin install autoresearch@autoresearch
+```
+
+安装后重启 Claude Code 即可使用。
+
+### 方式二：配置 settings.json
+
+在 `~/.claude/settings.json` 中添加：
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "autoresearch": {
+      "source": {
+        "source": "github",
+        "repo": "jacazjx/AI-Research-Orchestrator"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "autoresearch@autoresearch": true
+  }
+}
+```
+
+### 方式三：本地开发安装
+
+```bash
+# 指定本地目录
+cc --plugin-dir /path/to/AI-Research-Orchestrator
+```
+
+### 安装到 Codex
 
 ```bash
 cp -a ai-research-orchestrator "$CODEX_HOME/skills/ai-research-orchestrator"
 ```
 
 安装后重启 Codex。
-
-### 从仓库安装
-
-把 `ai-research-orchestrator/` 目录复制到 `$CODEX_HOME/skills/` 下即可。
 
 ## 快速开始
 

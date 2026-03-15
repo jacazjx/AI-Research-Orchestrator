@@ -24,13 +24,44 @@ VERSION_HISTORY = [
     ("1.3.0", "2026-03-10", "Added project takeover capability"),
     ("1.4.0", "2026-03-13", "Added starting phase selection"),
     ("1.5.0", "2026-03-13", "Added statusline display and version tracking"),
-    ("1.6.0", "2026-03-13", "Switched to PyYAML for full YAML support (comments, complex structures)"),
-    ("1.7.0", "2026-03-13", "Fixed KeyError in deliverables, added sub-agent failure recovery protocol"),
-    ("1.8.0", "2026-03-13", "Auto-complete missing deliverables on state load for backward compatibility"),
-    ("1.9.0", "2026-03-14", "Integrated ralph-loop for phase iteration control with completion promises"),
-    ("1.10.0", "2026-03-14", "Added experiment execution best practices (unbuffered output, checkpoint, process management) and document sync rules"),
-    ("1.11.0", "2026-03-14", "ARIS integration: cross-model review via Codex MCP, REVIEW_STATE persistence for long-running loops"),
-    ("1.12.0", "2026-03-14", "Full ARIS integration: 17 skills, three workflows, IDEA_STATE persistence, GPU protection, AUTO_PROCEED switch"),
+    (
+        "1.6.0",
+        "2026-03-13",
+        "Switched to PyYAML for full YAML support (comments, complex structures)",
+    ),
+    (
+        "1.7.0",
+        "2026-03-13",
+        "Fixed KeyError in deliverables, added sub-agent failure recovery protocol",
+    ),
+    (
+        "1.8.0",
+        "2026-03-13",
+        "Auto-complete missing deliverables on state load for backward compatibility",
+    ),
+    (
+        "1.9.0",
+        "2026-03-14",
+        "Integrated ralph-loop for phase iteration control with completion promises",
+    ),
+    (
+        "1.10.0",
+        "2026-03-14",
+        "Added experiment execution best practices (unbuffered output, "
+        "checkpoint, process management) and document sync rules",
+    ),
+    (
+        "1.11.0",
+        "2026-03-14",
+        "ARIS integration: cross-model review via Codex MCP, "
+        "REVIEW_STATE persistence for long-running loops",
+    ),
+    (
+        "1.12.0",
+        "2026-03-14",
+        "Full ARIS integration: 17 skills, three workflows, "
+        "IDEA_STATE persistence, GPU protection, AUTO_PROCEED switch",
+    ),
 ]
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -160,10 +191,10 @@ POSITIVE_VERDICT_KEYWORDS = ("accept", "sufficient", "ready for submission", "al
 # Note: GPU protection fields are defined here but enforcement is v1.13.0
 DEFAULT_ARIS_CONFIG = {
     "auto_proceed": False,
-    "pilot_max_hours": 2,          # v1.13.0: enforcement pending
-    "pilot_timeout_hours": 3,       # v1.13.0: enforcement pending
-    "max_pilot_ideas": 3,           # v1.13.0: enforcement pending
-    "max_total_gpu_hours": 8,       # v1.13.0: enforcement pending
+    "pilot_max_hours": 2,  # v1.13.0: enforcement pending
+    "pilot_timeout_hours": 3,  # v1.13.0: enforcement pending
+    "max_pilot_ideas": 3,  # v1.13.0: enforcement pending
+    "max_total_gpu_hours": 8,  # v1.13.0: enforcement pending
     "reviewer": {
         "enabled": False,
         "model": "gpt-5.4",
@@ -391,7 +422,9 @@ OLD_TO_NEW_PATH_MAPPING = {
     "03-full-experiments/run-registry.md": "code/run-registry.md",
     "03-full-experiments/results-summary.md": "code/results-summary.md",
     "03-full-experiments/checkpoints/checkpoint-index.md": "code/checkpoints/checkpoint-index.md",
-    "03-full-experiments/experiment-adviser-review.md": "agents/adviser/experiment-adviser-review.md",
+    "03-full-experiments/experiment-adviser-review.md": (
+        "agents/adviser/experiment-adviser-review.md"
+    ),
     "03-full-experiments/evidence-package-index.md": "docs/evidence-package-index.md",
     "03-full-experiments/phase-scorecard.md": "agents/coder/phase-scorecard.md",
     # Phase 04 files
@@ -404,7 +437,9 @@ OLD_TO_NEW_PATH_MAPPING = {
     # Phase 05 files
     "05-reflection-evolution/lessons-learned.md": "docs/lessons-learned.md",
     "05-reflection-evolution/overlay-draft.md": "paper/overlay-draft.md",
-    "05-reflection-evolution/runtime-improvement-report.md": ".autoresearch/archive/runtime-improvement-report.md",
+    "05-reflection-evolution/runtime-improvement-report.md": (
+        ".autoresearch/archive/runtime-improvement-report.md"
+    ),
     "05-reflection-evolution/phase-scorecard.md": "agents/reflector/phase-scorecard.md",
     # Phase 06 files
     "06-archive/archive-index.md": ".autoresearch/archive/archive-index.md",
@@ -447,7 +482,12 @@ PHASE_REQUIRED_DELIVERABLES = {
     # New semantic phase names
     "survey": ("readiness_report", "survey_scorecard"),
     "pilot": ("problem_analysis", "pilot_plan", "pilot_validation_report", "pilot_scorecard"),
-    "experiments": ("experiment_spec", "results_summary", "evidence_package_index", "experiment_scorecard"),
+    "experiments": (
+        "experiment_spec",
+        "results_summary",
+        "evidence_package_index",
+        "experiment_scorecard",
+    ),
     "paper": ("paper_draft", "citation_audit_report", "final_acceptance_report", "paper_scorecard"),
     "reflection": ("lessons_learned", "runtime_improvement_report", "reflection_scorecard"),
 }
@@ -580,13 +620,9 @@ def write_yaml(path: Path, data: Any) -> None:
     content = yaml_dump(data) + "\n"
 
     # Atomic write: write to temp file, then replace
-    fd, temp_path = tempfile.mkstemp(
-        dir=path.parent,
-        prefix=path.name + ".",
-        suffix=".tmp"
-    )
+    fd, temp_path = tempfile.mkstemp(dir=path.parent, prefix=path.name + ".", suffix=".tmp")
     try:
-        with os.fdopen(fd, 'w', encoding='utf-8') as f:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
             f.write(content)
         # Atomic replace on POSIX systems
         os.replace(temp_path, path)
@@ -618,6 +654,7 @@ def normalize_relative_path(project_root: Path, path_value: str | Path) -> str:
         return resolved.relative_to(root).as_posix()
     except ValueError as exc:
         from exceptions import PathSecurityError
+
         raise PathSecurityError(
             f"Path must stay inside project root: {path}",
             path=str(path),
@@ -625,7 +662,8 @@ def normalize_relative_path(project_root: Path, path_value: str | Path) -> str:
         ) from exc
 
 
-from datetime import datetime, timezone
+from datetime import datetime, timezone  # noqa: E402
+
 
 def build_state(
     project_id: str,
@@ -686,6 +724,103 @@ def build_state(
             "experiment_adviser": "pending",
             "paper_reviewer": "pending",
             "reflection_curator": "pending",
+        },
+        "current_substep": None,
+        "substep_status": {
+            "survey": {
+                "literature_survey": {
+                    "status": "pending",
+                    "review_result": "pending",
+                    "attempts": 0,
+                    "last_agent": None,
+                },
+                "idea_definition": {
+                    "status": "pending",
+                    "review_result": "pending",
+                    "attempts": 0,
+                    "last_agent": None,
+                },
+                "research_plan": {
+                    "status": "pending",
+                    "review_result": "pending",
+                    "attempts": 0,
+                    "last_agent": None,
+                },
+            },
+            "pilot": {
+                "problem_analysis": {
+                    "status": "pending",
+                    "review_result": "pending",
+                    "attempts": 0,
+                    "last_agent": None,
+                },
+                "pilot_design": {
+                    "status": "pending",
+                    "review_result": "pending",
+                    "attempts": 0,
+                    "last_agent": None,
+                },
+                "pilot_execution": {
+                    "status": "pending",
+                    "review_result": "pending",
+                    "attempts": 0,
+                    "last_agent": None,
+                },
+            },
+            "experiments": {
+                "experiment_design": {
+                    "status": "pending",
+                    "review_result": "pending",
+                    "attempts": 0,
+                    "last_agent": None,
+                },
+                "experiment_execution": {
+                    "status": "pending",
+                    "review_result": "pending",
+                    "attempts": 0,
+                    "last_agent": None,
+                },
+                "results_analysis": {
+                    "status": "pending",
+                    "review_result": "pending",
+                    "attempts": 0,
+                    "last_agent": None,
+                },
+            },
+            "paper": {
+                "paper_planning": {
+                    "status": "pending",
+                    "review_result": "pending",
+                    "attempts": 0,
+                    "last_agent": None,
+                },
+                "paper_writing": {
+                    "status": "pending",
+                    "review_result": "pending",
+                    "attempts": 0,
+                    "last_agent": None,
+                },
+                "citation_curation": {
+                    "status": "pending",
+                    "review_result": "pending",
+                    "attempts": 0,
+                    "last_agent": None,
+                },
+            },
+            "reflection": {
+                "lessons_extraction": {
+                    "status": "pending",
+                    "review_result": "pending",
+                    "attempts": 0,
+                    "last_agent": None,
+                },
+                "overlay_proposal": {
+                    "status": "pending",
+                    "review_result": "pending",
+                    "attempts": 0,
+                    "last_agent": None,
+                },
+            },
         },
         "language_policy": {
             "process_docs": process_language,
@@ -756,7 +891,10 @@ def build_template_variables(project_root: Path, state: dict[str, Any]) -> dict[
     if init_paths:
         init_paths_section = "\n".join(f"- `{path}`" for path in init_paths)
     else:
-        init_paths_section = "- No client `/init` artifact was detected; the skill bootstrap owns the initial project files."
+        init_paths_section = (
+            "- No client `/init` artifact was detected; "
+            "the skill bootstrap owns the initial project files."
+        )
 
     # Safely get deliverable path, fallback to DEFAULT_DELIVERABLES if missing
     def get_deliverable(key: str) -> str:
@@ -871,7 +1009,8 @@ def build_client_instruction_text(client_profile: str, state: dict[str, Any]) ->
             "- Gate 2: pilot validation pack approved by the user",
             "- Gate 3: experiment evidence package approved by the user",
             "- Gate 4: paper package approved by the user",
-            "- Gate 5: reflection/evolution package approved by the user before overlays or policy changes apply",
+            "- Gate 5: reflection/evolution package approved by the user "
+            "before overlays or policy changes apply",
             "",
             "## Runtime rules",
             "",
@@ -879,7 +1018,8 @@ def build_client_instruction_text(client_profile: str, state: dict[str, Any]) ->
             "- Update dashboard and runtime registries as phase status changes.",
             "- Do not bypass `research-state.yaml`.",
             "- Do not pivot without explicit human approval.",
-            "- Do not claim plagiarism clearance, AI-detection clearance, or formal proof verification in v1.",
+            "- Do not claim plagiarism clearance, AI-detection clearance, "
+            "or formal proof verification in v1.",
             "",
             "## Language policy",
             "",
@@ -992,13 +1132,9 @@ def write_json(path: Path, payload: Any) -> None:
     content = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
 
     # Atomic write: write to temp file, then replace
-    fd, temp_path = tempfile.mkstemp(
-        dir=path.parent,
-        prefix=path.name + ".",
-        suffix=".tmp"
-    )
+    fd, temp_path = tempfile.mkstemp(dir=path.parent, prefix=path.name + ".", suffix=".tmp")
     try:
-        with os.fdopen(fd, 'w', encoding='utf-8') as f:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
             f.write(content)
         # Atomic replace on POSIX systems
         os.replace(temp_path, path)
@@ -1014,6 +1150,7 @@ def write_json(path: Path, payload: Any) -> None:
 # ============================================================================
 # ARIS Integration: Review State Management
 # ============================================================================
+
 
 def build_review_state(
     phase: str,
@@ -1065,7 +1202,9 @@ def save_review_state(project_root: Path, review_state: dict[str, Any]) -> None:
     review_state["timestamp"] = datetime.now(timezone.utc).isoformat()
     path = project_root / REVIEW_STATE_FILENAME
     write_json(path, review_state)
-    logger.info(f"Saved review state: round {review_state['round']}, status {review_state['status']}")
+    logger.info(
+        f"Saved review state: round {review_state['round']}, status {review_state['status']}"
+    )
 
 
 def load_review_state(project_root: Path) -> dict[str, Any] | None:
@@ -1094,7 +1233,9 @@ def load_review_state(project_root: Path) -> dict[str, Any] | None:
                     timestamp = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
                     age_hours = (datetime.now(timezone.utc) - timestamp).total_seconds() / 3600
                     if age_hours > 24:
-                        logger.warning(f"Review state is stale ({age_hours:.1f} hours old), starting fresh")
+                        logger.warning(
+                            f"Review state is stale ({age_hours:.1f} hours old), starting fresh"
+                        )
                         return None
                 except Exception as e:
                     logger.warning(f"Failed to parse timestamp: {e}")
@@ -1164,6 +1305,7 @@ def is_cross_model_review_enabled(project_root: Path) -> bool:
 # ARIS Integration: Idea State Management
 # ============================================================================
 
+
 def build_idea_state(
     direction: str,
     phase: str = "literature-survey",
@@ -1209,7 +1351,9 @@ def save_idea_state(project_root: Path, idea_state: dict[str, Any]) -> None:
     idea_state["timestamp"] = datetime.now(timezone.utc).isoformat()
     path = project_root / IDEA_STATE_FILENAME
     write_json(path, idea_state)
-    logger.info(f"Saved idea state: phase {idea_state['phase']}, ideas {idea_state['ideas_generated']}")
+    logger.info(
+        f"Saved idea state: phase {idea_state['phase']}, ideas {idea_state['ideas_generated']}"
+    )
 
 
 def load_idea_state(project_root: Path) -> dict[str, Any] | None:
@@ -1318,7 +1462,9 @@ def parse_markdown_fields(path: Path) -> dict[str, str]:
     return fields
 
 
-def validate_structured_signals(project_root: Path, state: dict[str, Any], phase_name: str) -> list[str]:
+def validate_structured_signals(
+    project_root: Path, state: dict[str, Any], phase_name: str
+) -> list[str]:
     errors: list[str] = []
     requirements = STRUCTURED_SIGNAL_REQUIREMENTS.get(phase_name, {})
     for deliverable_key, field_requirements in requirements.items():
@@ -1333,7 +1479,8 @@ def validate_structured_signals(project_root: Path, state: dict[str, Any], phase
             normalized = normalize_signal_value(actual)
             if normalized not in expected_values:
                 errors.append(
-                    f"{relative_path} must set '{field_name}' to one of {sorted(expected_values)}, got {actual!r}."
+                    f"{relative_path} must set '{field_name}' to one of "
+                    f"{sorted(expected_values)}, got {actual!r}."
                 )
     return errors
 
@@ -1360,6 +1507,7 @@ def allowed_return_phases(phase_name: str) -> list[str]:
 def reset_state_for_phase(state: dict[str, Any], phase_name: str) -> None:
     if phase_name not in PHASE_SEQUENCE:
         from exceptions import PhaseTransitionError
+
         raise PhaseTransitionError(
             f"Unsupported phase: {phase_name}",
             to_phase=phase_name,
@@ -1398,7 +1546,7 @@ def setup_logging(level: int = logging.INFO, log_file: Path | None = None) -> No
     handlers: list[logging.Handler] = [logging.StreamHandler()]
     if log_file:
         log_file.parent.mkdir(parents=True, exist_ok=True)
-        handlers.append(logging.FileHandler(log_file, encoding='utf-8'))
+        handlers.append(logging.FileHandler(log_file, encoding="utf-8"))
 
     logging.basicConfig(
         level=level,
@@ -1457,4 +1605,434 @@ def ensure_project_structure(project_root: Path, create_if_missing: bool = True)
     if not state_file.exists():
         logger.info(f"State file not found (expected): {state_file}")
 
+    return True
+
+
+# ============================================================================
+# GitMem Integration: Lightweight Version Control for Agent Edits
+# ============================================================================
+
+# GitMem configuration
+GITMEM_DIR = ".gitmem"
+GITMEM_LOOP_THRESHOLD = 5  # Warn if file has 5+ changes without checkpoint
+GITMEM_TRACKED_DIRS = ("docs/reports/", "paper/", "code/", "agents/")
+
+
+def _run_git_command(project_root: Path, args: list[str], check: bool = True) -> str:
+    """Run a git command in the GitMem repository.
+
+    Args:
+        project_root: Project root directory.
+        args: Git command arguments (without 'git' prefix).
+        check: If True, raise exception on non-zero exit.
+
+    Returns:
+        Command stdout.
+
+    Raises:
+        RuntimeError: If git command fails and check=True.
+    """
+    import subprocess
+
+    gitmem_path = project_root / GITMEM_DIR
+    cmd = ["git", "-C", str(gitmem_path)] + args
+
+    try:
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            check=check,
+            timeout=30,
+        )
+        return result.stdout.strip()
+    except subprocess.TimeoutExpired:
+        raise RuntimeError(f"Git command timed out: {' '.join(args)}")
+    except subprocess.CalledProcessError as e:
+        if check:
+            raise RuntimeError(f"Git command failed: {e.stderr}") from e
+        return ""
+
+
+def gitmem_is_initialized(project_root: Path) -> bool:
+    """Check if GitMem is initialized for the project.
+
+    Args:
+        project_root: Project root directory.
+
+    Returns:
+        True if GitMem is initialized.
+    """
+    gitmem_path = project_root / GITMEM_DIR
+    return (gitmem_path / ".git").exists()
+
+
+def gitmem_init(project_root: Path) -> None:
+    """Initialize GitMem for a project.
+
+    Creates a .gitmem directory with a separate git repository
+    for tracking agent-generated document changes.
+
+    Args:
+        project_root: Project root directory.
+    """
+    gitmem_path = project_root / GITMEM_DIR
+
+    # Skip if already initialized
+    if gitmem_is_initialized(project_root):
+        logger.info(f"GitMem already initialized at {gitmem_path}")
+        return
+
+    # Create .gitmem directory
+    gitmem_path.mkdir(parents=True, exist_ok=True)
+
+    # Initialize git repo
+    _run_git_command(project_root, ["init"])
+
+    # Configure git user
+    _run_git_command(project_root, ["config", "user.name", "GitMem"])
+    _run_git_command(project_root, ["config", "user.email", "gitmem@orchestrator"])
+
+    # Create .gitignore in .gitmem to NOT ignore tracked directories
+    # We want to track docs/, paper/, code/, agents/ inside .gitmem
+    gitignore_content = """# GitMem tracks these directories
+!docs/
+!paper/
+!code/
+!agents/
+"""
+    (gitmem_path / ".gitignore").write_text(gitignore_content.strip(), encoding="utf-8")
+
+    # Create README in .gitmem to explain the directory
+    readme_content = """# GitMem Version Tracking
+
+This directory contains a git repository that tracks changes to files in:
+- docs/reports/
+- paper/
+- code/
+- agents/
+
+Files are mirrored here with the same directory structure for version tracking.
+This keeps the main project's git history clean while enabling iterative refinement.
+
+Use the gitmem_* functions in orchestrator_common.py to interact with this repository.
+"""
+    (gitmem_path / "README.md").write_text(readme_content, encoding="utf-8")
+
+    # Create initial commit
+    _run_git_command(project_root, ["add", ".gitignore", "README.md"])
+    _run_git_command(project_root, ["commit", "-m", "GitMem initialized"])
+
+    # Update main project's .gitignore to ignore .gitmem
+    main_gitignore = project_root / ".gitignore"
+    if main_gitignore.exists():
+        content = main_gitignore.read_text(encoding="utf-8")
+        if GITMEM_DIR not in content:
+            main_gitignore.write_text(
+                content + f"\n# GitMem version tracking\n{GITMEM_DIR}/\n",
+                encoding="utf-8",
+            )
+    else:
+        main_gitignore.write_text(f"# GitMem version tracking\n{GITMEM_DIR}/\n", encoding="utf-8")
+
+    logger.info(f"Initialized GitMem at {gitmem_path}")
+
+
+def gitmem_commit(project_root: Path, file_path: str, message: str) -> str:
+    """Commit a file change to GitMem history.
+
+    Args:
+        project_root: Project root directory.
+        file_path: Relative path to the file (from project root).
+        message: Commit message.
+
+    Returns:
+        Commit hash.
+
+    Raises:
+        ValueError: If GitMem is not initialized.
+    """
+    if not gitmem_is_initialized(project_root):
+        raise ValueError("GitMem not initialized. Call gitmem_init() first.")
+
+    # Normalize the file path
+    file_path = Path(file_path).as_posix()
+
+    # Check if file is in tracked directories
+    is_tracked = any(file_path.startswith(tracked) for tracked in GITMEM_TRACKED_DIRS)
+    if not is_tracked:
+        logger.warning(f"File {file_path} is not in GitMem tracked directories")
+
+    # Copy the file to .gitmem for tracking
+    source_path = project_root / file_path
+    gitmem_path = project_root / GITMEM_DIR
+
+    if not source_path.exists():
+        raise ValueError(f"File does not exist: {file_path}")
+
+    # Create the same directory structure in .gitmem
+    gitmem_file_path = gitmem_path / file_path
+    gitmem_file_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Copy file content
+    gitmem_file_path.write_text(source_path.read_text(encoding="utf-8"), encoding="utf-8")
+
+    # Stage the file in .gitmem repo
+    _run_git_command(project_root, ["add", file_path])
+
+    # Check if there are changes to commit
+    status = _run_git_command(project_root, ["status", "--porcelain"])
+    if not status:
+        logger.info(f"No changes to commit for {file_path}")
+        # Get current HEAD hash
+        return _run_git_command(project_root, ["rev-parse", "HEAD"])
+
+    _run_git_command(project_root, ["commit", "-m", message])
+
+    # Get commit hash
+    commit_hash = _run_git_command(project_root, ["rev-parse", "HEAD"])
+    logger.info(f"GitMem commit: {commit_hash[:8]} - {message}")
+
+    return commit_hash
+
+
+def gitmem_checkpoint(project_root: Path, name: str) -> None:
+    """Create a named checkpoint (annotated tag).
+
+    Checkpoints mark stable states for easy rollback.
+
+    Args:
+        project_root: Project root directory.
+        name: Checkpoint name (e.g., "survey-1.1-approved").
+
+    Raises:
+        ValueError: If GitMem is not initialized.
+    """
+    if not gitmem_is_initialized(project_root):
+        raise ValueError("GitMem not initialized. Call gitmem_init() first.")
+
+    # Create annotated tag
+    timestamp = datetime.now(timezone.utc).isoformat()
+    _run_git_command(
+        project_root,
+        ["tag", "-a", name, "-m", f"Checkpoint: {name} at {timestamp}"],
+    )
+
+    logger.info(f"GitMem checkpoint created: {name}")
+
+
+def gitmem_list_tags(project_root: Path) -> list[str]:
+    """List all tags (checkpoints) in the GitMem repository.
+
+    Args:
+        project_root: Project root directory.
+
+    Returns:
+        List of tag names, or empty list if GitMem not initialized.
+    """
+    if not gitmem_is_initialized(project_root):
+        return []
+
+    tags_output = _run_git_command(project_root, ["tag", "-l"], check=False)
+    if not tags_output:
+        return []
+    return [tag.strip() for tag in tags_output.split("\n") if tag.strip()]
+
+
+def gitmem_check_loop(project_root: Path, file_path: str) -> bool:
+    """Check if a file is in an edit loop.
+
+    A file is considered in a loop if it has 5+ consecutive changes
+    without a checkpoint.
+
+    Args:
+        project_root: Project root directory.
+        file_path: Relative path to the file.
+
+    Returns:
+        True if file appears to be in an edit loop.
+    """
+    loop_info = gitmem_get_loop_info(project_root, file_path)
+
+    if loop_info["in_loop"]:
+        logger.warning(
+            f"Loop detected: {file_path} has {loop_info['change_count']} "
+            f"changes without checkpoint"
+        )
+
+    return loop_info["in_loop"]
+
+
+def gitmem_get_loop_info(project_root: Path, file_path: str) -> dict[str, Any]:
+    """Get detailed loop information for a file.
+
+    Args:
+        project_root: Project root directory.
+        file_path: Relative path to the file.
+
+    Returns:
+        Dictionary with 'in_loop', 'change_count', and 'last_checkpoint' keys.
+    """
+    if not gitmem_is_initialized(project_root):
+        return {"in_loop": False, "change_count": 0, "last_checkpoint": None}
+
+    file_path = Path(file_path).as_posix()
+
+    # Get all tags (checkpoints)
+    tags_output = _run_git_command(project_root, ["tag", "-l"], check=False)
+    checkpoints = tags_output.split("\n") if tags_output else []
+
+    # Find last checkpoint
+    last_checkpoint = None
+    if checkpoints:
+        for tag in reversed(checkpoints):
+            try:
+                result = _run_git_command(
+                    project_root,
+                    ["ls-tree", "-r", "--name-only", tag],
+                    check=False,
+                )
+                if file_path in result.split("\n"):
+                    last_checkpoint = tag
+                    break
+            except RuntimeError:
+                continue
+
+    # Count commits
+    if last_checkpoint:
+        log_output = _run_git_command(
+            project_root,
+            ["log", "--oneline", f"{last_checkpoint}..HEAD", "--", file_path],
+            check=False,
+        )
+    else:
+        log_output = _run_git_command(
+            project_root,
+            ["log", "--oneline", "--", file_path],
+            check=False,
+        )
+
+    commit_count = len([line for line in log_output.split("\n") if line.strip()])
+
+    return {
+        "in_loop": commit_count >= GITMEM_LOOP_THRESHOLD,
+        "change_count": commit_count,
+        "last_checkpoint": last_checkpoint,
+    }
+
+
+def gitmem_history(project_root: Path, file_path: str, limit: int = 20) -> list[dict[str, str]]:
+    """Get version history for a file.
+
+    Args:
+        project_root: Project root directory.
+        file_path: Relative path to the file.
+        limit: Maximum number of history entries to return.
+
+    Returns:
+        List of dictionaries with 'hash', 'date', 'message' keys.
+    """
+    if not gitmem_is_initialized(project_root):
+        return []
+
+    file_path = Path(file_path).as_posix()
+
+    # Get commit log with format: hash|date|message
+    log_format = "--format=%H|%ci|%s"
+    log_output = _run_git_command(
+        project_root,
+        ["log", log_format, f"-{limit}", "--", file_path],
+        check=False,
+    )
+
+    history = []
+    for line in log_output.split("\n"):
+        if "|" in line:
+            parts = line.split("|", 2)
+            if len(parts) == 3:
+                history.append(
+                    {
+                        "hash": parts[0][:8],
+                        "date": parts[1],
+                        "message": parts[2],
+                    }
+                )
+
+    return history
+
+
+def gitmem_diff(
+    project_root: Path,
+    file_path: str,
+    from_rev: str = "HEAD~1",
+    to_rev: str = "HEAD",
+) -> str:
+    """Compare versions of a file.
+
+    Args:
+        project_root: Project root directory.
+        file_path: Relative path to the file.
+        from_rev: Source revision (default: HEAD~1).
+        to_rev: Target revision (default: HEAD).
+
+    Returns:
+        Diff output as string.
+    """
+    if not gitmem_is_initialized(project_root):
+        return "GitMem not initialized"
+
+    file_path = Path(file_path).as_posix()
+
+    diff_output = _run_git_command(
+        project_root,
+        ["diff", from_rev, to_rev, "--", file_path],
+        check=False,
+    )
+
+    return diff_output
+
+
+def gitmem_rollback(
+    project_root: Path,
+    file_path: str,
+    to_rev: str = "HEAD~1",
+) -> bool:
+    """Rollback a file to a previous version.
+
+    Creates a new commit with the rollback (never rewrites history).
+
+    Args:
+        project_root: Project root directory.
+        file_path: Relative path to the file.
+        to_rev: Target revision (default: HEAD~1).
+
+    Returns:
+        True if rollback succeeded.
+    """
+    if not gitmem_is_initialized(project_root):
+        logger.warning("GitMem not initialized, cannot rollback")
+        return False
+
+    file_path = Path(file_path).as_posix()
+
+    # Get the file content from the target revision
+    try:
+        content = _run_git_command(
+            project_root,
+            ["show", f"{to_rev}:{file_path}"],
+            check=True,
+        )
+    except RuntimeError as e:
+        logger.error(f"Cannot find revision {to_rev}: {e}")
+        return False
+
+    # Write the content back
+    source_path = project_root / file_path
+    source_path.parent.mkdir(parents=True, exist_ok=True)
+    source_path.write_text(content, encoding="utf-8")
+
+    # Create a commit for the rollback
+    gitmem_commit(project_root, file_path, f"Rollback {file_path} to {to_rev}")
+
+    logger.info(f"Rolled back {file_path} to {to_rev}")
     return True
