@@ -36,14 +36,12 @@ jobs:
 
       - name: Run tests
         run: |
-          cd ai-research-orchestrator
           python -m pytest tests/ -v --tb=short
 
       - name: Upload coverage
         uses: codecov/codecov-action@v4
         if: matrix.python-version == '3.11'
         with:
-          directory: ./ai-research-orchestrator
           fail_ci_if_error: false
 
   lint:
@@ -62,24 +60,16 @@ jobs:
           pip install black isort flake8 mypy
 
       - name: Check formatting with black
-        run: |
-          cd ai-research-orchestrator
-          black --check scripts/ tests/
+        run: black --check scripts/ tests/
 
       - name: Check imports with isort
-        run: |
-          cd ai-research-orchestrator
-          isort --check-only --diff scripts/ tests/
+        run: isort --check-only --diff scripts/ tests/
 
       - name: Lint with flake8
-        run: |
-          cd ai-research-orchestrator
-          flake8 scripts/ tests/ --max-line-length=100 --extend-ignore=E203,W503
+        run: flake8 scripts/ tests/ --max-line-length=100 --extend-ignore=E203,W503
 
       - name: Type check with mypy
-        run: |
-          cd ai-research-orchestrator
-          mypy scripts/ --ignore-missing-imports --no-error-summary || true
+        run: mypy scripts/ --ignore-missing-imports --no-error-summary || true
 
   security:
     runs-on: ubuntu-latest
@@ -97,6 +87,4 @@ jobs:
           pip install bandit
 
       - name: Run security scan
-        run: |
-          cd ai-research-orchestrator
-          bandit -r scripts/ -ll --skip B101,B601
+        run: bandit -r scripts/ -ll --skip B101,B601
