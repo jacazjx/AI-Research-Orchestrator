@@ -11,13 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **ARIS Integration**: Full integration of Auto-Research-In-Sleep capabilities
   - 17 new skills for autonomous research workflows
-  - Three main workflows: idea-discovery, auto-review-loop, paper-writing
+  - Three main workflows: idea-discovery, auto-review-loop, paper-pipeline
   - Cross-model review via Codex MCP (optional)
 
 - **New Skills**:
   - Workflow 1: `idea-discovery`, `research-lit`, `idea-creator`, `novelty-check`, `research-review`
   - Workflow 2: `auto-review-loop`, `run-experiment`, `monitor-experiment`, `analyze-results`
-  - Workflow 3: `paper-writing`, `paper-plan`, `paper-figure`, `paper-write`, `paper-compile`, `auto-paper-improvement-loop`
+  - Workflow 3: `paper-pipeline`, `paper-plan`, `paper-figure`, `paper-write`, `paper-compile`, `auto-paper-improvement-loop`
   - Utilities: `research-pipeline`, `feishu-notify`
 
 - **Configuration Extensions**:
@@ -47,7 +47,7 @@ No breaking changes. All existing functionality preserved.
 To enable new ARIS features:
 1. Add `aris:` section to existing `orchestrator-config.yaml` (see template)
 2. Configure Codex MCP for cross-model review (optional)
-3. Invoke new skills: `/idea-discovery`, `/auto-review-loop`, `/paper-writing`, `/research-pipeline`
+3. Invoke new skills: `/idea-discovery`, `/auto-review-loop`, `/paper-pipeline`, `/research-pipeline`
 
 ## [1.0.0] - 2024-01-XX
 

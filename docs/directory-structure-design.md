@@ -57,7 +57,7 @@ AI-Research-Orchestrator/
 │   │   └── SKILL.md
 │   ├── auto-review-loop/
 │   │   └── SKILL.md
-│   ├── paper-writing/
+│   ├── paper-pipeline/
 │   │   └── SKILL.md
 │   ├── paper-plan/
 │   │   └── SKILL.md
@@ -206,7 +206,7 @@ AI-Research-Orchestrator/
 - `analyze-results` - 分析结果
 
 **Paper Skills（论文）**:
-- `paper-writing` - 论文写作流程
+- `paper-pipeline` - 论文写作流程
 - `paper-plan` - 论文规划
 - `paper-figure` - 图表生成
 - `paper-write` - 论文撰写

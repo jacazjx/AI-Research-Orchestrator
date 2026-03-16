@@ -1,9 +1,9 @@
 ---
 name: airesearchorchestrator:monitor-experiment
+agent: code
 description: Monitor running experiments, check progress, collect results. Use when user says "check results", "is it done", "monitor", or wants experiment output.
 argument-hint: [server-alias or screen-name]
 allowed-tools: Bash(ssh *), Bash(echo *), Read, Write, Edit
-agent: adviser
 ---
 
 ## Workflow
@@ -36,3 +36,13 @@ Present results in comparison table:
 - Compare against known baselines
 - Flag unexpected results
 - Suggest next steps
+
+## Key Rules
+
+1. Check running status via SSH and screen
+2. Report resource usage (GPU, memory, time)
+3. Flag anomalies and unexpected results
+
+## Output
+
+- Console output with status table and resource metrics
