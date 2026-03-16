@@ -1,5 +1,5 @@
 ---
-name: autoresearch:idea-creator
+name: airesearchorchestrator:idea-creator
 description: Brainstorm and filter research ideas. Generates 8-12 concrete ideas via external LLM, filters by feasibility, and runs pilot experiments on top candidates. Use when user says "generate ideas", "头脑风暴", "find research ideas", or wants to explore possible directions.
 argument-hint: [research-context]
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, Skill, mcp__codex__codex

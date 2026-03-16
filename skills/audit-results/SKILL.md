@@ -1,5 +1,5 @@
 ---
-name: autoresearch:audit-results
+name: airesearchorchestrator:audit-results
 agent: adviser
 description: Audit experiment results for traceability, statistical validity, and negative result handling. Use when user says "audit results", "review experiment results", "审核实验结果", or needs to verify experiment outcomes.
 argument-hint: [results-path]

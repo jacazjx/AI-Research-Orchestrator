@@ -1,5 +1,5 @@
 ---
-name: autoresearch:run-pilot
+name: airesearchorchestrator:run-pilot
 agent: code
 description: Execute pilot experiment and report results. Use when user says "run pilot", "execute pilot", "运行 Pilot", or needs to run the designed pilot experiment.
 argument-hint: [pilot-design-path]

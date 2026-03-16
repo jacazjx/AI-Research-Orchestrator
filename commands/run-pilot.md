@@ -1,5 +1,5 @@
 ---
-name: autoresearch:run-pilot
+name: airesearchorchestrator:run-pilot
 description: "Run the Pilot phase with Code and Adviser agents. Use when user says 'run pilot', 'pilot experiment', 'Pilot验证', '小规模实验'."
 triggers:
   - "run pilot"

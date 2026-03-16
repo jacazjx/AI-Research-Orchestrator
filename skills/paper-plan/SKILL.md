@@ -1,5 +1,5 @@
 ---
-name: autoresearch:paper-plan
+name: airesearchorchestrator:paper-plan
 description: Create paper outline and structure from research narrative. Builds Claims-Evidence Matrix and section plan. Use when user says "paper outline", "论文大纲", "plan paper structure".
 argument-hint: [narrative-report-path]
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, mcp__codex__codex

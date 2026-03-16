@@ -1,5 +1,5 @@
 ---
-name: autoresearch:gitmem
+name: airesearchorchestrator:gitmem
 description: Lightweight version control for agent-generated document changes. Tracks iterative refinement without creating v1, v2, v3 copies. Use when committing agent edits, creating checkpoints, or checking for edit loops.
 argument-hint: <command> [options]
 allowed-tools: Bash(git), Read, Write

@@ -1,5 +1,5 @@
 ---
-name: autoresearch:run-survey
+name: airesearchorchestrator:run-survey
 description: "Run the Survey phase with Survey and Critic agents. Use when user says 'run survey', 'start survey', '文献调研', '开始调研'."
 triggers:
   - "run survey"

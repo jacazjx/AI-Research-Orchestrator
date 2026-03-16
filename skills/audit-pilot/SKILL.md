@@ -1,5 +1,5 @@
 ---
-name: autoresearch:audit-pilot
+name: airesearchorchestrator:audit-pilot
 agent: adviser
 description: Audit pilot results for hypothesis validation, reproducibility, and decision support. Use when user says "audit pilot", "review pilot results", "审核 Pilot 结果", or needs to verify pilot experiment outcomes.
 argument-hint: [pilot-validation-report-path]

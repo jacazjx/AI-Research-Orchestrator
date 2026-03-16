@@ -1,5 +1,5 @@
 ---
-name: autoresearch:design-exp
+name: airesearchorchestrator:design-exp
 agent: code
 description: Design full experiment matrix with hyperparameter ranges, evaluation metrics, and statistical tests. Use when user says "design experiments", "experiment matrix", "设计实验", or needs to plan comprehensive experiments.
 argument-hint: [pilot-validation-report-path]

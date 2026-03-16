@@ -1,5 +1,5 @@
 ---
-name: autoresearch:research-plan
+name: airesearchorchestrator:research-plan
 agent: survey
 description: Create comprehensive research execution plan with methodology overview, experiment design outline, resource requirements, and timeline. Use when user says "research plan", "create plan", "研究计划", or needs to structure research execution.
 argument-hint: [idea-definition-path]

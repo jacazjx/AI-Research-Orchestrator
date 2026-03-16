@@ -1,5 +1,5 @@
 ---
-name: autoresearch:design-pilot
+name: airesearchorchestrator:design-pilot
 agent: code
 description: Design minimal pilot experiment to validate core hypothesis. Use when user says "design pilot", "pilot experiment", "设计 Pilot", or needs to create a small-scale validation experiment.
 argument-hint: [problem-analysis-path]

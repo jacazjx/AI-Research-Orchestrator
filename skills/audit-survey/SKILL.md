@@ -1,5 +1,5 @@
 ---
-name: autoresearch:audit-survey
+name: airesearchorchestrator:audit-survey
 agent: critic
 description: Audit literature survey for completeness, citation authenticity, and novelty claims. Use when user says "audit survey", "review literature", "审核文献调研", or needs to verify survey quality.
 argument-hint: [survey-report-path]

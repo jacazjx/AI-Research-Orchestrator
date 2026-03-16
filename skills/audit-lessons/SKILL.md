@@ -1,5 +1,5 @@
 ---
-name: autoresearch:audit-lessons
+name: airesearchorchestrator:audit-lessons
 agent: curator
 description: Audit lessons learned for transferability and actionability. Use when user says "audit lessons", "review lessons learned", "审核经验总结", or needs to verify lessons quality.
 argument-hint: [lessons-learned-path]

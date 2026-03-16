@@ -318,7 +318,7 @@
 /plugin marketplace add jacazjx/AI-Research-Orchestrator
 
 # 2. 安装插件
-/plugin install autoresearch@autoresearch
+/plugin install airesearchorchestrator@airesearchorchestrator
 ```
 
 ### 方式二：配置 settings.json
@@ -328,7 +328,7 @@
 ```json
 {
   "extraKnownMarketplaces": {
-    "autoresearch": {
+    "airesearchorchestrator": {
       "source": {
         "source": "github",
         "repo": "jacazjx/AI-Research-Orchestrator"
@@ -336,7 +336,7 @@
     }
   },
   "enabledPlugins": {
-    "autoresearch@autoresearch": true
+    "airesearchorchestrator@airesearchorchestrator": true
   }
 }
 ```
@@ -357,11 +357,11 @@ python3 scripts/init_research_project.py \
   --client-type auto
 
 # 运行特定阶段
-/run-survey      # 启动文献调研阶段
-/run-pilot       # 启动 Pilot 阶段
-/run-experiments # 启动完整实验阶段
-/write-paper     # 启动论文写作阶段
-/reflect         # 启动反思总结阶段
+/airesearchorchestrator:run-survey      # 启动文献调研阶段
+/airesearchorchestrator:run-pilot       # 启动 Pilot 阶段
+/airesearchorchestrator:run-experiments # 启动完整实验阶段
+/airesearchorchestrator:write-paper     # 启动论文写作阶段
+/airesearchorchestrator:reflect         # 启动反思总结阶段
 ```
 
 ## 目录结构
@@ -395,12 +395,12 @@ my-project/
 
 | 命令 | 描述 | 触发词 |
 |------|------|--------|
-| `/init-research` | 初始化新项目 | "init research", "初始化研究" |
-| `/run-survey` | 运行文献调研阶段 | "run survey", "文献调研" |
-| `/run-pilot` | 运行 Pilot 阶段 | "run pilot", "Pilot验证" |
-| `/run-experiments` | 运行完整实验 | "run experiments", "完整实验" |
-| `/write-paper` | 撰写论文 | "write paper", "写论文" |
-| `/reflect` | 运行反思总结 | "reflect", "反思总结" |
+| `/airesearchorchestrator:init-research` | 初始化新项目 | "init research", "初始化研究" |
+| `/airesearchorchestrator:run-survey` | 运行文献调研阶段 | "run survey", "文献调研" |
+| `/airesearchorchestrator:run-pilot` | 运行 Pilot 阶段 | "run pilot", "Pilot验证" |
+| `/airesearchorchestrator:run-experiments` | 运行完整实验 | "run experiments", "完整实验" |
+| `/airesearchorchestrator:write-paper` | 撰写论文 | "write paper", "写论文" |
+| `/airesearchorchestrator:reflect` | 运行反思总结 | "reflect", "反思总结" |
 
 ## 硬规则
 

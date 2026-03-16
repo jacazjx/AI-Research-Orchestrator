@@ -1,5 +1,5 @@
 ---
-name: autoresearch:paper-write
+name: airesearchorchestrator:paper-write
 description: Generate LaTeX sections for paper. Writes section-by-section with proper formatting. Use when user says "write paper", "写论文", "generate LaTeX".
 argument-hint: [paper-plan-path]
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, mcp__codex__codex

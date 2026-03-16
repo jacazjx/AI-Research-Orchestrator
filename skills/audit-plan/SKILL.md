@@ -1,5 +1,5 @@
 ---
-name: autoresearch:audit-plan
+name: airesearchorchestrator:audit-plan
 agent: critic
 description: Audit research execution plan for feasibility, resource adequacy, and risk coverage. Use when user says "audit plan", "review research plan", "审核研究计划", or needs to verify planning quality.
 argument-hint: [research-plan-path]

@@ -1,5 +1,5 @@
 ---
-name: autoresearch:run-experiments
+name: airesearchorchestrator:run-experiments
 description: "Run the full Experiments phase with Code and Adviser agents. Use when user says 'run experiments', 'full experiments', '完整实验', '大规模实验'."
 triggers:
   - "run experiments"

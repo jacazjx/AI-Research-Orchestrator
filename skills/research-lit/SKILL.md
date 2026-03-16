@@ -1,5 +1,5 @@
 ---
-name: autoresearch:research-lit
+name: airesearchorchestrator:research-lit
 description: Literature survey using academic APIs (arXiv, Semantic Scholar, DBLP, OpenAlex). Use when user says "literature survey", "文献调研", "find related work", or needs to map the research landscape.
 argument-hint: [research-topic]
 allowed-tools: Bash(curl), Read, Write, Edit, Grep, Glob, WebFetch, Agent

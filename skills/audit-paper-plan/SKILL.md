@@ -1,5 +1,5 @@
 ---
-name: autoresearch:audit-paper-plan
+name: airesearchorchestrator:audit-paper-plan
 agent: reviewer
 description: Audit paper outline for claim-evidence alignment, structure completeness, and citation scaffolding. Use when user says "audit paper plan", "review paper outline", "审核论文大纲", or needs to verify paper planning.
 argument-hint: [paper-plan-path]

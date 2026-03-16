@@ -1,5 +1,5 @@
 ---
-name: autoresearch:audit-overlay
+name: airesearchorchestrator:audit-overlay
 agent: curator
 description: Audit proposed system improvements for safety, backward compatibility, and rollback capability. Use when user says "audit overlay", "review overlay", "审核系统改进", or needs to verify overlay safety.
 argument-hint: [overlay-draft-path]

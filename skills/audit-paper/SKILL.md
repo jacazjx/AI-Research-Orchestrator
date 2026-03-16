@@ -1,5 +1,5 @@
 ---
-name: autoresearch:audit-paper
+name: airesearchorchestrator:audit-paper
 agent: reviewer
 description: Review paper draft for scientific rigor, writing quality, and citation authenticity. Use when user says "audit paper", "review paper", "审核论文", or needs to verify manuscript quality.
 argument-hint: [paper-directory]

@@ -1,5 +1,5 @@
 ---
-name: autoresearch:propose-overlay
+name: airesearchorchestrator:propose-overlay
 agent: reflector
 description: Propose system improvements through prompt modifications and workflow changes. Use when user says "propose overlay", "system improvement", "系统改进", or needs to suggest orchestrator enhancements.
 argument-hint: [lessons-learned-path]

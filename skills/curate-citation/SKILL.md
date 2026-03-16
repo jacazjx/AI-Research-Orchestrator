@@ -1,5 +1,5 @@
 ---
-name: autoresearch:curate-citation
+name: airesearchorchestrator:curate-citation
 agent: writer
 description: Finalize all citations with verification status and ensure authenticity. Use when user says "curate citations", "verify references", "整理引用", or needs to finalize paper citations.
 argument-hint: [paper-directory]

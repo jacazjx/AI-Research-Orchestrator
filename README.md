@@ -321,7 +321,7 @@
 /plugin marketplace add jacazjx/AI-Research-Orchestrator
 
 # Install the plugin
-/plugin install autoresearch@autoresearch
+/plugin install airesearchorchestrator@airesearchorchestrator
 ```
 
 ### Option 2: Configure settings.json
@@ -331,7 +331,7 @@ Add to `~/.claude/settings.json`:
 ```json
 {
   "extraKnownMarketplaces": {
-    "autoresearch": {
+    "airesearchorchestrator": {
       "source": {
         "source": "github",
         "repo": "jacazjx/AI-Research-Orchestrator"
@@ -339,7 +339,7 @@ Add to `~/.claude/settings.json`:
     }
   },
   "enabledPlugins": {
-    "autoresearch@autoresearch": true
+    "airesearchorchestrator@airesearchorchestrator": true
   }
 }
 ```
@@ -360,11 +360,11 @@ python3 scripts/init_research_project.py \
   --client-type auto
 
 # Run a specific phase
-/run-survey    # Start Survey phase
-/run-pilot     # Start Pilot phase
-/run-experiments # Start Experiments phase
-/write-paper   # Start Paper phase
-/reflect       # Start Reflection phase
+/airesearchorchestrator:run-survey    # Start Survey phase
+/airesearchorchestrator:run-pilot     # Start Pilot phase
+/airesearchorchestrator:run-experiments # Start Experiments phase
+/airesearchorchestrator:write-paper   # Start Paper phase
+/airesearchorchestrator:reflect       # Start Reflection phase
 ```
 
 ## Directory Structure
@@ -398,12 +398,12 @@ my-project/
 
 | Command | Description | Triggers |
 |---------|-------------|----------|
-| `/init-research` | Initialize new project | "init research", "start research project" |
-| `/run-survey` | Run Survey phase | "run survey", "literature review" |
-| `/run-pilot` | Run Pilot phase | "run pilot", "pilot experiment" |
-| `/run-experiments` | Run full experiments | "run experiments", "full experiments" |
-| `/write-paper` | Write paper | "write paper", "draft paper" |
-| `/reflect` | Run reflection | "reflect", "lessons learned" |
+| `/airesearchorchestrator:init-research` | Initialize new project | "init research", "start research project" |
+| `/airesearchorchestrator:run-survey` | Run Survey phase | "run survey", "literature review" |
+| `/airesearchorchestrator:run-pilot` | Run Pilot phase | "run pilot", "pilot experiment" |
+| `/airesearchorchestrator:run-experiments` | Run full experiments | "run experiments", "full experiments" |
+| `/airesearchorchestrator:write-paper` | Write paper | "write paper", "draft paper" |
+| `/airesearchorchestrator:reflect` | Run reflection | "reflect", "lessons learned" |
 
 ## Hard Rules
 

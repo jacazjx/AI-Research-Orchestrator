@@ -1,5 +1,5 @@
 ---
-name: autoresearch:audit-design
+name: airesearchorchestrator:audit-design
 agent: adviser
 description: Audit pilot design for validity, resource efficiency, and success criteria clarity. Use when user says "audit design", "review pilot design", "审核 Pilot 设计", or needs to verify pilot experiment design.
 argument-hint: [pilot-design-path]

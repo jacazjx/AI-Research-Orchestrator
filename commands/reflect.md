@@ -1,5 +1,5 @@
 ---
-name: autoresearch:reflect
+name: airesearchorchestrator:reflect
 description: "Run the Reflection phase with Reflector and Curator agents. Use when user says 'reflect', 'reflection', '反思', '总结'."
 triggers:
   - "reflect"

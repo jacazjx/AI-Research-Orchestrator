@@ -1,5 +1,5 @@
 ---
-name: autoresearch:define-idea
+name: airesearchorchestrator:define-idea
 agent: survey
 description: Formulate research hypothesis with clear problem statement, proposed approach, and expected contributions. Use when user says "define idea", "formulate hypothesis", "明确研究想法", or needs to structure a research concept.
 argument-hint: [research-topic-or-idea]

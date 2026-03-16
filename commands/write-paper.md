@@ -1,5 +1,5 @@
 ---
-name: autoresearch:write-paper
+name: airesearchorchestrator:write-paper
 description: "Run the Paper phase with Writer and Reviewer agents. Use when user says 'write paper', 'paper writing', '写论文', '论文写作'."
 triggers:
   - "write paper"
