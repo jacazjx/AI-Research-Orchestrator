@@ -914,6 +914,10 @@ def build_state(
         },
         "deliverables": dict(DEFAULT_DELIVERABLES),
         "starting_phase": starting_phase,
+        "state_version": "2.0.0",
+        "research_type": "ml_experiment",
+        "user_config_inherited": {},
+        "gpu_usage_history": [],
     }
 
 
@@ -1111,6 +1115,18 @@ def load_state(project_root: Path) -> dict[str, Any]:
     config = load_project_config(project_root)
     state["loop_limits"] = dict(config["loop_limits"])
     state["language_policy"] = dict(config["languages"])
+
+    # State version migration
+    from state_migrator import needs_migration, migrate_state
+
+    if needs_migration(state):
+        state, migration_logs = migrate_state(state)
+        for log in migration_logs:
+            logger.info(log)
+        # Save migrated state
+        save_state(project_root, state)
+        logger.info("State migration completed and saved")
+
     # Ensure all deliverables exist (backward compatibility)
     state = ensure_complete_deliverables(state)
     return state

@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
+from typing import Any
 
 from orchestrator_common import (
     DEFAULT_DELIVERABLES,
@@ -21,6 +23,17 @@ from orchestrator_common import (
     write_text_if_needed,
     write_yaml,
 )
+
+# Import new modules for interactive wizard support
+try:
+    from user_config import load_user_config, merge_configs
+    from legacy_handler import analyze_directory_contents, handle_non_empty_directory
+    from init_wizard import run_wizard
+    from state_migrator import CURRENT_STATE_VERSION
+
+    INTERACTIVE_MODE_AVAILABLE = True
+except ImportError:
+    INTERACTIVE_MODE_AVAILABLE = False
 
 # New semantic phase names
 VALID_PHASES = ["survey", "pilot", "experiments", "paper", "reflection"]
@@ -116,9 +129,46 @@ def initialize_research_project(
     overwrite_templates: bool = False,
     explicit_init_paths: list[str] | None = None,
     starting_phase: str = "survey",
+    interactive: bool = False,
+    research_type: str = "ml_experiment",
+    compute_config: dict[str, Any] | None = None,
+    user_profile: dict[str, Any] | None = None,
 ) -> dict[str, object]:
+    """Initialize a research project with optional interactive wizard.
+
+    Args:
+        project_root: Path to the project directory.
+        topic: Research topic or idea.
+        project_id: Optional project identifier.
+        client_type: Client type (auto, claude, codex).
+        process_language: Language for process documents.
+        paper_language: Language for paper documents.
+        overwrite_templates: Whether to overwrite existing templates.
+        explicit_init_paths: Explicit initialization paths.
+        starting_phase: Starting phase for the project.
+        interactive: Whether to run in interactive mode.
+        research_type: Type of research (ml_experiment, theory, survey, applied).
+        compute_config: Compute configuration from wizard.
+        user_profile: User profile from wizard.
+
+    Returns:
+        Dictionary with initialization results.
+    """
     # Normalize phase name (convert legacy to new format)
     normalized_phase = normalize_phase_name(starting_phase)
+
+    # Handle non-empty directory (only if directory exists and is non-empty)
+    if INTERACTIVE_MODE_AVAILABLE and project_root.exists():
+        analysis = analyze_directory_contents(project_root)
+        if not analysis.is_empty and not interactive:
+            # Non-interactive mode with non-empty directory - preserve existing files
+            from legacy_handler import handle_non_empty_directory
+            migration_result = handle_non_empty_directory(
+                project_root,
+                mode="preserve",
+            )
+            if migration_result.legacy_path:
+                print(f"Preserved existing files in: {migration_result.legacy_path}")
 
     # Ensure project structure using new directory layout
     ensure_project_structure(project_root, create_if_missing=True)
@@ -139,6 +189,20 @@ def initialize_research_project(
     client_profile = detect_client_profile(project_root, init_paths, client_type)
     client_instruction_file = "CLAUDE.md" if client_profile == "claude" else "AGENTS.md"
     project_identifier = project_id or slugify(project_root.name)
+
+    # Load and merge user config
+    user_config_inherited = {}
+    if INTERACTIVE_MODE_AVAILABLE:
+        try:
+            user_cfg = load_user_config()
+            if user_cfg:
+                user_config_inherited = {
+                    "author": user_cfg.get("author", {}),
+                    "preferences": user_cfg.get("preferences", {}),
+                }
+        except Exception:
+            pass  # User config is optional
+
     state = build_state(
         project_id=project_identifier,
         topic=topic,
@@ -150,6 +214,14 @@ def initialize_research_project(
         paper_language=paper_language,
         starting_phase=normalized_phase,
     )
+
+    # Update state with new fields from interactive wizard
+    state["research_type"] = research_type
+    state["user_config_inherited"] = user_config_inherited
+    if compute_config:
+        state["compute_config"] = compute_config
+    if user_profile:
+        state["user_profile"] = user_profile
 
     variables = build_template_variables(project_root, state)
     rendered_files = render_template_tree(
@@ -211,6 +283,17 @@ def build_parser() -> argparse.ArgumentParser:
         choices=ALL_VALID_PHASES,
         help="Phase to start the project at. Use for resuming work or skipping completed phases.",
     )
+    parser.add_argument(
+        "--interactive", "-i",
+        action="store_true",
+        help="Run interactive initialization wizard to guide through project setup.",
+    )
+    parser.add_argument(
+        "--research-type",
+        default="ml_experiment",
+        choices=["ml_experiment", "theory", "survey", "applied"],
+        help="Type of research project (used in non-interactive mode).",
+    )
     parser.add_argument("--json", action="store_true", help="Print a JSON summary.")
     return parser
 
@@ -218,19 +301,72 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
+    project_root = Path(args.project_root)
+
     # Normalize phase name before passing to initialize_research_project
     normalized_phase = normalize_phase_name(args.starting_phase)
-    result = initialize_research_project(
-        project_root=Path(args.project_root),
-        topic=args.topic,
-        project_id=args.project_id,
-        client_type=args.client_type,
-        process_language=args.process_language,
-        paper_language=args.paper_language,
-        overwrite_templates=args.overwrite_templates,
-        explicit_init_paths=args.client_init_paths,
-        starting_phase=normalized_phase,
-    )
+
+    # Handle interactive mode
+    if args.interactive:
+        if not INTERACTIVE_MODE_AVAILABLE:
+            print("Error: Interactive mode requires additional modules.", file=sys.stderr)
+            print("Please ensure user_config.py, legacy_handler.py, and init_wizard.py are available.", file=sys.stderr)
+            return 1
+
+        print("=" * 60)
+        print("  AI Research Orchestrator - Interactive Setup")
+        print("=" * 60)
+        print()
+
+        # Run the interactive wizard
+        wizard_responses = run_wizard(
+            project_root=project_root,
+            interactive=True,
+            prefill={
+                "project_id": args.project_id,
+                "starting_phase": normalized_phase,
+                "research_type": args.research_type,
+            },
+        )
+
+        # Use wizard responses for initialization
+        topic = wizard_responses.get("research_idea", args.topic)
+        project_id = wizard_responses.get("project_id") or args.project_id
+        research_type = wizard_responses.get("research_type", args.research_type)
+        compute_config = wizard_responses.get("compute_config", {})
+        user_profile = wizard_responses.get("user_profile", {})
+        wizard_starting_phase = wizard_responses.get("starting_phase", normalized_phase)
+
+        result = initialize_research_project(
+            project_root=project_root,
+            topic=topic,
+            project_id=project_id,
+            client_type=args.client_type,
+            process_language=args.process_language,
+            paper_language=args.paper_language,
+            overwrite_templates=args.overwrite_templates,
+            explicit_init_paths=args.client_init_paths,
+            starting_phase=wizard_starting_phase,
+            interactive=True,
+            research_type=research_type,
+            compute_config=compute_config,
+            user_profile=user_profile,
+        )
+    else:
+        # Non-interactive mode (original behavior)
+        result = initialize_research_project(
+            project_root=project_root,
+            topic=args.topic,
+            project_id=args.project_id,
+            client_type=args.client_type,
+            process_language=args.process_language,
+            paper_language=args.paper_language,
+            overwrite_templates=args.overwrite_templates,
+            explicit_init_paths=args.client_init_paths,
+            starting_phase=normalized_phase,
+            interactive=False,
+            research_type=args.research_type,
+        )
     if args.json:
         print(json.dumps(result, ensure_ascii=False, indent=2))
     else:

@@ -97,8 +97,14 @@ User Input → Command Detection → Skill Loading → Script Execution
 ## Key Scripts
 
 ```bash
-# Initialize a new research project
+# Initialize a new research project (non-interactive, default)
 python3 scripts/init_research_project.py --project-root /abs/path/to/project --topic "Your idea" --client-type auto
+
+# Initialize with interactive wizard
+python3 scripts/init_research_project.py --project-root /abs/path/to/project --interactive
+
+# Initialize with specific research type
+python3 scripts/init_research_project.py --project-root /abs/path/to/project --research-type theory
 
 # Materialize templates
 python3 scripts/materialize_templates.py --project-root /abs/path/to/project
@@ -121,6 +127,64 @@ python3 scripts/analyze_project.py --project-root /path/to/existing-project
 # Migrate existing project
 python3 scripts/migrate_project.py --project-root /path/to/project --topic "Topic"
 ```
+
+## Initialization System
+
+### Interactive Mode
+
+The initialization wizard provides guided setup:
+
+```bash
+python3 scripts/init_research_project.py --project-root /path/to/project --interactive
+```
+
+Wizard steps:
+1. **Welcome** - Overview of the setup process
+2. **Research Idea** - Enter your research topic
+3. **Research Type** - Select type (ml_experiment, theory, survey, applied)
+4. **Existing Resources** - Handle non-empty directories
+5. **Compute Resources** - Configure GPU settings (for GPU-requiring types)
+6. **User Profile** - Confirm author information
+7. **Confirmation** - Review and approve settings
+
+### Research Types
+
+| Type | Description | GPU Required |
+|------|-------------|--------------|
+| `ml_experiment` | Machine learning experiments (default) | Yes |
+| `theory` | Theoretical/mathematical research | No |
+| `survey` | Literature survey/review papers | No |
+| `applied` | Applied research with experiments | Yes |
+
+### User Configuration
+
+User preferences are stored in `~/.autoresearch/`:
+
+```
+~/.autoresearch/
+├── user-config.yaml    # Author info, preferences, defaults
+└── gpu-registry.yaml   # GPU device registry
+```
+
+User configuration is automatically inherited by new projects.
+
+### Non-Empty Directory Handling
+
+When initializing into an existing directory:
+- **Preserve mode** (default in non-interactive): Keep existing files
+- **Migrate mode**: Move unrecognized files to `.autoresearch/legacy/{timestamp}/`
+- Analysis detects recognized patterns (paper drafts, code, data, etc.)
+
+### State Version Migration
+
+State files are automatically migrated to the current version on load:
+- Current version: `2.0.0`
+- Migration chain: `1.0.0` → `1.1.0` → `1.12.0` → `2.0.0`
+
+New fields in v2.0.0:
+- `research_type`: Type of research project
+- `user_config_inherited`: Inherited user configuration
+- `gpu_usage_history`: Track GPU usage over time
 
 ## Architecture
 
@@ -174,10 +238,16 @@ AI-Research-Orchestrator/
 │   ├── research-lit/SKILL.md
 │   ├── paper-pipeline/SKILL.md
 │   └── ... (14 more)
-├── scripts/                 # Python scripts (24)
+├── scripts/                 # Python scripts (29)
 │   ├── orchestrator_common.py
 │   ├── init_research_project.py
-│   └── ... (22 more)
+│   ├── user_config.py       # User configuration management
+│   ├── gpu_manager.py       # GPU registry management
+│   ├── legacy_handler.py    # Non-empty directory handling
+│   ├── state_migrator.py    # State version migration
+│   ├── init_wizard.py       # Interactive initialization wizard
+│   ├── prompts.py           # Interactive prompt utilities
+│   └── ... (21 more)
 ├── agents/                  # Agent configurations
 ├── assets/                  # Templates and prompts
 │   ├── prompts/
