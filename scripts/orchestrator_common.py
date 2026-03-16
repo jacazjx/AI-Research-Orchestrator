@@ -445,6 +445,37 @@ OLD_TO_NEW_PATH_MAPPING = {
     "06-archive/archive-index.md": ".autoresearch/archive/archive-index.md",
 }
 
+# Phase name mapping (legacy to semantic)
+LEGACY_TO_SEMANTIC_PHASE = {
+    "01-survey": "survey",
+    "02-pilot-analysis": "pilot",
+    "03-full-experiments": "experiments",
+    "04-paper": "paper",
+    "05-reflection-evolution": "reflection",
+}
+
+SEMANTIC_TO_LEGACY_PHASE = {v: k for k, v in LEGACY_TO_SEMANTIC_PHASE.items()}
+
+
+def normalize_phase_name(phase_name: str) -> str:
+    """Convert legacy phase name to semantic name."""
+    return LEGACY_TO_SEMANTIC_PHASE.get(phase_name, phase_name)
+
+
+def get_legacy_phase_name(phase_name: str) -> str:
+    """Convert semantic phase name to legacy name."""
+    return SEMANTIC_TO_LEGACY_PHASE.get(phase_name, phase_name)
+
+
+def get_all_phase_aliases(phase_name: str) -> list[str]:
+    """Get all valid names for a phase (semantic + legacy)."""
+    semantic = normalize_phase_name(phase_name)
+    legacy = get_legacy_phase_name(semantic)
+    if semantic == legacy:
+        return [semantic]
+    return [semantic, legacy]
+
+
 PHASE_REQUIRED_DELIVERABLES = {
     # Legacy phase names (kept for backward compatibility)
     "01-survey": ("survey_round_log", "critic_round_log", "readiness_report", "survey_scorecard"),

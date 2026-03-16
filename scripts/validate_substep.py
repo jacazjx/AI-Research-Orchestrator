@@ -553,7 +553,7 @@ def main() -> int:
         config = load_orchestrator_config(project_root)
         next_substep = get_next_substep(config, args.phase, args.substep)
         if args.json:
-            print(json.dumps({"next_substep": next_substep}))
+            print(json.dumps({"next_substep": next_substep}, ensure_ascii=False, indent=2))
         else:
             print(f"Next substep: {next_substep or 'None (last substep)'}")
         return 0

@@ -88,7 +88,7 @@ def cmd_check_loop(args: argparse.Namespace) -> int:
 
     if not gitmem_is_initialized(project_root):
         result = {"in_loop": False, "change_count": 0, "last_checkpoint": None}
-        print(json.dumps(result, indent=2))
+        print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
 
     in_loop = gitmem_check_loop(project_root, args.file)
@@ -99,7 +99,7 @@ def cmd_check_loop(args: argparse.Namespace) -> int:
         "change_count": loop_info["change_count"],
         "last_checkpoint": loop_info["last_checkpoint"],
     }
-    print(json.dumps(result, indent=2))
+    print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0
 
 
@@ -114,7 +114,7 @@ def cmd_history(args: argparse.Namespace) -> int:
     history = gitmem_history(project_root, args.file, limit=args.limit)
 
     if args.json:
-        print(json.dumps(history, indent=2))
+        print(json.dumps(history, ensure_ascii=False, indent=2))
     else:
         for entry in history:
             print(f"{entry['hash'][:8]}  {entry['date']}  {entry['message']}")

@@ -10,6 +10,7 @@ from orchestrator_common import (
     PHASE_TO_REVIEW,
     ensure_project_structure,
     load_state,
+    normalize_phase_name,
     validate_deliverable_content,
     validate_structured_signals,
 )
@@ -103,21 +104,16 @@ def evaluate_quality_gate(project_root: Path, phase: str | None = None) -> dict[
 
 
 def _phase_loop_key(phase_name: str) -> str:
-    # Support both new semantic and legacy phase names
-    phase_mapping = {
+    # Normalize to semantic name, then map to loop key
+    normalized = normalize_phase_name(phase_name)
+    loop_keys = {
         "survey": "survey_critic",
         "pilot": "pilot_code_adviser",
         "experiments": "experiment_code_adviser",
         "paper": "writer_reviewer",
         "reflection": "reflector_curator",
-        # Legacy names for backward compatibility
-        "01-survey": "survey_critic",
-        "02-pilot-analysis": "pilot_code_adviser",
-        "03-full-experiments": "experiment_code_adviser",
-        "04-paper": "writer_reviewer",
-        "05-reflection-evolution": "reflector_curator",
     }
-    return phase_mapping[phase_name]
+    return loop_keys.get(normalized, f"{normalized}_loop")
 
 
 def build_parser() -> argparse.ArgumentParser:
