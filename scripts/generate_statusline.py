@@ -69,17 +69,20 @@ PHASE_NAMES = {
     "05-reflection-evolution": "Reflection",
 }
 
-
-def _get_phase_loop_key(phase: str) -> str:
-    """Get loop key for a phase, supporting both semantic and legacy names."""
-    normalized = normalize_phase_name(phase)
-    return _PHASE_LOOP_KEY_MAP.get(normalized, "")
+# Phase loop key mapping
+_PHASE_LOOP_KEY_MAP = {
     "survey": "survey_critic",
     "pilot": "pilot_code_adviser",
     "experiments": "experiment_code_adviser",
     "paper": "writer_reviewer",
     "reflection": "reflector_curator",
 }
+
+
+def _get_phase_loop_key(phase: str) -> str:
+    """Get loop key for a phase, supporting both semantic and legacy names."""
+    normalized = normalize_phase_name(phase)
+    return _PHASE_LOOP_KEY_MAP.get(normalized, "")
 
 # Agent definitions for each phase (using new semantic names)
 PHASE_AGENTS = {
