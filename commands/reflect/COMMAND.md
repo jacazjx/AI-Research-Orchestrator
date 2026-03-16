@@ -1,12 +1,26 @@
 ---
-name: airesearchorchestrator:reflect
-description: "Run the Reflection phase with Reflector and Curator agents. Use when user says 'reflect', 'reflection', '反思', '总结'."
+name: reflect
+description: "Run the Reflection phase for lessons learned and system improvement"
+script: scripts/run_stage_loop.py
 triggers:
   - "reflect"
-  - "reflection"
+  - "lessons learned"
   - "反思"
   - "总结"
-  - "lessons learned"
+phase: reflection
+agents:
+  - reflector
+  - curator
+arguments:
+  required:
+    - name: project-root
+      description: Absolute path to the project directory
+      type: path
+  optional:
+    - name: max-loops
+      description: Maximum iteration loops between agents
+      type: integer
+      default: 2
 ---
 
 # Reflection Phase

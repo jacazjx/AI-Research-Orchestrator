@@ -1,12 +1,26 @@
 ---
-name: airesearchorchestrator:run-survey
-description: "Run the Survey phase with Survey and Critic agents. Use when user says 'run survey', 'start survey', '文献调研', '开始调研'."
+name: run-survey
+description: "Run the Survey phase for literature review and research gap identification"
+script: scripts/run_stage_loop.py
 triggers:
   - "run survey"
-  - "start survey"
+  - "literature review"
   - "文献调研"
   - "开始调研"
-  - "literature review"
+phase: survey
+agents:
+  - survey
+  - critic
+arguments:
+  required:
+    - name: project-root
+      description: Absolute path to the project directory
+      type: path
+  optional:
+    - name: max-loops
+      description: Maximum iteration loops between agents
+      type: integer
+      default: 3
 ---
 
 # Run Survey Phase
