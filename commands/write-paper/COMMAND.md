@@ -1,12 +1,26 @@
 ---
-name: airesearchorchestrator:write-paper
-description: "Run the Paper phase with Writer and Reviewer agents. Use when user says 'write paper', 'paper writing', '写论文', '论文写作'."
+name: write-paper
+description: "Run the Paper phase for manuscript writing and review"
+script: scripts/run_stage_loop.py
 triggers:
   - "write paper"
-  - "paper writing"
+  - "draft paper"
   - "写论文"
   - "论文写作"
-  - "draft paper"
+phase: paper
+agents:
+  - writer
+  - reviewer
+arguments:
+  required:
+    - name: project-root
+      description: Absolute path to the project directory
+      type: path
+  optional:
+    - name: max-loops
+      description: Maximum iteration loops between agents
+      type: integer
+      default: 5
 ---
 
 # Write Paper Phase

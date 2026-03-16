@@ -2,40 +2,103 @@
 
 This directory contains user-facing commands for the five-phase research workflow.
 
+## Directory Structure
+
+```
+commands/
+├── init-research/COMMAND.md    # Initialize a new research project
+├── run-survey/COMMAND.md       # Literature survey and readiness assessment
+├── run-pilot/COMMAND.md        # Pilot validation and feasibility check
+├── run-experiments/COMMAND.md  # Full experiments and evidence collection
+├── write-paper/COMMAND.md      # Paper writing and submission preparation
+├── reflect/COMMAND.md          # Lessons learned and project evolution
+└── README.md                   # This file
+```
+
 ## Available Commands
 
-| Command | Phase | Description |
-|---------|-------|-------------|
-| `/autoresearch:init-research` | Setup | Initialize a new research project |
-| `/autoresearch:run-survey` | Phase 1 | Literature survey and readiness assessment |
-| `/autoresearch:run-pilot` | Phase 2 | Pilot validation and feasibility check |
-| `/autoresearch:run-experiments` | Phase 3 | Full experiments and evidence collection |
-| `/autoresearch:write-paper` | Phase 4 | Paper writing and submission preparation |
-| `/autoresearch:reflect` | Phase 5 | Lessons learned and project evolution |
+| Command | Phase | Agents | Trigger Phrases |
+|---------|-------|--------|-----------------|
+| `/init-research` | Init | - | "init research", "初始化研究" |
+| `/run-survey` | Survey | Survey, Critic | "run survey", "文献调研" |
+| `/run-pilot` | Pilot | Code, Adviser | "run pilot", "Pilot验证" |
+| `/run-experiments` | Experiments | Code, Adviser | "run experiments", "完整实验" |
+| `/write-paper` | Paper | Writer, Reviewer | "write paper", "写论文" |
+| `/reflect` | Reflection | Reflector, Curator | "reflect", "反思总结" |
 
 ## Workflow Order
 
 ```
-/autoresearch:init-research → /autoresearch:run-survey → /autoresearch:run-pilot → /autoresearch:run-experiments → /autoresearch:write-paper → /autoresearch:reflect
-           Setup                    Phase 1                  Phase 2                     Phase 3                           Phase 4                    Phase 5
+/init-research → /run-survey → /run-pilot → /run-experiments → /write-paper → /reflect
+     Setup          Phase 1       Phase 2          Phase 3              Phase 4        Phase 5
 ```
+
+## COMMAND.md Frontmatter Schema
+
+Each `COMMAND.md` file contains the following frontmatter fields:
+
+```yaml
+---
+name: <command-name>
+description: "<描述>"
+script: scripts/<script-name>.py
+triggers:
+  - "trigger1"
+  - "trigger2"
+phase: <phase-name>
+agents:
+  - <agent1>
+  - <agent2>
+arguments:
+  required:
+    - name: <arg-name>
+      description: "<描述>"
+      type: <path|string|integer|enum>
+  optional:
+    - name: <arg-name>
+      description: "<描述>"
+      type: <path|string|integer|enum>
+      default: <default-value>
+---
+```
+
+### Field Descriptions
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `name` | Yes | Command identifier (e.g., `init-research`) |
+| `description` | Yes | Brief description of the command |
+| `script` | Yes | Python script that implements the command |
+| `triggers` | Yes | List of phrases that activate this command |
+| `phase` | Yes | Research phase this command belongs to |
+| `agents` | Yes | List of agents involved (can be empty) |
+| `arguments` | Yes | Command arguments definition |
+
+### Argument Types
+
+| Type | Description |
+|------|-------------|
+| `path` | File system path |
+| `string` | Text string |
+| `integer` | Integer number |
+| `enum` | Enumeration with predefined values |
 
 ## Quick Start
 
 ### Start a New Project
 
-```
-/autoresearch:init-research "Your research topic or idea"
+```bash
+/init-research --project-root /path/to/project --topic "Your research idea"
 ```
 
 ### Run Full Pipeline
 
-```
-/autoresearch:run-survey
-/autoresearch:run-pilot
-/autoresearch:run-experiments
-/autoresearch:write-paper
-/autoresearch:reflect
+```bash
+/run-survey --project-root /path/to/project
+/run-pilot --project-root /path/to/project
+/run-experiments --project-root /path/to/project
+/write-paper --project-root /path/to/project
+/reflect --project-root /path/to/project
 ```
 
 ## Gate Requirements
@@ -48,19 +111,6 @@ Each phase transition requires:
 4. **Gate 3 → 4**: `evidence-package-index.md` approved
 5. **Gate 4 → 5**: `final-acceptance-report.md` approved
 6. **Gate 5**: Project completion decision
-
-## Command Details
-
-Each command follows the same structure:
-
-```yaml
----
-name: command-name
-description: "Description with trigger phrases"
-argument-hint: [expected-argument]
-allowed-tools: List of allowed tools
----
-```
 
 ## Related Skills
 

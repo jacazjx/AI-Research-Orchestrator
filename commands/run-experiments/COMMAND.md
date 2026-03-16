@@ -1,12 +1,26 @@
 ---
-name: airesearchorchestrator:run-experiments
-description: "Run the full Experiments phase with Code and Adviser agents. Use when user says 'run experiments', 'full experiments', '完整实验', '大规模实验'."
+name: run-experiments
+description: "Run the full Experiments phase for comprehensive evaluation"
+script: scripts/run_stage_loop.py
 triggers:
   - "run experiments"
   - "full experiments"
   - "完整实验"
   - "大规模实验"
-  - "experiment phase"
+phase: experiments
+agents:
+  - code
+  - adviser
+arguments:
+  required:
+    - name: project-root
+      description: Absolute path to the project directory
+      type: path
+  optional:
+    - name: max-loops
+      description: Maximum iteration loops between agents
+      type: integer
+      default: 5
 ---
 
 # Run Experiments Phase

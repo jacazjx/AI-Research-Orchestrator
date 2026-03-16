@@ -1,12 +1,26 @@
 ---
-name: airesearchorchestrator:run-pilot
-description: "Run the Pilot phase with Code and Adviser agents. Use when user says 'run pilot', 'pilot experiment', 'Pilot验证', '小规模实验'."
+name: run-pilot
+description: "Run the Pilot phase for preliminary experiment validation"
+script: scripts/run_stage_loop.py
 triggers:
   - "run pilot"
   - "pilot experiment"
   - "Pilot验证"
   - "小规模实验"
-  - "pilot analysis"
+phase: pilot
+agents:
+  - code
+  - adviser
+arguments:
+  required:
+    - name: project-root
+      description: Absolute path to the project directory
+      type: path
+  optional:
+    - name: max-loops
+      description: Maximum iteration loops between agents
+      type: integer
+      default: 3
 ---
 
 # Run Pilot Phase

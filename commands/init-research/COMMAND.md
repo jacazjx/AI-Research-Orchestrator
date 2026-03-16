@@ -1,12 +1,28 @@
 ---
-name: airesearchorchestrator:init-research
-description: "Initialize a new five-phase AI research project. Use when user says 'init research', 'start research project', '初始化研究', '新建研究项目'."
+name: init-research
+description: "Initialize a new AI research project with proper directory structure and state management"
+script: scripts/init_research_project.py
 triggers:
   - "init research"
   - "start research project"
   - "初始化研究"
   - "新建研究项目"
-  - "research init"
+phase: init
+agents: []
+arguments:
+  required:
+    - name: project-root
+      description: Absolute path to the project directory
+      type: path
+    - name: topic
+      description: Research topic or idea description
+      type: string
+  optional:
+    - name: client-type
+      description: Client type for agent execution
+      type: enum
+      values: [auto, codex, openai, claude]
+      default: auto
 ---
 
 # Initialize Research Project
