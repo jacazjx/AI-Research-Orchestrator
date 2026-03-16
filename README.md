@@ -22,30 +22,307 @@
 
 ---
 
-`ai-research-orchestrator` is a research workflow skill for Claude Code, Codex, and Openclaw environments. It transforms a research IDEA into a project with state machines, deliverables, visual progress tracking, and explicit human gates.
+`AI Research Orchestrator` transforms a research idea into a structured project with state machines, deliverables, visual progress tracking, and explicit human gates between phases. Optimized for AI/ML research requiring literature review, pilot validation, experiments, and paper writing.
 
-## Key Features
+## Workflow Diagram
 
-- **Five-Phase Workflow**: `Survey/Critic → Pilot Code/Adviser → Experiment Code/Adviser → Paper Writer/Reviewer → Reflector/Curator`
-- **Dual-Loop Architecture**: Inner loop with dual-agent iteration per phase, outer loop for phase transitions
-- **Five Human Gates**: Survey, Pilot, Full Experiments, Paper, Reflection/Evolution
-- **Visual Progress**: `.autoresearch/dashboard/` for runtime visualization
-- **Quality Gates**: `scripts/quality_gate.py` with score thresholds
-- **Standardized Workspace**: Templates, state files, and handoff validation
+### Overall Research Pipeline
+
+```
+    ┌────────────────────────────────────────────────────────────────────────────┐
+    │                         RESEARCH IDEA                                       │
+    └─────────────────────────────────┬──────────────────────────────────────────┘
+                                      │
+                                      ▼
+    ┌────────────────────────────────────────────────────────────────────────────┐
+    │  PHASE 1: SURVEY                                                           │
+    │  ┌───────────────┐                              ┌───────────────┐          │
+    │  │    SURVEY     │ ── literature review ───────▶│    CRITIC     │          │
+    │  │    (Doer)     │ ── novelty check ──────────▶│  (Auditor)    │          │
+    │  │               │ ◀── revision requests ──────│               │          │
+    │  └───────┬───────┘                              └───────┬───────┘          │
+    │          │                                              │                  │
+    │          └──────────────────┬───────────────────────────┘                  │
+    │                             ▼                                              │
+    │                    ┌───────────────┐                                       │
+    │                    │   GATE 1 ✋   │  ← Human Approval Required            │
+    │                    └───────┬───────┘                                       │
+    └────────────────────────────┼───────────────────────────────────────────────┘
+                                 │ Score ≥ 3.5
+                                 ▼
+    ┌────────────────────────────────────────────────────────────────────────────┐
+    │  PHASE 2: PILOT                                                            │
+    │  ┌───────────────┐                              ┌───────────────┐          │
+    │  │     CODE      │ ── pilot experiment ───────▶│   ADVISER     │          │
+    │  │    (Doer)     │ ── preliminary results ────▶│  (Auditor)    │          │
+    │  │               │ ◀── design feedback ────────│               │          │
+    │  └───────┬───────┘                              └───────┬───────┘          │
+    │          │                                              │                  │
+    │          └──────────────────┬───────────────────────────┘                  │
+    │                             ▼                                              │
+    │                    ┌───────────────┐                                       │
+    │                    │   GATE 2 ✋   │  ← Go/No-Go Decision                  │
+    │                    └───────┬───────┘                                       │
+    └────────────────────────────┼───────────────────────────────────────────────┘
+                                 │ Go decision
+                                 ▼
+    ┌────────────────────────────────────────────────────────────────────────────┐
+    │  PHASE 3: EXPERIMENTS                                                      │
+    │  ┌───────────────┐                              ┌───────────────┐          │
+    │  │     CODE      │ ── full experiments ───────▶│   ADVISER     │          │
+    │  │    (Doer)     │ ── evidence package ───────▶│  (Auditor)    │          │
+    │  │               │ ◀── validation requests ───│               │          │
+    │  └───────┬───────┘                              └───────┬───────┘          │
+    │          │                                              │                  │
+    │          └──────────────────┬───────────────────────────┘                  │
+    │                             ▼                                              │
+    │                    ┌───────────────┐                                       │
+    │                    │   GATE 3 ✋   │  ← Evidence Sufficient?               │
+    │                    └───────┬───────┘                                       │
+    └────────────────────────────┼───────────────────────────────────────────────┘
+                                 │ Evidence approved
+                                 ▼
+    ┌────────────────────────────────────────────────────────────────────────────┐
+    │  PHASE 4: PAPER                                                            │
+    │  ┌───────────────┐                              ┌───────────────┐          │
+    │  │    WRITER     │ ── manuscript draft ───────▶│   REVIEWER    │          │
+    │  │    (Doer)     │ ── evidence citations ─────▶│  (Auditor)    │          │
+    │  │               │ ◀── revision comments ─────│               │          │
+    │  └───────┬───────┘                              └───────┬───────┘          │
+    │          │                                              │                  │
+    │          └──────────────────┬───────────────────────────┘                  │
+    │                             ▼                                              │
+    │                    ┌───────────────┐                                       │
+    │                    │   GATE 4 ✋   │  ← Submission Ready?                  │
+    │                    └───────┬───────┘                                       │
+    └────────────────────────────┼───────────────────────────────────────────────┘
+                                 │ Approved
+                                 ▼
+    ┌────────────────────────────────────────────────────────────────────────────┐
+    │  PHASE 5: REFLECTION                                                       │
+    │  ┌───────────────┐                              ┌───────────────┐          │
+    │  │  REFLECTOR    │ ── lessons learned ────────▶│    CURATOR    │          │
+    │  │    (Doer)     │ ── improvement proposals ──▶│  (Auditor)    │          │
+    │  │               │ ◀── actionable items ──────│               │          │
+    │  └───────┬───────┘                              └───────┬───────┘          │
+    │          │                                              │                  │
+    │          └──────────────────┬───────────────────────────┘                  │
+    │                             ▼                                              │
+    │                    ┌───────────────┐                                       │
+    │                    │   GATE 5 ✋   │  ← Archive & Close                    │
+    │                    └───────┬───────┘                                       │
+    └────────────────────────────┼───────────────────────────────────────────────┘
+                                 │
+                                 ▼
+                    ┌───────────────────────┐
+                    │   📁 PROJECT CLOSED   │
+                    │   Lessons Archived    │
+                    └───────────────────────┘
+```
+
+### Inner Loop Detail (Per Phase)
+
+```
+                    ┌─────────────────────────────────────────┐
+                    │            PHASE START                   │
+                    └──────────────────┬──────────────────────┘
+                                       │
+                                       ▼
+                    ┌─────────────────────────────────────────┐
+                    │                                         │
+                    │   ┌─────────────┐                       │
+                    │   │   PRIMARY   │                       │
+                    │   │    AGENT    │                       │
+                    │   │   (Doer)    │                       │
+                    │   └──────┬──────┘                       │
+                    │          │                              │
+                    │          │ produces                     │
+                    │          ▼                              │
+                    │   ┌─────────────┐                       │
+                    │   │  DELIVERABLE│                       │
+                    │   │   (Draft)   │                       │
+                    │   └──────┬──────┘                       │
+                    │          │                              │
+                    │          │ submits                      │
+                    │          ▼                              │
+                    │   ┌─────────────┐                       │
+                    │   │   REVIEWER  │                       │
+                    │   │    AGENT    │                       │
+                    │   │  (Auditor)  │                       │
+                    │   └──────┬──────┘                       │
+                    │          │                              │
+                    │          │ scores & comments            │
+                    │          ▼                              │
+              ┌─────┴─────────────────────────────┐           │
+              │                                   │           │
+              ▼                                   ▼           │
+       ┌────────────┐                      ┌────────────┐     │
+       │  APPROVE   │                      │  REVISE    │     │
+       │  Score ≥3.5│                      │  Score <3.5│     │
+       └─────┬──────┘                      └──────┬─────┘     │
+             │                                    │           │
+             │                                    │           │
+             │        ┌───────────────────────────┘           │
+             │        │                                       │
+             │        │ feedback loop                          │
+             │        └──────────────────────┐                │
+             │                               │                │
+             │                               ▼                │
+             │                    ┌──────────────────┐        │
+             │                    │ MAX LOOPS HIT?   │        │
+             │                    └────────┬─────────┘        │
+             │                             │                  │
+             │              ┌──────────────┼──────────────┐    │
+             │              │              │              │    │
+             │              ▼              ▼              ▼    │
+             │         ┌────────┐   ┌────────────┐  ┌────────┐ │
+             │         │  YES   │   │    NO      │  │ ESCAL- │ │
+             │         │EXIT    │   │CONTINUE    │  │  ATE   │ │
+             │         │LOOP    │   │LOOP        │  │to Human│ │
+             │         └────┬───┘   └────────────┘  └───┬────┘ │
+             │              │                           │      │
+             └──────────────┼───────────────────────────┘      │
+                            │                                  │
+                            ▼                                  │
+                    ┌───────────────┐                          │
+                    │  GATE CHECK   │◀─────────────────────────┘
+                    │   ✋ HUMAN     │
+                    └───────┬───────┘
+                            │
+              ┌─────────────┼─────────────┐
+              │             │             │
+              ▼             ▼             ▼
+       ┌──────────┐  ┌──────────┐  ┌──────────┐
+       │ APPROVE  │  │  REVISE  │  │ ROLLBACK │
+       │ Continue │  │   More   │  │  Return  │
+       │ to Next  │  │  Work    │  │  Back    │
+       │  Phase   │  │          │  │          │
+       └────┬─────┘  └──────────┘  └──────────┘
+            │
+            ▼
+    ┌─────────────────┐
+    │   NEXT PHASE    │
+    └─────────────────┘
+```
+
+### Rollback & Pivot Flow
+
+```
+    Current Phase
+         │
+         │ Gate Rejected (Score < 2.5)
+         │
+         ▼
+    ┌─────────────────────────────────────────────────────┐
+    │                  ROLLBACK OPTIONS                    │
+    │                                                      │
+    │   ┌──────────┐   ┌──────────┐   ┌──────────┐        │
+    │   │  REVISE  │   │ ROLLBACK │   │  PIVOT   │        │
+    │   │  (Stay)  │   │  (Back)  │   │ (Change) │        │
+    │   └────┬─────┘   └────┬─────┘   └────┬─────┘        │
+    │        │              │              │               │
+    │        ▼              ▼              ▼               │
+    │   Continue       Return to       Change             │
+    │   current        earlier         research           │
+    │   phase          phase           direction          │
+    │                                                      │
+    └─────────────────────────────────────────────────────┘
+         │
+         │ Orchestrator suggests:
+         │ "Based on issues found, recommend rollback to Phase X"
+         │
+         ▼
+    ┌─────────────────┐
+    │  HUMAN DECIDES  │
+    │  Which option?  │
+    └────────┬────────┘
+             │
+             ▼
+    Resumed at chosen phase
+    with context preserved
+```
+
+## Five Phases
+
+| Phase | Agents | Key Deliverable | Gate |
+|-------|--------|-----------------|------|
+| **Survey** | Survey ↔ Critic | `research-readiness-report.md` | Gate 1 |
+| **Pilot** | Code ↔ Adviser | `pilot-validation-report.md` | Gate 2 |
+| **Experiments** | Code ↔ Adviser | `evidence-package-index.md` | Gate 3 |
+| **Paper** | Writer ↔ Reviewer | `final-acceptance-report.md` | Gate 4 |
+| **Reflection** | Reflector ↔ Curator | `runtime-improvement-report.md` | Gate 5 |
+
+## Agent Roles
+
+### Primary Agents (Doers)
+
+| Agent | Phase | Responsibilities |
+|--------|-------|------------------|
+| **Survey** | Survey | Literature review using academic APIs, define atomic academic definitions, identify research gaps |
+| **Code** | Pilot, Experiments | Design experiments, implement code, run experiments, analyze results |
+| **Writer** | Paper | Write manuscript based only on approved evidence, structure arguments |
+| **Reflector** | Reflection | Extract lessons learned, propose system improvements (overlays) |
+
+### Reviewer Agents (Auditors)
+
+| Agent | Phase | Responsibilities |
+|--------|-------|------------------|
+| **Critic** | Survey | Audit novelty, feasibility, theory risk, citation authenticity |
+| **Adviser** | Pilot, Experiments | Review experimental design, validate results, judge evidence strength |
+| **Reviewer** | Paper | Review manuscript per top-tier standards, audit citations |
+| **Curator** | Reflection | Judge which improvements are reusable, safe, and actionable |
+
+## Gate Mechanism
+
+### Gate Scoring
+
+| Score | Decision | Action |
+|-------|----------|--------|
+| 4.5-5.0 | ✅ Approve | Proceed immediately |
+| 3.5-4.4 | 🔶 Advance | Minor fixes, then proceed |
+| 2.5-3.4 | 🔄 Revise | Significant revision required |
+| 1.5-2.4 | 🔙 Major Revise | Return to earlier phase |
+| 0.0-1.4 | ⚠️ Pivot | Consider alternative or termination |
+
+### Gate Checklist
+
+**Gate 1 (Survey → Pilot):**
+- [ ] Literature review (min 10 papers, academic APIs only)
+- [ ] Novelty argument with evidence
+- [ ] All citations verified authentic
+- [ ] Research questions clearly defined
+
+**Gate 2 (Pilot → Experiments):**
+- [ ] Pilot code runs without errors
+- [ ] Preliminary results support hypothesis
+- [ ] Clear go/no-go recommendation
+
+**Gate 3 (Experiments → Paper):**
+- [ ] All experiments traceable with run IDs
+- [ ] Statistical analysis complete
+- [ ] No hidden negative results
+
+**Gate 4 (Paper → Reflection):**
+- [ ] Manuscript compiles to PDF
+- [ ] All citations verified (≥90%)
+- [ ] No placeholder text
+
+**Gate 5 (Reflection → Close):**
+- [ ] Lessons documented
+- [ ] Overlay decisions made
+- [ ] Project archived
 
 ## Installation
 
-### Option 1: Install from GitHub Marketplace (Recommended)
+### Option 1: From GitHub Marketplace (Recommended)
 
 ```bash
-# 1. Add the marketplace
+# Add the marketplace
 /plugin marketplace add jacazjx/AI-Research-Orchestrator
 
-# 2. Install the plugin
+# Install the plugin
 /plugin install autoresearch@autoresearch
 ```
-
-Restart Claude Code after installation.
 
 ### Option 2: Configure settings.json
 
@@ -81,60 +358,77 @@ python3 scripts/init_research_project.py \
   --project-root /abs/path/to/my-project \
   --topic "Your research idea" \
   --client-type auto
+
+# Run a specific phase
+/run-survey    # Start Survey phase
+/run-pilot     # Start Pilot phase
+/run-experiments # Start Experiments phase
+/write-paper   # Start Paper phase
+/reflect       # Start Reflection phase
 ```
-
-## Workflow Phases
-
-| Phase | Agents | Key Deliverable |
-|-------|--------|-----------------|
-| Survey | Survey ↔ Critic | `docs/reports/survey/research-readiness-report.md` |
-| Pilot | Code ↔ Adviser | `docs/reports/pilot/pilot-validation-report.md` |
-| Experiments | Code ↔ Adviser | `docs/reports/experiments/evidence-package-index.md` |
-| Paper | Writer ↔ Reviewer | `paper/final-acceptance-report.md` |
-| Reflection | Reflector ↔ Curator | `docs/reports/reflection/runtime-improvement-report.md` |
-
-## Commands
-
-| Command | Description |
-|---------|-------------|
-| `/init-research` | Initialize a new research project |
-| `/run-survey` | Run the Survey phase |
-| `/run-pilot` | Run the Pilot phase |
-| `/run-experiments` | Run the full Experiments phase |
-| `/write-paper` | Run the Paper Writing phase |
-| `/reflect` | Run the Reflection phase |
 
 ## Directory Structure
 
 ```
 my-project/
 ├── .autoresearch/           # System directory
-│   ├── state/               # State files
-│   ├── config/              # Configuration
-│   ├── dashboard/           # Runtime dashboard
+│   ├── state/               # research-state.yaml (single source of truth)
+│   ├── config/              # orchestrator-config.yaml
+│   ├── dashboard/           # Visual progress tracking
 │   └── runtime/             # Job/GPU/Backend registries
 ├── agents/                  # Agent work directories
+│   ├── survey/              # Survey agent workspace
+│   ├── critic/              # Critic agent workspace
+│   ├── coder/               # Code agent workspace
+│   ├── adviser/             # Adviser agent workspace
+│   ├── writer/              # Writer agent workspace
+│   ├── reviewer/            # Reviewer agent workspace
+│   ├── reflector/           # Reflector agent workspace
+│   └── curator/             # Curator agent workspace
 ├── paper/                   # Paper-related files
-├── code/                    # Code-related files
+├── code/                    # Code and experiments
 └── docs/reports/            # Phase deliverables
+    ├── survey/
+    ├── pilot/
+    ├── experiments/
+    └── reflection/
 ```
 
-## Key Scripts
+## Commands
 
-| Script | Purpose |
-|--------|---------|
-| `scripts/init_research_project.py` | Initialize five-phase workspace |
-| `scripts/quality_gate.py` | Gate evaluation with scoring |
-| `scripts/generate_dashboard.py` | Generate progress dashboard |
-| `scripts/validate_handoff.py` | Validate phase transitions |
-| `scripts/run_stage_loop.py` | Execute phase iteration loops |
+| Command | Description | Triggers |
+|---------|-------------|----------|
+| `/init-research` | Initialize new project | "init research", "start research project" |
+| `/run-survey` | Run Survey phase | "run survey", "literature review" |
+| `/run-pilot` | Run Pilot phase | "run pilot", "pilot experiment" |
+| `/run-experiments` | Run full experiments | "run experiments", "full experiments" |
+| `/write-paper` | Write paper | "write paper", "draft paper" |
+| `/reflect` | Run reflection | "reflect", "lessons learned" |
+
+## Hard Rules
+
+1. **Two agents per phase** - Only the primary and reviewer agents are active
+2. **No web search for literature** - Use academic APIs (Semantic Scholar, arXiv, CrossRef, DBLP, OpenAlex)
+3. **No fabrication** - Never fabricate citations, experiments, or results
+4. **Human gates mandatory** - No automatic phase advancement without approval
+5. **State persistence** - All state saved to `research-state.yaml`
+
+## Literature Search APIs
+
+| API | Use Case | Example |
+|-----|----------|---------|
+| Semantic Scholar | AI/ML papers | `api.semanticscholar.org/graph/v1/paper/search?query=transformer` |
+| arXiv | Preprints | `export.arxiv.org/api/query?search_query=all:attention` |
+| CrossRef | DOI verification | `api.crossref.org/works?query.title=paper+title` |
+| DBLP | Computer Science | `dblp.org/search/publ/api?q=transformer&format=json` |
+| OpenAlex | Comprehensive | `api.openalex.org/works?search=vision+transformer` |
 
 ## Documentation
 
-- [Workflow Protocol](references/workflow-protocol.md)
-- [Gate Rubrics](references/gate-rubrics.md)
-- [System Architecture](references/system-architecture.md)
-- [Phase Execution Details](references/phase-execution-details.md)
+- [Workflow Protocol](references/workflow-protocol.md) - Phase order and requirements
+- [Gate Rubrics](references/gate-rubrics.md) - Detailed scoring criteria
+- [System Architecture](references/system-architecture.md) - Inner/outer loop design
+- [Phase Execution Details](references/phase-execution-details.md) - Substeps per phase
 
 ## Testing
 
