@@ -55,17 +55,17 @@ ai-research-dashboard = "scripts.generate_dashboard:main"
 ai-research-citation = "scripts.run_citation_audit:main"
 
 [project.urls]
-Homepage = "https://github.com/example/ai-research-orchestrator"
-Documentation = "https://github.com/example/ai-research-orchestrator#readme"
-Repository = "https://github.com/example/ai-research-orchestrator"
-Issues = "https://github.com/example/ai-research-orchestrator/issues"
+Homepage = "https://github.com/jacazjx/AI-Research-Orchestrator"
+Documentation = "https://github.com/jacazjx/AI-Research-Orchestrator#readme"
+Repository = "https://github.com/jacazjx/AI-Research-Orchestrator"
+Issues = "https://github.com/jacazjx/AI-Research-Orchestrator/issues"
 
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["scripts*"]
 
 [tool.setuptools.package-data]
-scripts = ["../assets/templates/**/*", "../assets/prompts/**/*"]
+"*" = ["assets/templates/**/*", "assets/prompts/**/*"]
 
 [tool.black]
 line-length = 100

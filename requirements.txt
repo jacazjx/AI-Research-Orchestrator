@@ -2,8 +2,14 @@
 # Core dependencies
 PyYAML>=6.0
 
-# Development dependencies (install with: pip install -e ".[dev]")
-# See pyproject.toml for the full list
-
-# For users who prefer requirements.txt style installation:
-# pip install pytest pytest-cov mypy black isort flake8 pylint
+# Development dependencies
+# Install with: pip install -e ".[dev]"
+# Or manually install:
+# pytest>=7.0
+# pytest-cov>=4.0
+# black>=23.0
+# isort>=5.0
+# flake8>=6.0
+# mypy>=1.0
+# pylint>=2.17
+# pre-commit>=3.0
