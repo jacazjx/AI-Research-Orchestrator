@@ -7,7 +7,7 @@ import argparse
 import json
 import math
 import sys
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 CCF_SCORES = {"A": 35.0, "B": 28.0, "C": 18.0}
@@ -220,7 +220,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--current-year",
         type=int,
-        default=datetime.now(UTC).year,
+        default=datetime.now(timezone.utc).year,
         help="Override the year used by freshness and citations-per-year scoring.",
     )
     parser.add_argument(

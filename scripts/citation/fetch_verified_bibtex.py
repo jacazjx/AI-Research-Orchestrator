@@ -9,7 +9,7 @@ import os
 import re
 import sys
 import time
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
@@ -1535,7 +1535,7 @@ def build_scored_local_result(
     result["googleScholarSearchUrl"] = result.get(
         "googleScholarSearchUrl"
     ) or google_scholar_search_url(str(result.get("title", "")) or query)
-    scored = compute_scores(result, datetime.now(UTC).year, allow_preprint)
+    scored = compute_scores(result, datetime.now(timezone.utc).year, allow_preprint)
     scored["verificationSources"] = list(result.get("verificationSources", []))
     scored["notes"] = [f"reused-{result.get('candidateSource', 'local-cache')}-entry"]
     scored["manualCheckRequired"] = bool(result.get("manualCheckRequired"))
@@ -1751,7 +1751,7 @@ def enrich_with_verified_metadata(
         str(result.get("title", "")) or query
     )
 
-    scored = compute_scores(result, datetime.now(UTC).year, allow_preprint)
+    scored = compute_scores(result, datetime.now(timezone.utc).year, allow_preprint)
     scored["verificationSources"] = provenance_chain
     scored["notes"] = notes
     scored["manualCheckRequired"] = bool(manual_check_reasons)
