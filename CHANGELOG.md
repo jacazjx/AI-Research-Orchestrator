@@ -5,13 +5,29 @@ All notable changes to the AI Research Orchestrator project will be documented i
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- Project configuration: added `scripts/__init__.py`, fixed pyproject.toml resource paths
+- Commands: restructured to subdirectories, added required frontmatter fields
+- Skills: standardized format, resolved trigger phrase conflicts, renamed `paper-writing` to `paper-pipeline`
+- Scripts: fixed KeyError risk in `_completion_percent()`, unified phase names, extracted common functions
+- Documentation: synced skill counts (17 → 41), removed duplicate entries in directory-structure-design.md, updated structure descriptions
+
+### Changed
+
+- `paper-writing` skill renamed to `paper-pipeline` to avoid confusion with `paper-write`
+- Phase names unified to semantic names (survey, pilot, experiments, paper, reflection)
+- Commands directory restructured from flat files to subdirectories with `COMMAND.md`
+
 ## [1.12.0] - 2026-03-14
 
 ### Added
 
 - **ARIS Integration**: Full integration of Auto-Research-In-Sleep capabilities
-  - 17 new skills for autonomous research workflows
-  - Three main workflows: idea-discovery, auto-review-loop, paper-writing
+  - 41 skills for autonomous research workflows (16 primary + 12 audit + 12 supporting + 1 orchestrator)
+  - Three main workflows: idea-discovery, auto-review-loop, paper-pipeline
   - Cross-model review via Codex MCP (optional)
 
 - **New Skills**:
