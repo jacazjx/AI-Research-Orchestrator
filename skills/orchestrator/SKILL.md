@@ -377,6 +377,562 @@ When transitioning between phases:
 - Phase 5: `Reflector <-> Curator`
   Produce `docs/reports/reflection/runtime-improvement-report.md` and `docs/reports/reflection/phase-scorecard.md`, then stop for Gate 5 before any overlay or policy change is activated.
 
+## Subagent-Driven Architecture
+
+### Core Principle: Orchestrator Never Executes
+
+**The Orchestrator is a coordinator, not an executor.** The Orchestrator NEVER directly performs research tasks. All research work must be delegated to specialized subagents.
+
+```
+CORRECT Architecture:
+┌─────────────────────────────────────────────────────────────────┐
+│                    Orchestrator (Main Session)                   │
+│  ┌─────────────────────────────────────────────────────────────┐ │
+│  │  Responsibilities:                                          │ │
+│  │  • Coordinate phase transitions                             │ │
+│  │  • Spawn/dismiss subagents                                 │ │
+│  │  • Collect and aggregate results                           │ │
+│  │  • Present gates to human for decision                     │ │
+│  │  • Maintain state file                                      │ │
+│  │  • Handle human interaction                                 │ │
+│  └─────────────────────────────────────────────────────────────┘ │
+│         │                    │                    │              │
+│         ▼                    ▼                    ▼              │
+│  ┌─────────────┐      ┌─────────────┐      ┌─────────────┐      │
+│  │ Survey Agent│      │ Critic Agent│      │ Other Agent │      │
+│  │ (Subagent)  │      │ (Subagent)  │      │ (Subagent)  │      │
+│  └─────────────┘      └─────────────┘      └─────────────┘      │
+│         │                    │                    │              │
+│         ▼                    ▼                    ▼              │
+│  research-lit skill    audit-survey skill   relevant skill       │
+└─────────────────────────────────────────────────────────────────┘
+
+WRONG Architecture (DO NOT DO THIS):
+┌─────────────────────────────────────────────────────────────────┐
+│                    Orchestrator (Main Session)                   │
+│  ┌─────────────────────────────────────────────────────────────┐ │
+│  │  ❌ Directly executing research-lit                          │ │
+│  │  ❌ Directly writing survey reports                         │ │
+│  │  ❌ Directly running experiments                            │ │
+│  │  ❌ Directly writing paper sections                          │ │
+│  └─────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Subagent Dispatch Pattern
+
+Each phase follows a **Primary Agent + Reviewer Agent** pattern:
+
+| Phase | Primary Agent | Reviewer Agent | Primary Skill | Reviewer Skill |
+|-------|---------------|----------------|---------------|----------------|
+| Survey | Survey Agent | Critic Agent | `define-idea`, `theoretical-derivation`, `research-lit`, `novelty-check` | `audit-derivation`, `audit-survey` |
+| Pilot | Code Agent | Adviser Agent | `analyze-problem`, `design-pilot`, `run-pilot` | `audit-analysis`, `audit-design`, `audit-pilot` |
+| Experiments | Code Agent | Adviser Agent | `design-exp`, `run-experiment`, `analyze-results` | `audit-exp-design`, `audit-results` |
+| Paper | Writer Agent | Reviewer Agent | `paper-plan`, `paper-write`, `curate-citation` | `audit-paper-plan`, `audit-paper`, `audit-citation` |
+| Reflection | Reflector Agent | Curator Agent | `extract-lessons`, `propose-overlay` | `audit-lessons`, `audit-overlay` |
+
+### Survey Phase Workflow (Updated with Theoretical Derivation)
+
+The Survey Phase now includes theoretical derivation:
+
+```
+define-idea → theoretical-derivation → audit-derivation → [BATTLE] → research-lit → audit-survey → [BATTLE] → Gate 1
+                    ↑                         │
+                    └─────────────────────────┘
+                          May iterate based on battle outcome
+```
+
+### Task State Management
+
+Subagent tasks follow a strict state machine:
+
+```
+                    ┌──────────────┐
+                    │   PENDING    │  Task created, waiting to be assigned
+                    └──────┬───────┘
+                           │ spawn subagent
+                           ▼
+                    ┌──────────────┐
+           ┌───────│  IN_PROGRESS │  Subagent actively working
+           │       └──────┬───────┘
+           │              │
+    timeout/         success│           │failure
+    retry_limit             ▼           ▼
+           │       ┌──────────────┐  ┌──────────────┐
+           └──────▶│  COMPLETED   │  │   FAILED     │
+                   └──────────────┘  └──────┬───────┘
+                                             │ retry? │
+                                             ▼       │
+                                      ┌──────────────┐
+                                      │   RETRYING   │
+                                      └──────┬───────┘
+                                             │ respawn
+                                             ▼
+                                      ┌──────────────┐
+                                      │  IN_PROGRESS │
+                                      └──────────────┘
+```
+
+**State Definitions:**
+
+| State | Description | Orchestrator Action |
+|-------|-------------|---------------------|
+| `PENDING` | Task queued, no agent assigned | Spawn subagent with task |
+| `IN_PROGRESS` | Subagent actively working | Monitor progress, collect results |
+| `COMPLETED` | Task finished successfully | Record results, dismiss subagent |
+| `FAILED` | Task failed with error | Log error, decide retry or escalate |
+| `RETRYING` | Failed task being retried | Respawn subagent with same task |
+
+**Task State Transitions:**
+
+```yaml
+# Example state tracking in research-state.yaml
+current_phase: survey
+phase_status:
+  survey:
+    state: in_progress
+    tasks:
+      - task_id: survey-001
+        skill: research-lit
+        agent: survey-agent
+        state: completed
+        result_path: docs/reports/survey/literature-review.md
+      - task_id: survey-002
+        skill: audit-survey
+        agent: critic-agent
+        state: in_progress
+        started_at: "2024-01-15T10:30:00Z"
+```
+
+### Gate Decision Workflow (with Battle Phase)
+
+Gates are **human decision points** after collecting subagent results. The workflow now includes a **Battle Phase** where the Primary Agent can challenge the Reviewer's findings.
+
+```
+Phase Execution                    Battle Phase              Gate Decision
+────────────────────────────────────────────────────────────────────────────────
+
+┌─────────────┐    spawn    ┌─────────────┐
+│ Orchestrator│────────────▶│ Primary     │
+│             │             │ Agent       │
+└─────────────┘             └──────┬──────┘
+      │                            │ complete
+      │                            ▼
+      │                     ┌─────────────┐
+      │                     │ Primary     │
+      │                     │ Results     │
+      │                     └──────┬──────┘
+      │                            │ collect
+      │                            ▼
+      │    spawn            ┌─────────────┐
+      ├───────────────────▶│ Reviewer    │
+      │                    │ Agent       │
+      │                    └──────┬──────┘
+      │                            │ complete
+      │                            ▼
+      │                     ┌─────────────┐
+      │                     │ Reviewer    │
+      │                     │ Results     │
+      │                     └──────┬──────┘
+      │                            │
+      │                            ▼
+      │                     ┌─────────────┐
+      │    notify           │   BATTLE    │◀── NEW: Challenge Phase
+      ├───────────────────▶│   PHASE     │
+      │                    └──────┬──────┘
+      │                           │
+      │            ┌──────────────┼──────────────┐
+      │            │              │              │
+      │            ▼              ▼              ▼
+      │     ┌──────────┐   ┌──────────┐   ┌──────────┐
+      │     │ Consensus│   │ Primary  │   │ Reviewer │
+      │     │ Reached  │   │ Defends  │   │ Replies  │
+      │     └────┬─────┘   └────┬─────┘   └────┬─────┘
+      │          │              │              │
+      │          │              └──────┬───────┘
+      │          │                     │
+      │          ▼                     ▼
+      │   ┌─────────────┐       ┌─────────────┐
+      │   │ Aggregate   │       │ Orchestrator│
+      │   │ Results     │       │ Arbitrates  │
+      │   └──────┬──────┘       └──────┬──────┘
+      │          │                     │
+      │          │              ┌──────┴──────┐
+      │          │              │             │
+      │          │              ▼             ▼
+      │          │       ┌──────────┐  ┌──────────┐
+      │          │       │ Decision │  │  Escalate│
+      │          │       │  Made    │  │ to Human │
+      │          │       └────┬─────┘  └────┬─────┘
+      │          │            │             │
+      │          ▼            ▼             ▼
+      │   ┌─────────────┐                     │
+      └──▶│   GATE      │◀────────────────────┘
+          │  Decision   │
+          └──────┬──────┘
+                 │
+                  ┌──────────────┼──────────────┐
+                  │              │              │
+                  ▼              ▼              ▼
+            ┌──────────┐  ┌──────────┐  ┌──────────┐
+            │ APPROVE  │  │  REVISE  │  │  PIVOT   │
+            │ (next)   │  │  (retry) │  │ (back)   │
+            └──────────┘  └──────────┘  └──────────┘
+```
+
+### Battle Resolution Protocol
+
+After the Reviewer Agent produces an audit report, the workflow enters the **Battle Phase**:
+
+#### Step 1: Present Review to Primary Agent
+
+The Orchestrator sends the Reviewer's findings to the Primary Agent:
+
+```yaml
+# Battle notification to Primary Agent
+battle_phase:
+  type: "review_presentation"
+  reviewer_findings:
+    critical_issues: [...]
+    major_issues: [...]
+    gate_decision: "REVISE"
+  options:
+    - "ACCEPT: Accept all findings and revise"
+    - "CHALLENGE: Contest specific findings"
+```
+
+#### Step 2: Primary Agent Response
+
+The Primary Agent can choose:
+
+| Response | Description | Next Step |
+|----------|-------------|-----------|
+| `ACCEPT_ALL` | Accept all reviewer findings | Proceed to revision |
+| `ACCEPT_PARTIAL` | Accept some, note disagreements | Document disagreements, proceed |
+| `CHALLENGE` | Formally challenge findings | Enter formal debate |
+
+**Challenge Format:**
+
+```yaml
+challenge:
+  type: "formal_challenge"
+  issues_contested:
+    - issue_id: "critical-1"
+      primary_position: "This is not actually a critical issue because..."
+      evidence: "[Supporting argument]"
+    - issue_id: "major-2"
+      primary_position: "The reviewer misunderstood the approach..."
+      evidence: "[Clarification]"
+  max_rounds: 3  # Maximum debate rounds
+```
+
+#### Step 3: Reviewer Response to Challenge
+
+The Reviewer Agent responds to each contested issue:
+
+```yaml
+challenge_response:
+  type: "reviewer_rebuttal"
+  responses:
+    - issue_id: "critical-1"
+      reviewer_position: "I maintain this is critical because..."
+      counter_evidence: "[Counter-argument]"
+      stance: "UPHELD" | "MODIFIED" | "WITHDRAWN"
+    - issue_id: "major-2"
+      reviewer_position: "I acknowledge the clarification, but..."
+      stance: "MODIFIED"
+      revised_severity: "minor"
+```
+
+#### Step 4: Consensus Check
+
+After each round, check for consensus:
+
+```yaml
+consensus_check:
+  round: 1
+  agreed_issues: [issue-1, issue-3]
+  disputed_issues: [issue-2, issue-4]
+  consensus_reached: false
+  next_action: "continue_debate" | "arbitrate" | "escalate"
+```
+
+#### Step 5: Orchestrator Arbitration
+
+If consensus is NOT reached after max rounds (default: 3), the Orchestrator arbitrates:
+
+```yaml
+arbitration:
+  type: "orchestrator_decision"
+  disputed_issues:
+    - issue_id: "issue-2"
+      primary_argument: "..."
+      reviewer_argument: "..."
+  orchestrator_ruling:
+    - issue_id: "issue-2"
+      decision: "UPHOLD_REVIEWER" | "UPHOLD_PRIMARY" | "COMPROMISE"
+      reasoning: "..."
+      final_severity: "critical" | "major" | "minor" | "dismissed"
+```
+
+#### Step 6: Escalation to Human
+
+If the Orchestrator CANNOT make a confident ruling:
+
+```yaml
+escalation:
+  type: "human_escalation"
+  reason: "Unable to determine technical validity without domain expertise"
+  summary:
+    - issue: "..."
+      primary_position: "..."
+      reviewer_position: "..."
+      orchestrator_assessment: "Both positions have merit"
+  questions_for_human:
+    - "Is assumption A realistic for our use case?"
+    - "Does the proof sketch adequately cover the edge case?"
+```
+
+### Battle State Machine
+
+```
+                    ┌──────────────────┐
+                    │ Review Complete  │
+                    └────────┬─────────┘
+                             │
+                             ▼
+                    ┌──────────────────┐
+                    │ Present to       │
+                    │ Primary Agent    │
+                    └────────┬─────────┘
+                             │
+              ┌──────────────┼──────────────┐
+              │              │              │
+              ▼              ▼              ▼
+       ┌────────────┐ ┌────────────┐ ┌────────────┐
+       │ ACCEPT_ALL │ │ ACCEPT_    │ │  CHALLENGE │
+       │            │ │ PARTIAL    │ │            │
+       └─────┬──────┘ └─────┬──────┘ └─────┬──────┘
+             │              │              │
+             │              │              ▼
+             │              │      ┌───────────────┐
+             │              │      │ Debate Round  │
+             │              │      │ (max 3)       │
+             │              │      └───────┬───────┘
+             │              │              │
+             │              │       ┌──────┴──────┐
+             │              │       │             │
+             │              │       ▼             ▼
+             │              │ ┌───────────┐ ┌───────────┐
+             │              │ │ Consensus │ │ Disputed  │
+             │              │ │ Reached   │ │ Issues    │
+             │              │ └─────┬─────┘ └─────┬─────┘
+             │              │       │             │
+             │              │       │      ┌──────┴──────┐
+             │              │       │      │             │
+             │              │       │      ▼             ▼
+             │              │       │ ┌──────────┐ ┌──────────┐
+             │              │       │ │Arbitrate │ │ Escalate │
+             │              │       │ │          │ │ to Human │
+             │              │       │ └────┬─────┘ └────┬─────┘
+             │              │       │      │           │
+             └──────────────┴───────┴──────┴───────────┘
+                                         │
+                                         ▼
+                                  ┌─────────────┐
+                                  │   GATE      │
+                                  │  Decision   │
+                                  └─────────────┘
+```
+
+### Battle Communication Protocol
+
+**Primary Agent → Orchestrator (Challenge):**
+```yaml
+message_type: "battle_challenge"
+task_id: "survey-001"
+challenges:
+  - issue_id: "crit-1"
+    position: "This finding is incorrect because..."
+    evidence: "[Supporting details]"
+    requested_action: "withdraw" | "modify_severity"
+```
+
+**Reviewer Agent → Orchestrator (Response):**
+```yaml
+message_type: "battle_response"
+task_id: "audit-survey-001"
+responses:
+  - issue_id: "crit-1"
+    stance: "upheld" | "modified" | "withdrawn"
+    reasoning: "[Why upheld/modified/withdrawn]"
+    revised_severity: "critical" | "major" | "minor"  # if modified
+```
+
+**Orchestrator → Both Agents (Arbitration):**
+```yaml
+message_type: "arbitration_ruling"
+disputed_issues:
+  - issue_id: "..."
+    ruling: "uphold_reviewer" | "uphold_primary" | "compromise"
+    reasoning: "[Technical justification]"
+    final_severity: "..."
+mandatory: true  # Both agents must accept this ruling
+```
+
+**Orchestrator → Human (Escalation):**
+```yaml
+message_type: "human_escalation"
+escalation_id: "esc-001"
+phase: "survey"
+summary: "[Summary of the dispute]"
+positions:
+  primary: "[Primary Agent's position]"
+  reviewer: "[Reviewer Agent's position]"
+questions:
+  - "[Question for human to decide]"
+decision_options:
+  - "uphold_reviewer"
+  - "uphold_primary"
+  - "compromise"
+  - "request_more_analysis"
+```
+
+### Battle Rules
+
+1. **Max Rounds**: Maximum 3 debate rounds before arbitration
+2. **Evidence Required**: Each challenge must include supporting evidence
+3. **Good Faith**: Agents must argue in good faith, not just defend ego
+4. **Orchestrator Neutral**: Orchestrator arbitrates based on technical merit
+5. **Human Supreme**: Human escalation overrides all agent decisions
+6. **Document Everything**: All battle exchanges are logged in state file
+
+### Battle Record in State File
+
+```yaml
+battle_history:
+  phase: survey
+  started_at: "2024-01-15T14:00:00Z"
+  rounds:
+    - round: 1
+      primary_challenges:
+        - issue_id: "crit-1"
+          position: "..."
+          evidence: "..."
+      reviewer_responses:
+        - issue_id: "crit-1"
+          stance: "upheld"
+          reasoning: "..."
+    - round: 2
+      ...
+  outcome:
+    type: "arbitrated" | "consensus" | "escalated"
+    final_issues:
+      - issue_id: "crit-1"
+        final_severity: "major"  # Reduced from critical
+        resolution: "compromise"
+  resolution_at: "2024-01-15T15:30:00Z"
+```
+
+### Orchestrator Prohibitions
+
+The Orchestrator MUST NOT:
+
+| Prohibition | Reason | Correct Approach |
+|-------------|--------|------------------|
+| ❌ Execute `research-lit` directly | Survey work requires domain expertise | Spawn Survey Agent subagent |
+| ❌ Execute `audit-survey` directly | Review requires independent perspective | Spawn Critic Agent subagent |
+| ❌ Write survey reports directly | Research synthesis needs focused agent | Delegate to Survey Agent |
+| ❌ Run experiments directly | Experiment execution needs isolation | Spawn Code Agent subagent |
+| ❌ Write paper sections directly | Writing requires dedicated focus | Spawn Writer Agent subagent |
+| ❌ Make gate decisions autonomously | Human oversight is mandatory | Present options, await human input |
+| ❌ Skip phase gates | Quality control requires checkpoints | Always pause at gates |
+| ❌ Spawn helper/explore agents | Only 2 agents per phase allowed | Stick to Primary + Reviewer pattern |
+| ❌ Auto-proceed without human approval | Research direction requires human judgment | Wait for explicit approval |
+
+### Subagent Communication Protocol
+
+When dispatching a subagent, the Orchestrator provides:
+
+```yaml
+# Subagent dispatch context
+dispatch:
+  task_id: "survey-001"
+  skill: "research-lit"
+  role: "survey"
+  context:
+    research_topic: "..."
+    current_phase: "survey"
+    handoff_summary: "..." # if resuming
+  deliverables:
+    - "docs/reports/survey/literature-review.md"
+    - "docs/reports/survey/novelty-report.md"
+  constraints:
+    max_iterations: 5
+    timeout_minutes: 60
+    required_apis:
+      - "semantic-scholar"
+      - "arxiv"
+```
+
+When a subagent completes, it returns:
+
+```yaml
+# Subagent completion report
+completion:
+  task_id: "survey-001"
+  status: "completed"  # or "failed"
+  deliverables:
+    - path: "docs/reports/survey/literature-review.md"
+      status: "created"
+      summary: "Reviewed 15 papers on attention mechanisms"
+  errors: []  # populated if failed
+  recommendations:
+    - "Consider expanding to transformer variants"
+```
+
+### Subagent Lifecycle Management
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Subagent Lifecycle                        │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  1. SPAWN                                                    │
+│     │                                                        │
+│     │  Orchestrator:                                         │
+│     │  - Generate task_id                                   │
+│     │  - Select appropriate skill                           │
+│     │  - Provide context and deliverables                    │
+│     │  - Record PENDING state                               │
+│     │                                                        │
+│     ▼                                                        │
+│  2. MONITOR                                                  │
+│     │                                                        │
+│     │  Orchestrator:                                         │
+│     │  - Track progress via state file                      │
+│     │  - Check for timeout                                   │
+│     │  - Collect intermediate results                        │
+│     │                                                        │
+│     ▼                                                        │
+│  3. COLLECT                                                  │
+│     │                                                        │
+│     │  Orchestrator:                                         │
+│     │  - Gather deliverables                                 │
+│     │  - Record completion status                            │
+│     │  - Save handoff summary if dismissing                  │
+│     │                                                        │
+│     ▼                                                        │
+│  4. DISMISS                                                  │
+│     │                                                        │
+│     │  Orchestrator:                                         │
+│     │  - Clear agent context                                 │
+│     │  - Update state file                                   │
+│     │  - Prepare for next phase or retry                    │
+│     │                                                        │
+└─────────────────────────────────────────────────────────────┘
+```
+
 ## Phase Gate Checklist
 
 Before advancing to the next phase, ALL items in the corresponding gate checklist must be verified.
@@ -526,17 +1082,47 @@ Each gate is scored on these dimensions (see `references/gate-rubrics.md` for de
 
 ## Hard Rules
 
-- Keep every phase as a two-agent loop under the user-facing orchestrator.
-- **Do NOT spawn explore agents or other helper agents. Only the 2 designated phase agents.**
-- **Do NOT use websearch for literature. Use academic database APIs (Semantic Scholar, arXiv, CrossRef, DBLP, OpenAlex).**
+### Subagent Execution Rules
+
+- **Orchestrator NEVER executes research tasks directly.** All research work must be delegated to subagents via the Agent tool.
+- **Each phase has EXACTLY 2 active agents** (primary + reviewer). Do NOT spawn explore agents or other helper agents.
+- **Spawn subagents for all skills** in the Skills Registry. The Orchestrator coordinates; subagents execute.
+- **Use the Agent tool to dispatch subagents**, passing task context, skill name, and deliverable requirements.
+
+### Literature Search Rules
+
+- **Do NOT use websearch for literature.** Use academic database APIs (Semantic Scholar, arXiv, CrossRef, DBLP, OpenAlex).
+- All cited papers must be verified via academic APIs before inclusion in any report.
+
+### Language and Documentation Rules
+
 - Keep process documents in Chinese by default and manuscript-facing documents in English by default unless the user overrides this.
 - Do not claim plagiarism checks, AI-detection checks, or formal proof verification in v1.
+
+### Integrity Rules
+
 - Do not fabricate experiments, citations, datasets, checkpoints, or reviewer conclusions.
+- All results must be traceable to actual runs with logged configurations.
+- All citations must be verifiable through academic APIs.
+
+### Gate and Transition Rules
+
+- **Human gates are mandatory between phases.** The Orchestrator presents options but NEVER makes the decision autonomously.
 - Do not pivot or advance phases without explicit human approval at the phase boundary.
 - When a human gate rejects the current phase, present the allowed return phases and a suggested return phase; do not roll back automatically without that human choice.
 - Do not advance phases when `validate_handoff.py` or `quality_gate.py` reports failure or escalation.
 - Escalate back to the user when a phase loop reaches its configured limit without approval.
-- **Save handoff summaries when dismissing agents. Read them when resuming a phase.**
+
+### State Management Rules
+
+- **Save handoff summaries when dismissing agents.** Read them when resuming a phase.
+- The Orchestrator maintains the single source of truth in `.autoresearch/state/research-state.yaml`.
+- Task states must be updated in real-time as subagents progress through PENDING → IN_PROGRESS → COMPLETED/FAILED.
+
+### Human Interaction Rules
+
+- **The Orchestrator is the only agent that talks directly to the researcher.** Subagents do not interact with users.
+- All questions, clarifications, and decisions must flow through the Orchestrator to the human.
 
 ## Resource Map
 

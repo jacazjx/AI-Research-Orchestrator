@@ -104,3 +104,6 @@ temp/
 
 # Worktrees
 .worktrees/
+
+# Development documentation (not for release)
+docs/
