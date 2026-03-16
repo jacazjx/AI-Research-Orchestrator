@@ -5,6 +5,8 @@ import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+import yaml
+
 from generate_dashboard import generate_dashboard
 
 from orchestrator_common import (
@@ -18,13 +20,19 @@ from orchestrator_common import (
 )
 
 
+# Default stale threshold in minutes
+DEFAULT_STALE_AFTER_MINUTES = 30
+
+
 def inspect_runtime(
     project_root: Path, stale_after_minutes: int | None = None
 ) -> dict[str, object]:
     project_root = project_root.resolve()
     state = load_state(project_root)
     config = load_project_config(project_root)
-    stale_after = stale_after_minutes or int(config["runtime"].get("stale_after_minutes", 30))
+    stale_after = stale_after_minutes or int(
+        config["runtime"].get("stale_after_minutes", DEFAULT_STALE_AFTER_MINUTES)
+    )
     issues: list[dict[str, str]] = []
     now = datetime.now(timezone.utc)
 
@@ -35,7 +43,20 @@ def inspect_runtime(
 
     registry_path = project_root / DEFAULT_DELIVERABLES["job_registry"]
     if registry_path.exists():
-        registry = read_yaml(registry_path)
+        try:
+            registry = read_yaml(registry_path)
+        except yaml.YAMLError as e:
+            return {
+                "project_root": str(project_root),
+                "issues": [{"type": "yaml_error", "error": str(e)}],
+                "status": "error",
+            }
+        except FileNotFoundError:
+            return {
+                "project_root": str(project_root),
+                "issues": [{"type": "file_not_found", "path": str(registry_path)}],
+                "status": "error",
+            }
         for job_id in state.get("active_jobs", []):
             job = registry.get("jobs", {}).get(job_id)
             if job is None:

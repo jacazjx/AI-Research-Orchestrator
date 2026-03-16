@@ -25,6 +25,7 @@ from orchestrator_common import (  # noqa: E402
     SYSTEM_VERSION_NAME,
     ensure_project_structure,
     load_state,
+    normalize_phase_name,
 )
 
 # ANSI color codes
@@ -68,19 +69,16 @@ PHASE_NAMES = {
     "05-reflection-evolution": "Reflection",
 }
 
-# Phase loop key mapping
-PHASE_LOOP_KEY = {
+
+def _get_phase_loop_key(phase: str) -> str:
+    """Get loop key for a phase, supporting both semantic and legacy names."""
+    normalized = normalize_phase_name(phase)
+    return _PHASE_LOOP_KEY_MAP.get(normalized, "")
     "survey": "survey_critic",
     "pilot": "pilot_code_adviser",
     "experiments": "experiment_code_adviser",
     "paper": "writer_reviewer",
     "reflection": "reflector_curator",
-    # Legacy names for backward compatibility
-    "01-survey": "survey_critic",
-    "02-pilot-analysis": "pilot_code_adviser",
-    "03-full-experiments": "experiment_code_adviser",
-    "04-paper": "writer_reviewer",
-    "05-reflection-evolution": "reflector_curator",
 }
 
 # Agent definitions for each phase (using new semantic names)
@@ -161,7 +159,7 @@ def get_agent_status(
         if current_agent == agent_name:
             return "active"
         # Check inner loop to see which agent is working
-        loop_key = PHASE_LOOP_KEY.get(phase, "")
+        loop_key = _get_phase_loop_key(phase)
         inner_loops = state.get("inner_loops", {})
         loop_count = inner_loops.get(loop_key, 0)
 

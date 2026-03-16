@@ -30,7 +30,20 @@ def schedule_job(
     cwd: str = ".",
     remote_host: str = "",
 ) -> dict[str, object]:
+    # Input validation
+    if not command or not command.strip():
+        return {"status": "error", "error": "Command cannot be empty"}
+
+    if cwd and not Path(cwd).exists() and not Path(cwd).is_absolute():
+        # Relative paths will be checked after project_root is resolved
+        pass
+
     project_root = project_root.resolve()
+
+    # Validate working directory if absolute path
+    if cwd and Path(cwd).is_absolute() and not Path(cwd).exists():
+        return {"status": "error", "error": f"Working directory does not exist: {cwd}"}
+
     state = load_state(project_root)
     config = load_project_config(project_root)
     if backend not in IMPLEMENTED_BACKENDS:

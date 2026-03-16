@@ -13,6 +13,7 @@ from orchestrator_common import (
     append_state_log,
     ensure_project_structure,
     load_state,
+    normalize_phase_name,
     save_state,
 )
 
@@ -106,9 +107,9 @@ def _execute_pivot(state: dict[str, object], pivot_entry: dict[str, str]) -> Non
     pivot_type = pivot_entry["type"]
     phase = pivot_entry["phase"]
     if pivot_type == "downgrade_to_pilot":
-        state["current_phase"] = "02-pilot-analysis"
-        state["phase"] = "02-pilot-analysis"
-        state["current_gate"] = PHASE_TO_GATE["02-pilot-analysis"]
+        state["current_phase"] = "pilot"  # Semantic name
+        state["phase"] = "pilot"
+        state["current_gate"] = PHASE_TO_GATE["pilot"]
     elif pivot_type == "archive_branch":
         state["current_phase"] = "06-archive"
         state["phase"] = "06-archive"
@@ -121,21 +122,17 @@ def _execute_pivot(state: dict[str, object], pivot_entry: dict[str, str]) -> Non
 
 
 def _phase_review_key(phase: str) -> str:
-    return {
-        # New semantic names
+    # Normalize to semantic name, then map to review key
+    normalized = normalize_phase_name(phase)
+    review_keys = {
         "survey": "survey_critic",
         "pilot": "pilot_adviser",
         "experiments": "experiment_adviser",
         "paper": "paper_reviewer",
         "reflection": "reflection_curator",
-        # Legacy names for backward compatibility
-        "01-survey": "survey_critic",
-        "02-pilot-analysis": "pilot_adviser",
-        "03-full-experiments": "experiment_adviser",
-        "04-paper": "paper_reviewer",
-        "05-reflection-evolution": "reflection_curator",
         "06-archive": "reflection_curator",
-    }[phase]
+    }
+    return review_keys.get(normalized, f"{normalized}_review")
 
 
 def build_parser() -> argparse.ArgumentParser:

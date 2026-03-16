@@ -31,24 +31,19 @@ from orchestrator_common import (
     gitmem_is_initialized,
     load_state,
     logger,
+    normalize_phase_name,
     reset_state_for_phase,
     save_state,
     suggest_return_phase,
 )
 
 PHASE_AGENT_PAIRS = {
-    # New semantic names
+    # Semantic names only (legacy names are normalized)
     "survey": ("survey", "critic"),
     "pilot": ("code", "adviser"),
     "experiments": ("code", "adviser"),
     "paper": ("paper-writer", "reviewer-editor"),
     "reflection": ("reflector", "curator"),
-    # Legacy names for backward compatibility
-    "01-survey": ("survey", "critic"),
-    "02-pilot-analysis": ("code", "adviser"),
-    "03-full-experiments": ("code", "adviser"),
-    "04-paper": ("paper-writer", "reviewer-editor"),
-    "05-reflection-evolution": ("reflector", "curator"),
 }
 
 
@@ -348,7 +343,7 @@ def _check_phase_loop_guard(
 
 
 def _completion_percent(phase_name: str) -> int:
-    return {
+    phase_progress = {
         # New semantic names
         "survey": 10,
         "pilot": 30,
@@ -362,11 +357,17 @@ def _completion_percent(phase_name: str) -> int:
         "04-paper": 80,
         "05-reflection-evolution": 95,
         "06-archive": 100,
-    }[phase_name]
+    }
+    normalized = normalize_phase_name(phase_name)
+    if normalized not in phase_progress:
+        raise ValueError(f"Unknown phase name: {phase_name}")
+    return phase_progress[normalized]
 
 
 def _next_loop_agent(phase_name: str, actor: str) -> str:
-    pair = PHASE_AGENT_PAIRS[phase_name]
+    # Normalize phase name to support both semantic and legacy names
+    normalized = normalize_phase_name(phase_name)
+    pair = PHASE_AGENT_PAIRS[normalized]
     normalized_actor = actor.strip().lower()
     if normalized_actor == pair[0]:
         return pair[1]

@@ -70,7 +70,7 @@ def run_job(project_root: Path, job_id: str, execute: bool = False) -> dict[str,
         )
 
     job = jobs[job_id]
-    log_dir = project_root / "00-admin/runtime/logs"
+    log_dir = project_root / ".autoresearch/runtime/logs"
     log_dir.mkdir(parents=True, exist_ok=True)
     stdout_path = log_dir / f"{job_id}.stdout.log"
     stderr_path = log_dir / f"{job_id}.stderr.log"
@@ -92,7 +92,7 @@ def run_job(project_root: Path, job_id: str, execute: bool = False) -> dict[str,
             result_status = "completed" if exit_code == 0 else "failed"
             job["completed_at"] = datetime.now(timezone.utc).isoformat()
         except (CommandExecutionError, PathSecurityError) as exc:
-            stderr_text = f"{type(exc).__name__}: {exc.message}"
+            stderr_text = f"{type(exc).__name__}: {str(exc)}"
             exit_code = 1
             result_status = "failed"
             job["completed_at"] = datetime.now(timezone.utc).isoformat()
