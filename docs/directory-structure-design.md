@@ -18,7 +18,7 @@
 ### 1.2 保持向后兼容
 
 - 现有 `scripts/` 目录保持不变
-- 现有 17 个子 skills 保持不变
+- 现有 41 个子 skills 保持不变
 - 新增命令目录不影响现有功能
 
 ---
@@ -45,40 +45,48 @@ AI-Research-Orchestrator/
 │       └── SKILL.md
 │
 ├── skills/                      # 子 skills（现有，保持不变）
-│   ├── idea-discovery/
-│   │   └── SKILL.md
-│   ├── research-lit/
-│   │   └── SKILL.md
-│   ├── idea-creator/
-│   │   └── SKILL.md
-│   ├── novelty-check/
-│   │   └── SKILL.md
-│   ├── research-review/
-│   │   └── SKILL.md
-│   ├── auto-review-loop/
-│   │   └── SKILL.md
-│   ├── paper-writing/
-│   │   └── SKILL.md
-│   ├── paper-plan/
-│   │   └── SKILL.md
-│   ├── paper-figure/
-│   │   └── SKILL.md
-│   ├── paper-write/
-│   │   └── SKILL.md
-│   ├── paper-compile/
-│   │   └── SKILL.md
-│   ├── run-experiment/
-│   │   └── SKILL.md
-│   ├── monitor-experiment/
-│   │   └── SKILL.md
+│   ├── analyze-problem/
 │   ├── analyze-results/
-│   │   └── SKILL.md
-│   ├── research-pipeline/
-│   │   └── SKILL.md
+│   ├── audit-analysis/
+│   ├── audit-citation/
+│   ├── audit-design/
+│   ├── audit-exp-design/
+│   ├── audit-lessons/
+│   ├── audit-overlay/
+│   ├── audit-paper/
+│   ├── audit-paper-plan/
+│   ├── audit-pilot/
+│   ├── audit-plan/
+│   ├── audit-results/
+│   ├── audit-survey/
+│   ├── auto-paper-improvement-loop/
+│   ├── auto-review-loop/
+│   ├── curate-citation/
+│   ├── define-idea/
+│   ├── design-exp/
+│   ├── design-pilot/
+│   ├── extract-lessons/
 │   ├── feishu-notify/
-│   │   └── SKILL.md
-│   └── auto-paper-improvement-loop/
-│       └── SKILL.md
+│   ├── gitmem/
+│   ├── idea-creator/
+│   ├── idea-discovery/
+│   ├── latex-citation-curator/
+│   ├── monitor-experiment/
+│   ├── novelty-check/
+│   ├── orchestrator/
+│   ├── paper-compile/
+│   ├── paper-figure/
+│   ├── paper-plan/
+│   ├── paper-write/
+│   ├── paper-writing/
+│   ├── propose-overlay/
+│   ├── research-lit/
+│   ├── research-pipeline/
+│   ├── research-plan/
+│   ├── research-review/
+│   ├── run-experiment/
+│   ├── run-pilot/
+│   └── ... (41 skills total)
 │
 ├── scripts/                     # Python 脚本（现有，保持不变）
 │   ├── orchestrator_common.py
@@ -122,8 +130,7 @@ AI-Research-Orchestrator/
 │   │   ├── reflector.md.tmpl
 │   │   ├── curator.md.tmpl
 │   │   ├── system-auditor.md.tmpl
-│   │   ├── project-takeover.md.tmpl
-│   │   └── survey.md.tmpl
+│   │   └── project-takeover.md.tmpl
 │   └── templates/
 │       └── .autoresearch/
 │           └── [项目模板]
@@ -189,32 +196,54 @@ AI-Research-Orchestrator/
 
 **用途**: 可复用的子功能模块
 
-现有 17 个 skills 分为三类：
+现有 41 个 skills 分为四类：
 
-**Workflow Skills（工作流）**:
+**Primary Skills (16)**:
 - `idea-discovery` - 创意发现流程
-- `research-pipeline` - 端到端研究流程
-- `auto-review-loop` - 自主评审循环
-
-**Task Skills（任务）**:
 - `research-lit` - 文献调研
 - `idea-creator` - 创意生成
 - `novelty-check` - 新颖性验证
 - `research-review` - 研究评审
+- `define-idea` - 定义研究假设
+- `analyze-problem` - 分析问题
+- `design-pilot` - 设计 Pilot 实验
 - `run-experiment` - 运行实验
 - `monitor-experiment` - 监控实验
 - `analyze-results` - 分析结果
-
-**Paper Skills（论文）**:
-- `paper-writing` - 论文写作流程
+- `design-exp` - 设计完整实验
 - `paper-plan` - 论文规划
 - `paper-figure` - 图表生成
 - `paper-write` - 论文撰写
 - `paper-compile` - 论文编译
-- `auto-paper-improvement-loop` - 论文自动改进
 
-**Utility Skills（工具）**:
+**Audit Skills (12)**:
+- `audit-survey` - 审核文献调研
+- `audit-design` - 审核 Pilot 设计
+- `audit-pilot` - 审核 Pilot 结果
+- `audit-exp-design` - 审核实验设计
+- `audit-results` - 审核实验结果
+- `audit-paper-plan` - 审核论文大纲
+- `audit-paper` - 审核论文草稿
+- `audit-citation` - 审核引用真实性
+- `audit-analysis` - 审核问题分析
+- `audit-plan` - 审核研究计划
+- `audit-lessons` - 审核经验总结
+- `audit-overlay` - 审核系统改进
+
+**Supporting Skills (12)**:
+- `auto-review-loop` - 自主评审循环
+- `auto-paper-improvement-loop` - 论文自动改进
+- `research-pipeline` - 端到端研究流程
+- `research-plan` - 创建研究计划
+- `extract-lessons` - 提取经验教训
+- `propose-overlay` - 提出系统改进
+- `curate-citation` - 整理引用
+- `latex-citation-curator` - LaTeX 引用管理
+- `gitmem` - 轻量级版本控制
 - `feishu-notify` - 飞书通知
+
+**Orchestrator (1)**:
+- `orchestrator` - 主协调器
 
 ### 3.3 scripts/ 目录
 
@@ -270,10 +299,13 @@ skills/research-lit/ (文献调研子任务)
 
 ### 5.1 当前状态
 
-- ✅ `commands/` 目录已创建，6 个命令已实现
-- ✅ `skills/` 目录已有 17 个子 skills
-- ✅ `scripts/` 目录有 24 个脚本
-- ✅ 向后兼容现有功能
+- ✅ `commands/` 目录存在
+- ✅ 6 个命令定义完整
+- ✅ 每个 command 有 COMMAND.md
+- ✅ COMMAND.md 有 YAML frontmatter
+- ✅ 现有 skills/ 有 41 个子 skills
+- ✅ 现有 scripts/ 不受影响
+- ✅ 测试全部通过
 
 ### 5.2 未来扩展
 
@@ -300,16 +332,16 @@ hooks/
 
 | 目录 | 当前文件数 | 说明 |
 |------|-----------|------|
-| commands/ | 7 (6 SKILL.md + README) | 新增 |
-| skills/ | 17 | 保持不变 |
+| commands/ | 6 (6 COMMAND.md) | 子目录结构 |
+| skills/ | 41 | 保持不变 |
 | scripts/ | 24 | 保持不变 |
 | agents/ | 2 | 保持不变 |
-| assets/prompts/ | 12 | 保持不变 |
+| assets/prompts/ | 11 | 保持不变 |
 | assets/templates/ | ~30 | 保持不变 |
 | references/ | 17 | 保持不变 |
 | tests/ | ~25 | 保持不变 |
 
-**总计**: ~134 个文件
+**总计**: ~158 个文件
 
 ---
 
@@ -317,9 +349,9 @@ hooks/
 
 - [x] `commands/` 目录存在
 - [x] 6 个命令定义完整
-- [x] 每个 command 有 SKILL.md
-- [x] SKILL.md 有 YAML frontmatter
-- [x] 现有 skills/ 不受影响
+- [x] 每个 command 有 COMMAND.md
+- [x] COMMAND.md 有 YAML frontmatter
+- [x] 现有 skills/ 有 41 个子 skills
 - [x] 现有 scripts/ 不受影响
 - [x] 测试全部通过
 
