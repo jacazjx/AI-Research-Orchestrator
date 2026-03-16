@@ -40,8 +40,8 @@ def schedule_job(
 
     project_root = project_root.resolve()
 
-    # Validate working directory if absolute path
-    if cwd and Path(cwd).is_absolute() and not Path(cwd).exists():
+    # Validate working directory for local backend when absolute path
+    if backend != "ssh" and cwd and Path(cwd).is_absolute() and not Path(cwd).exists():
         return {"status": "error", "error": f"Working directory does not exist: {cwd}"}
 
     state = load_state(project_root)
