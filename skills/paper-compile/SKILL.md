@@ -1,5 +1,6 @@
 ---
 name: airesearchorchestrator:paper-compile
+agent: writer
 description: Compile LaTeX paper to PDF. Handles multi-pass compilation and auto-fixes common errors. Use when user says "compile paper", "编译论文", "build PDF".
 argument-hint: [paper-directory]
 allowed-tools: Bash(*), Read, Write, Edit
@@ -20,6 +21,12 @@ Build PDF from LaTeX source.
 ## Output
 
 paper/main.pdf
+
+## Key Rules
+
+1. Check LaTeX syntax before compilation
+2. Compile PDF with latexmk -pdf (up to 3 attempts)
+3. Report errors with line numbers and suggested fixes
 
 ## Checks
 

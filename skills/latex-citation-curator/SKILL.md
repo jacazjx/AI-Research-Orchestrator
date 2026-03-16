@@ -173,7 +173,7 @@ After every run:
 - if a target `.bib` file was provided, sync the ledger with that `.bib` file again
 - keep user-edited BibTeX entries intact; use the ledger to store extra verification state instead of overwriting manual edits
 
-## Hard Rules
+## Key Rules
 
 - Do not invent papers, DOIs, venues, citation counts, quartiles, or impact factors.
 - Do not claim authenticated Semantic Scholar verification when no valid user key was used.

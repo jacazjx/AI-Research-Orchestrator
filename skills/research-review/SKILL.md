@@ -1,5 +1,6 @@
 ---
 name: airesearchorchestrator:research-review
+agent: critic
 description: External critical review of research ideas via Codex MCP. Acts as a senior reviewer (NeurIPS/ICML level) to score ideas and identify weaknesses. Use when user says "review this idea", "critique", "反馈", or wants brutal feedback on a research direction.
 argument-hint: [idea-with-context]
 allowed-tools: Bash(*), Read, Write, Edit, mcp__codex__codex, mcp__codex__codex-reply
@@ -43,3 +44,13 @@ Output:
 - Key weaknesses
 - Recommended improvements
 - Next steps
+
+## Key Rules
+
+1. Verify citation authenticity (no fake references)
+2. Check methodology completeness and soundness
+3. Provide score (1-10) with actionable feedback
+
+## Output
+
+- Review report with score, verdict, weaknesses, and recommendations

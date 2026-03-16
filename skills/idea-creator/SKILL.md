@@ -1,5 +1,6 @@
 ---
 name: airesearchorchestrator:idea-creator
+agent: survey
 description: Brainstorm and filter research ideas. Generates 8-12 concrete ideas via external LLM, filters by feasibility, and runs pilot experiments on top candidates. Use when user says "generate ideas", "头脑风暴", "find research ideas", or wants to explore possible directions.
 argument-hint: [research-context]
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, Skill, mcp__codex__codex
@@ -52,3 +53,13 @@ Output `IDEA_REPORT.md` with:
 - PILOT_MAX_HOURS = 2
 - MAX_PILOT_IDEAS = 3
 - MAX_TOTAL_GPU_HOURS = 8
+
+## Key Rules
+
+1. Generate 8-12 concrete ideas with clear hypotheses and expected contributions
+2. Filter by novelty and feasibility (compute, data, skills)
+3. Output top 3 ranked ideas with pilot results
+
+## Output
+
+- `docs/reports/survey/idea-candidates.md` - Ranked idea list with pilot results

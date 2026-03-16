@@ -123,13 +123,13 @@ assets/prompts/critic.md.tmpl
 
 ### 6. Paper Writing Pipeline (P2 - Medium)
 
-**ARIS Approach (paper-writing workflow):**
+**ARIS Approach (paper-pipeline workflow):**
 ```
 /paper-plan → /paper-figure → /paper-write → /paper-compile → /auto-paper-improvement-loop
 ```
 
 **Integration Plan:**
-- 在 Phase 04-paper 中集成 ARIS 的 paper-writing workflow
+- 在 Phase 04-paper 中集成 ARIS 的 paper-pipeline workflow
 - 修改 `assets/prompts/paper-writer.md.tmpl`:
   - 添加 Claims-Evidence Matrix
   - 添加自动化图表生成
@@ -180,7 +180,7 @@ assets/prompts/critic.md.tmpl
 - [ ] Add Obsidian MCP integration
 
 ### v2.0.0 - Full Integration
-- [ ] Integrate paper-writing pipeline
+- [ ] Integrate paper-pipeline pipeline
 - [ ] Full auto-review-loop with state persistence
 - [ ] Complete documentation update
 

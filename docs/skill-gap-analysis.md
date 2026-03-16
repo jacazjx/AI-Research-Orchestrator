@@ -134,7 +134,7 @@ allowed-tools: Bash(curl), Read, Write, Edit, Grep, Glob, WebFetch, Agent
 | novelty-check | `[idea-description]` | 10 tools | ✅ 明确 |
 | research-review | `[topic-or-results]` | 11 tools | ✅ 明确 |
 | auto-review-loop | `[topic-or-scope]` | 11 tools | ✅ 明确 |
-| paper-writing | `[narrative-report]` | 12 tools | ✅ 明确 |
+| paper-pipeline | `[narrative-report]` | 12 tools | ✅ 明确 |
 | paper-plan | `[results-dir]` | 10 tools | ✅ 明确 |
 | paper-figure | `[data-dir]` | 9 tools | ✅ 明确 |
 | paper-write | `[paper-plan]` | 10 tools | ✅ 明确 |

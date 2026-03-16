@@ -119,7 +119,7 @@ The commands delegate to these skills:
 - `skills/idea-discovery/` - Idea discovery workflow
 - `skills/research-lit/` - Literature search
 - `skills/run-experiment/` - Experiment execution
-- `skills/paper-writing/` - Paper writing workflow
+- `skills/paper-pipeline/` - Paper writing workflow
 - `skills/auto-review-loop/` - Autonomous review
 
 ## Configuration

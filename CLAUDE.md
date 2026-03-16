@@ -172,7 +172,7 @@ AI-Research-Orchestrator/
 ├── skills/                  # Sub-skills (17)
 │   ├── idea-discovery/SKILL.md
 │   ├── research-lit/SKILL.md
-│   ├── paper-writing/SKILL.md
+│   ├── paper-pipeline/SKILL.md
 │   └── ... (14 more)
 ├── scripts/                 # Python scripts (24)
 │   ├── orchestrator_common.py

@@ -46,6 +46,33 @@ AI-Research-Orchestrator/
 │
 ├── skills/                      # 子 skills（现有，保持不变）
 │   ├── analyze-problem/
+│   │   └── SKILL.md
+│   ├── idea-discovery/
+│   │   └── SKILL.md
+│   ├── research-lit/
+│   │   └── SKILL.md
+│   ├── idea-creator/
+│   │   └── SKILL.md
+│   ├── novelty-check/
+│   │   └── SKILL.md
+│   ├── research-review/
+│   │   └── SKILL.md
+│   ├── auto-review-loop/
+│   │   └── SKILL.md
+│   ├── paper-pipeline/
+│   │   └── SKILL.md
+│   ├── paper-plan/
+│   │   └── SKILL.md
+│   ├── paper-figure/
+│   │   └── SKILL.md
+│   ├── paper-write/
+│   │   └── SKILL.md
+│   ├── paper-compile/
+│   │   └── SKILL.md
+│   ├── run-experiment/
+│   │   └── SKILL.md
+│   ├── monitor-experiment/
+│   │   └── SKILL.md
 │   ├── analyze-results/
 │   ├── audit-analysis/
 │   ├── audit-citation/
@@ -211,6 +238,9 @@ AI-Research-Orchestrator/
 - `monitor-experiment` - 监控实验
 - `analyze-results` - 分析结果
 - `design-exp` - 设计完整实验
+
+**Paper Skills（论文）**:
+- `paper-pipeline` - 论文写作流程
 - `paper-plan` - 论文规划
 - `paper-figure` - 图表生成
 - `paper-write` - 论文撰写

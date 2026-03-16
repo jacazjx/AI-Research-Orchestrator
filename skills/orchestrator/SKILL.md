@@ -1,5 +1,6 @@
 ---
 name: airesearchorchestrator:orchestrator
+agent: orchestrator
 description: "Initialize and run a gated five-phase AI research project from idea through paper. Use when user says 'start research project', '帮我做一个研究', 'research workflow', '五阶段研究流程', 'research orchestrator', or needs structured AI/ML research management with Survey, Pilot, Experiments, Paper, and Reflection phases."
 argument-hint: [research-topic-or-idea]
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, Skill, mcp__codex__codex, mcp__codex__codex-reply
@@ -215,7 +216,7 @@ See [references/literature-verification.md](references/literature-verification.m
 
 ## Skills Registry
 
-The orchestrator includes 40 skills organized into Primary Skills (workflow execution) and Audit Skills (quality verification).
+The orchestrator includes 41 skills organized into Primary Skills (workflow execution), Audit Skills (quality verification), and Supporting Skills (workflow automation).
 
 ### Primary Skills (16)
 
@@ -269,7 +270,7 @@ Additional workflow automation skills:
 | `idea-creator` | Generate research ideas |
 | `research-review` | Review research progress |
 | `research-pipeline` | End-to-end research pipeline |
-| `paper-writing` | Full paper writing pipeline |
+| `paper-pipeline` | Full paper writing pipeline |
 | `paper-figure` | Generate paper figures |
 | `paper-compile` | Compile paper to PDF |
 | `auto-review-loop` | Multi-round autonomous review |
@@ -311,9 +312,9 @@ This skill now includes ARIS (Auto-Research-In-Sleep) capabilities. You can invo
 
 ```bash
 # Full paper writing pipeline
-/autoresearch:paper-writing "NARRATIVE_REPORT.md"
+/autoresearch:paper-pipeline "NARRATIVE_REPORT.md"
 
-# Sub-skills (invoked by paper-writing)
+# Sub-skills (invoked by paper-pipeline)
 /autoresearch:paper-plan "results/"
 /autoresearch:paper-figure "data/"
 /autoresearch:paper-write "PAPER_PLAN.md"
