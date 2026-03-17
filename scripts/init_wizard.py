@@ -44,6 +44,20 @@ import legacy_handler
 import prompts
 import user_config
 
+# Import intent clarification module
+try:
+    from intent_clarification import (
+        assess_intent_clarity,
+        generate_clarification_questions,
+        format_assessment_summary,
+        should_trigger_brainstorming,
+        MAX_CLARIFICATION_ROUNDS,
+        MIN_CONFIRMATION_SCORE,
+    )
+    INTENT_CLARIFICATION_AVAILABLE = True
+except ImportError:
+    INTENT_CLARIFICATION_AVAILABLE = False
+
 # Configure module logger
 logger = logging.getLogger(__name__)
 
@@ -88,6 +102,9 @@ class WizardResponses:
         user_profile: User profile information from user_config.
         existing_resources_mode: How to handle existing files (preserve, migrate, cancel).
         legacy_analysis: Analysis of existing directory contents.
+        clarity_score: Intent clarity score (0.0-1.0).
+        clarification_rounds: Number of clarification rounds performed.
+        clarified_idea: Final clarified research idea.
     """
 
     research_idea: str = ""
@@ -98,6 +115,9 @@ class WizardResponses:
     user_profile: dict[str, str] = field(default_factory=dict)
     existing_resources_mode: str = "preserve"
     legacy_analysis: dict[str, Any] = field(default_factory=dict)
+    clarity_score: float = 0.0
+    clarification_rounds: int = 0
+    clarified_idea: str = ""
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
@@ -110,6 +130,9 @@ class WizardResponses:
             "user_profile": self.user_profile,
             "existing_resources_mode": self.existing_resources_mode,
             "legacy_analysis": self.legacy_analysis,
+            "clarity_score": self.clarity_score,
+            "clarification_rounds": self.clarification_rounds,
+            "clarified_idea": self.clarified_idea,
         }
 
 
@@ -162,6 +185,12 @@ class InitWizard:
 
         self.step_welcome()
         self.step_research_idea()
+
+        # New: Intent clarity assessment and clarification
+        if INTENT_CLARIFICATION_AVAILABLE:
+            self.step_intent_clarity_assessment()
+            self.step_intent_clarification_loop()
+
         self.step_research_type()
         self.step_existing_resources()
         self.step_compute_resources()
@@ -181,11 +210,12 @@ class InitWizard:
         print("Welcome! This wizard will help you set up a new research project.")
         print("\nThe setup process includes:")
         print("  1. Define your research idea")
-        print("  2. Select research type")
-        print("  3. Handle existing resources (if any)")
-        print("  4. Configure compute resources")
-        print("  5. Confirm user profile")
-        print("  6. Review and finalize")
+        print("  2. Assess and clarify your intent")
+        print("  3. Select research type")
+        print("  4. Handle existing resources (if any)")
+        print("  5. Configure compute resources")
+        print("  6. Confirm user profile")
+        print("  7. Review and finalize")
 
         print("\nYour settings will be saved to:")
         print(f"  Project Root: {self.project_root}")
@@ -234,12 +264,151 @@ class InitWizard:
                     error_message="Invalid project ID. Use lowercase letters, numbers, and hyphens only. Must start with a letter.",
                 )
 
+    def step_intent_clarity_assessment(self) -> None:
+        """Step: Assess intent clarity and potentially trigger brainstorming.
+
+        Evaluates the clarity of the research idea and determines if
+        brainstorming is needed.
+        """
+        if not INTENT_CLARIFICATION_AVAILABLE:
+            logger.warning("Intent clarification module not available, skipping assessment")
+            self.responses.clarity_score = 0.8  # Default to high if unavailable
+            self.responses.clarified_idea = self.responses.research_idea
+            return
+
+        prompts.print_section("Step 2: Intent Clarity Assessment")
+
+        # Assess the research idea
+        print("Analyzing your research idea for clarity...")
+        assessment = assess_intent_clarity(self.responses.research_idea)
+        self.responses.clarity_score = assessment.score
+
+        # Display assessment
+        print("\n" + format_assessment_summary(assessment))
+
+        if should_trigger_brainstorming(assessment):
+            print("\n📊 Your research idea needs more development.")
+            print("   The research-ideation skill can help you explore directions.")
+
+            if self.interactive:
+                if prompts.prompt_yes_no(
+                    "\nWould you like to brainstorm research directions?",
+                    default=True,
+                ):
+                    self._trigger_brainstorming()
+                else:
+                    print("\nProceeding with current idea. You can run clarification later.")
+        elif assessment.score < MIN_CONFIRMATION_SCORE:
+            print(f"\n📈 Your idea is partially clear (score: {assessment.score:.2f}).")
+            print("   Let's clarify some details to ensure alignment.")
+        else:
+            print(f"\n✅ Your research idea is clear (score: {assessment.score:.2f}).")
+            self.responses.clarified_idea = self.responses.research_idea
+
+    def _trigger_brainstorming(self) -> None:
+        """Trigger brainstorming skill for research ideation."""
+        print("\n🧠 Launching research ideation skill...")
+        print("   This will help you develop and refine your research idea.")
+        print("\n   Note: In the current implementation, you should use:")
+        print("   /research-ideation to run the ideation skill")
+        print("\n   For now, we'll proceed with clarification questions.")
+        # The actual skill invocation would be done by the orchestrator
+        # Here we just set the flag for the orchestrator to handle
+
+    def step_intent_clarification_loop(self) -> None:
+        """Step: Run clarification loop if needed.
+
+        Asks targeted questions to improve clarity until threshold
+        is reached or max rounds exhausted.
+        """
+        if not INTENT_CLARIFICATION_AVAILABLE:
+            return
+
+        # Skip if already clear enough
+        if self.responses.clarity_score >= MIN_CONFIRMATION_SCORE:
+            if not self.responses.clarified_idea:
+                self.responses.clarified_idea = self.responses.research_idea
+            return
+
+        if not self.interactive:
+            # In non-interactive mode, just record the current state
+            self.responses.clarified_idea = self.responses.research_idea
+            return
+
+        prompts.print_section("Step 3: Intent Clarification")
+
+        print(f"Current clarity score: {self.responses.clarity_score:.2f}")
+        print(f"Target score: {MIN_CONFIRMATION_SCORE:.2f}")
+        print(f"Maximum rounds: {MAX_CLARIFICATION_ROUNDS}")
+        print()
+
+        current_idea = self.responses.research_idea
+        current_score = self.responses.clarity_score
+
+        while (self.responses.clarification_rounds < MAX_CLARIFICATION_ROUNDS
+               and current_score < MIN_CONFIRMATION_SCORE):
+
+            self.responses.clarification_rounds += 1
+            round_num = self.responses.clarification_rounds
+
+            print(f"\n--- Clarification Round {round_num} ---")
+
+            # Generate questions
+            assessment = assess_intent_clarity(current_idea)
+            questions = generate_clarification_questions(
+                current_idea,
+                assessment.gaps,
+                assessment.dimension_scores,
+                language="en",  # Could be made configurable
+            )
+
+            # Ask questions and collect responses
+            responses = []
+            for i, question in enumerate(questions, 1):
+                print(f"\nQ{i}: {question}")
+                response = prompts.prompt_text("Your answer", required=False, default="")
+                responses.append(response)
+
+            # Synthesize responses into updated idea
+            if any(responses):  # If any response was provided
+                synthesis = current_idea
+                for q, r in zip(questions, responses):
+                    if r.strip():
+                        synthesis += f"\n\n[Clarification] Q: {q}\nA: {r}"
+                current_idea = synthesis
+
+            # Re-assess
+            new_assessment = assess_intent_clarity(current_idea)
+            current_score = new_assessment.score
+
+            print(f"\nClarity score: {self.responses.clarity_score:.2f} → {current_score:.2f}")
+
+            # Update state
+            self.responses.clarity_score = current_score
+            self.responses.clarified_idea = current_idea
+
+            if current_score >= MIN_CONFIRMATION_SCORE:
+                print("\n✅ Clarity threshold reached!")
+                break
+
+            if self.responses.clarification_rounds < MAX_CLARIFICATION_ROUNDS:
+                if not prompts.prompt_yes_no("\nContinue clarifying?", default=True):
+                    break
+
+        # Final state
+        self.responses.clarified_idea = current_idea
+        self.responses.clarity_score = current_score
+
+        if current_score < MIN_CONFIRMATION_SCORE:
+            print(f"\n⚠️ Maximum rounds reached. Final score: {current_score:.2f}")
+            print("   Consider using /research-ideation for structured brainstorming.")
+
     def step_research_type(self) -> None:
-        """Step 3: Select research type."""
+        """Step: Select research type."""
         if not self.interactive:
             return
 
-        prompts.print_section("Step 2: Research Type")
+        prompts.print_section("Step 4: Research Type")
 
         print("Select the type of research you'll be conducting:")
 
@@ -281,8 +450,8 @@ class InitWizard:
             )
 
     def step_existing_resources(self) -> None:
-        """Step 4: Detect and handle existing resources."""
-        prompts.print_section("Step 3: Existing Resources")
+        """Step 5: Detect and handle existing resources."""
+        prompts.print_section("Step 5: Existing Resources")
 
         # Analyze directory
         try:
@@ -337,8 +506,8 @@ class InitWizard:
             self.responses.existing_resources_mode = "preserve"
 
     def step_compute_resources(self) -> None:
-        """Step 5: Configure compute resources (GPU)."""
-        prompts.print_section("Step 4: Compute Resources")
+        """Step 6: Configure compute resources (GPU)."""
+        prompts.print_section("Step 6: Compute Resources")
 
         # Check if GPU is needed
         research_info = RESEARCH_TYPES.get(self.responses.research_type, {})
@@ -452,8 +621,8 @@ class InitWizard:
                 print(f"Registered GPU: {device.id}")
 
     def step_user_profile(self) -> None:
-        """Step 6: Confirm or update user profile."""
-        prompts.print_section("Step 5: User Profile")
+        """Step 7: Confirm or update user profile."""
+        prompts.print_section("Step 7: User Profile")
 
         # Load existing user config
         config = user_config.load_user_config()
@@ -532,11 +701,11 @@ class InitWizard:
         print("\nProfile saved to user configuration.")
 
     def step_confirmation(self) -> None:
-        """Step 7: Review and confirm all settings."""
+        """Step 8: Review and confirm all settings."""
         if not self.interactive:
             return
 
-        prompts.print_section("Step 6: Confirmation")
+        prompts.print_section("Step 8: Confirmation")
 
         print("Please review your settings before proceeding:\n")
 
@@ -550,8 +719,16 @@ class InitWizard:
         print(f"Starting Phase: {self.responses.starting_phase}")
 
         print(f"\nResearch Type: {RESEARCH_TYPES[self.responses.research_type]['label']}")
-        print(f"\nResearch Idea:\n  {self.responses.research_idea[:200]}...")
-        if len(self.responses.research_idea) > 200:
+
+        # Display clarity score if available
+        if self.responses.clarity_score > 0:
+            print(f"\nIntent Clarity Score: {self.responses.clarity_score:.2f}")
+            print(f"  Clarification Rounds: {self.responses.clarification_rounds}")
+
+        # Display clarified idea if different from original
+        display_idea = self.responses.clarified_idea or self.responses.research_idea
+        print(f"\nResearch Idea:\n  {display_idea[:200]}...")
+        if len(display_idea) > 200:
             print("  [truncated]")
 
         print(f"\nExisting Resources: {self.responses.existing_resources_mode}")

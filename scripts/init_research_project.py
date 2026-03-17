@@ -133,6 +133,11 @@ def initialize_research_project(
     research_type: str = "ml_experiment",
     compute_config: dict[str, Any] | None = None,
     user_profile: dict[str, Any] | None = None,
+    skip_clarification: bool = False,
+    force_brainstorm: bool = False,
+    clarity_score: float = 0.0,
+    clarification_rounds: int = 0,
+    clarified_idea: str | None = None,
 ) -> dict[str, object]:
     """Initialize a research project with optional interactive wizard.
 
@@ -150,6 +155,11 @@ def initialize_research_project(
         research_type: Type of research (ml_experiment, theory, survey, applied).
         compute_config: Compute configuration from wizard.
         user_profile: User profile from wizard.
+        skip_clarification: Whether to skip intent clarification.
+        force_brainstorm: Whether to force brainstorming invocation.
+        clarity_score: Intent clarity score from wizard.
+        clarification_rounds: Number of clarification rounds performed.
+        clarified_idea: Final clarified research idea.
 
     Returns:
         Dictionary with initialization results.
@@ -223,6 +233,15 @@ def initialize_research_project(
     if user_profile:
         state["user_profile"] = user_profile
 
+    # Add intent clarification information
+    state["intent_clarification"] = {
+        "skip_clarification": skip_clarification,
+        "force_brainstorm": force_brainstorm,
+        "clarity_score": clarity_score,
+        "clarification_rounds": clarification_rounds,
+        "clarified_idea": clarified_idea or topic,
+    }
+
     variables = build_template_variables(project_root, state)
     rendered_files = render_template_tree(
         TEMPLATE_ROOT, project_root, variables, overwrite=overwrite_templates
@@ -294,6 +313,16 @@ def build_parser() -> argparse.ArgumentParser:
         choices=["ml_experiment", "theory", "survey", "applied"],
         help="Type of research project (used in non-interactive mode).",
     )
+    parser.add_argument(
+        "--skip-clarification",
+        action="store_true",
+        help="Skip intent clarification process. Use for advanced users with well-defined ideas.",
+    )
+    parser.add_argument(
+        "--force-brainstorm",
+        action="store_true",
+        help="Force invocation of research-ideation skill for brainstorming.",
+    )
     parser.add_argument("--json", action="store_true", help="Print a JSON summary.")
     return parser
 
@@ -336,6 +365,9 @@ def main() -> int:
         compute_config = wizard_responses.get("compute_config", {})
         user_profile = wizard_responses.get("user_profile", {})
         wizard_starting_phase = wizard_responses.get("starting_phase", normalized_phase)
+        clarity_score = wizard_responses.get("clarity_score", 0.0)
+        clarification_rounds = wizard_responses.get("clarification_rounds", 0)
+        clarified_idea = wizard_responses.get("clarified_idea", "")
 
         result = initialize_research_project(
             project_root=project_root,
@@ -351,6 +383,11 @@ def main() -> int:
             research_type=research_type,
             compute_config=compute_config,
             user_profile=user_profile,
+            skip_clarification=args.skip_clarification,
+            force_brainstorm=args.force_brainstorm,
+            clarity_score=clarity_score,
+            clarification_rounds=clarification_rounds,
+            clarified_idea=clarified_idea or topic,
         )
     else:
         # Non-interactive mode (original behavior)
@@ -366,6 +403,8 @@ def main() -> int:
             starting_phase=normalized_phase,
             interactive=False,
             research_type=args.research_type,
+            skip_clarification=args.skip_clarification,
+            force_brainstorm=args.force_brainstorm,
         )
     if args.json:
         print(json.dumps(result, ensure_ascii=False, indent=2))

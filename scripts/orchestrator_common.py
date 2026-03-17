@@ -936,6 +936,9 @@ def build_template_variables(project_root: Path, state: dict[str, Any]) -> dict[
         deliverables = state.get("deliverables", {})
         return deliverables.get(key, DEFAULT_DELIVERABLES.get(key, f"MISSING_{key}"))
 
+    # Get intent clarification info
+    intent_clarification = state.get("intent_clarification", {})
+
     return {
         "PROJECT_ID": state["project_id"],
         "TOPIC": state["topic"],
@@ -962,6 +965,11 @@ def build_template_variables(project_root: Path, state: dict[str, Any]) -> dict[
         "GATE_4_REPORT_PATH": get_deliverable("final_acceptance_report"),
         "GATE_5_REPORT_PATH": get_deliverable("runtime_improvement_report"),
         "CITATION_AUDIT_REPORT_PATH": get_deliverable("citation_audit_report"),
+        # Intent clarification variables
+        "CLARITY_SCORE": f"{intent_clarification.get('clarity_score', 0.0):.2f}",
+        "CLARIFICATION_ROUNDS": str(intent_clarification.get("clarification_rounds", 0)),
+        "CLARIFIED_IDEA": intent_clarification.get("clarified_idea", state["topic"]),
+        "RESEARCH_TYPE": state.get("research_type", "ml_experiment"),
     }
 
 
@@ -1000,6 +1008,48 @@ def render_template_tree(
         if write_text_if_needed(destination, content, overwrite=overwrite):
             created.append(destination)
     return created
+
+
+def detect_platform() -> str:
+    """Detect the current running platform.
+
+    Returns:
+        Platform name: "claude-code", "codex", or "unknown".
+    """
+    import os
+
+    # Check for Claude Code environment
+    if os.environ.get("CLAUDE_CODE"):
+        return "claude-code"
+
+    # Check for Codex/OpenAI environment
+    if os.environ.get("OPENAI_API_KEY") and not os.environ.get("ANTHROPIC_API_KEY"):
+        return "codex"
+
+    # Default to Claude Code as it's the primary platform
+    return "claude-code"
+
+
+def select_client_template(platform: str, template_root: Path) -> Path:
+    """Select the appropriate client instruction template.
+
+    Args:
+        platform: Platform name.
+        template_root: Root directory for templates.
+
+    Returns:
+        Path to the appropriate template file.
+    """
+    template_name = "CLAUDE.md.tmpl" if platform in ("claude-code", "claude") else "AGENTS.md.tmpl"
+    template_path = template_root / "project-root" / template_name
+
+    # Fall back to default if template doesn't exist
+    if not template_path.exists():
+        logger.warning(f"Template not found: {template_path}, using default")
+        # Return a placeholder - actual generation uses build_client_instruction_text
+        return None
+
+    return template_path
 
 
 def detect_client_profile(project_root: Path, init_paths: list[str], client_type: str) -> str:

@@ -62,16 +62,31 @@ The project uses semantic phase names:
 ### Option A: Start a New Project
 
 1. If the client supports `/init`, run it first in the target project directory. Do not rely on the generated Markdown file name.
-2. Initialize the standardized workspace:
+
+2. **Intent Clarification** (Recommended): Use interactive mode to clarify your research intent:
+
+```bash
+python3 scripts/init_research_project.py \
+  --project-root /abs/path/to/my-project \
+  --interactive
+```
+
+This runs the intent clarification process:
+- Assesses clarity of your research idea
+- Asks targeted questions based on information gaps
+- Generates `research-intent-confirmation.md`
+
+3. **Non-Interactive Initialization** (Advanced): Skip clarification if your idea is well-formed:
 
 ```bash
 python3 scripts/init_research_project.py \
   --project-root /abs/path/to/my-project \
   --topic "Your research idea or problem statement" \
-  --client-type auto
+  --client-type auto \
+  --skip-clarification
 ```
 
-3. (Optional) Specify a starting phase if resuming work or skipping completed phases:
+4. (Optional) Specify a starting phase if resuming work or skipping completed phases:
 
 ```bash
 # Start at pilot analysis phase
@@ -88,6 +103,15 @@ python3 scripts/init_research_project.py \
 ```
 
 Available starting phases: `survey`, `pilot`, `experiments`, `paper`, `reflection` (or legacy names: `01-survey`, `02-pilot-analysis`, `03-full-experiments`, `04-paper`, `05-reflection-evolution`)
+
+**Vague Idea?** If your research idea is unclear, use `--force-brainstorm` to invoke the ideation skill:
+
+```bash
+python3 scripts/init_research_project.py \
+  --project-root /abs/path/to/my-project \
+  --topic "I want to do NLP research" \
+  --force-brainstorm
+```
 
 ### Option B: Take Over an Existing Project
 
@@ -939,11 +963,39 @@ Before advancing to the next phase, ALL items in the corresponding gate checklis
 
 ### Gate 0: Initialization Check
 
+#### Mandatory Requirements
 - [ ] `.autoresearch/state/research-state.yaml` exists and is valid
 - [ ] `.autoresearch/config/orchestrator-config.yaml` exists
 - [ ] Required directories created (`paper/`, `code/`, `docs/`, `agents/`)
 - [ ] `AGENTS.md` or `CLAUDE.md` generated at project root
-- [ ] Research topic clarified and recorded
+
+#### Intent Confirmation (One Required)
+- [ ] **Option A:** `.autoresearch/research-intent-confirmation.md` exists with confirmed intent
+- [ ] **Option B:** `--skip-clarification` flag used with explicit acknowledgment
+
+#### Intent Clarification Process
+
+Before initialization, the research intent is clarified through:
+
+1. **Clarity Assessment** - Evaluate idea across five dimensions:
+   - Problem Definition (25%)
+   - Solution Direction (25%)
+   - Contribution Type (20%)
+   - Constraints (15%)
+   - Novelty Claim (15%)
+
+2. **Action by Score:**
+   - Score < 0.4: Invoke `research-ideation` skill for brainstorming
+   - Score 0.4-0.7: Run clarification loop (max 5 rounds)
+   - Score ≥ 0.7: Proceed to confirmation
+
+3. **Documentation** - Generate `research-intent-confirmation.md` with:
+   - Clarified research idea
+   - Key parameters (venue, timeline, resources)
+   - Success criteria
+   - Q&A history
+
+> See [skills/research-intent-clarification/SKILL.md](../research-intent-clarification/SKILL.md) and [references/intent-clarification-protocol.md](references/intent-clarification-protocol.md) for details.
 
 ### Gate 1: Survey → Pilot
 

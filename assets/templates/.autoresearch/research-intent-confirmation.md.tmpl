@@ -6,19 +6,30 @@ This document records the confirmed research intent after iterative clarificatio
 
 ---
 
+## Confirmation Summary
+
+| Metric | Value |
+|--------|-------|
+| **Clarity Score** | {{ clarity_score | default("0.80") }} |
+| **Clarification Rounds** | {{ rounds_count | default("0") }} |
+| **Status** | {{ status | default("Confirmed") }} |
+| **Confirmed At** | {{ confirmation_timestamp | default("N/A") }} |
+
+---
+
 ## Research Goal
 
-**Researcher's Statement:**
+**Researcher's Original Statement:**
 
-> [Researcher's original statement of the research goal]
+> {{ researcher_original_statement | default("[Researcher's original statement of the research goal]") }}
 
 **Orchestrator's Restatement:**
 
-> [Orchestrator's restatement in their own words]
+> {{ orchestrator_restatement | default("[Orchestrator's restatement in their own words]") }}
 
 **Confirmed Understanding:**
 
-> [Final mutually agreed understanding]
+> {{ confirmed_understanding | default("[Final mutually agreed understanding]") }}
 
 ---
 
@@ -26,10 +37,10 @@ This document records the confirmed research intent after iterative clarificatio
 
 ### Target Venue
 
-- **Venue Type:** [Conference / Journal / Preprint / Other]
-- **Target Name:** [e.g., CVPR, Nature, arXiv]
-- **Submission Deadline:** [Date or "Flexible"]
-- **Formatting Requirements:** [Link or reference]
+- **Venue Type:** {{ venue_type | default("[Conference / Journal / Preprint / Other]") }}
+- **Target Name:** {{ target_name | default("[e.g., CVPR, Nature, arXiv]") }}
+- **Submission Deadline:** {{ submission_deadline | default("[Date or 'Flexible']") }}
+- **Formatting Requirements:** {{ formatting_requirements | default("[Link or reference]") }}
 
 ### Contribution Type
 
@@ -38,30 +49,30 @@ This document records the confirmed research intent after iterative clarificatio
 - [ ] Application Study
 - [ ] Survey/Review
 - [ ] Benchmark/Evaluation
-- [ ] Other: ___________
+- [ ] Other: {{ contribution_other | default("___________") }}
 
 ### Timeline Constraints
 
-- **Hard Deadline:** [Date or "None"]
-- **Preferred Duration:** [e.g., "3 months", "Flexible"]
+- **Hard Deadline:** {{ hard_deadline | default("[Date or 'None']") }}
+- **Preferred Duration:** {{ preferred_duration | default("[e.g., '3 months', 'Flexible']") }}
 - **Milestones:**
-  1. [Milestone 1]: [Date]
-  2. [Milestone 2]: [Date]
-  3. [Milestone 3]: [Date]
+  1. {{ milestone_1 | default("[Milestone 1]") }}: {{ milestone_1_date | default("[Date]") }}
+  2. {{ milestone_2 | default("[Milestone 2]") }}: {{ milestone_2_date | default("[Date]") }}
+  3. {{ milestone_3 | default("[Milestone 3]") }}: {{ milestone_3_date | default("[Date]") }}
 
 ### Resource Limitations
 
 - **Compute Resources:**
-  - [ ] Local GPU available: [Specs]
-  - [ ] Cloud compute access: [Provider]
+  - [ ] Local GPU available: {{ local_gpu | default("[Specs]") }}
+  - [ ] Cloud compute access: {{ cloud_compute | default("[Provider]") }}
   - [ ] Limited/no GPU access
 
 - **Data Access:**
   - [ ] Public datasets only
-  - [ ] Private dataset access available: [Details]
+  - [ ] Private dataset access available: {{ private_data | default("[Details]") }}
   - [ ] Need to collect data
 
-- **Budget Constraints:** [Description or "None"]
+- **Budget Constraints:** {{ budget_constraints | default("[Description or 'None']") }}
 
 ---
 
@@ -71,50 +82,79 @@ This document records the confirmed research intent after iterative clarificatio
 
 What constitutes minimum acceptable outcome:
 
-1. [Criterion 1]
-2. [Criterion 2]
-3. [Criterion 3]
+1. {{ min_success_1 | default("[Criterion 1]") }}
+2. {{ min_success_2 | default("[Criterion 2]") }}
+3. {{ min_success_3 | default("[Criterion 3]") }}
 
 ### Target Success
 
 What constitutes successful completion:
 
-1. [Criterion 1]
-2. [Criterion 2]
-3. [Criterion 3]
+1. {{ target_success_1 | default("[Criterion 1]") }}
+2. {{ target_success_2 | default("[Criterion 2]") }}
+3. {{ target_success_3 | default("[Criterion 3]") }}
 
 ### Stretch Goals
 
 What would exceed expectations:
 
-1. [Goal 1]
-2. [Goal 2]
+1. {{ stretch_goal_1 | default("[Goal 1]") }}
+2. {{ stretch_goal_2 | default("[Goal 2]") }}
+
+---
+
+## Clarity Assessment
+
+### Dimension Scores
+
+| Dimension | Score | Weight | Weighted |
+|-----------|-------|--------|----------|
+| Problem Definition | {{ problem_score | default("0.80") }} | 25% | {{ problem_weighted | default("0.20") }} |
+| Solution Direction | {{ solution_score | default("0.80") }} | 25% | {{ solution_weighted | default("0.20") }} |
+| Contribution Type | {{ contribution_score | default("0.80") }} | 20% | {{ contribution_weighted | default("0.16") }} |
+| Constraints | {{ constraints_score | default("0.80") }} | 15% | {{ constraints_weighted | default("0.12") }} |
+| Novelty Claim | {{ novelty_score | default("0.80") }} | 15% | {{ novelty_weighted | default("0.12") }} |
+
+**Overall Clarity Score:** {{ clarity_score | default("0.80") }}
+
+### Identified Gaps (Before Clarification)
+
+{% for gap in gaps_before | default([]) %}
+- {{ gap }}
+{% endfor %}
+{% if not gaps_before %}
+- No significant gaps identified
+{% endif %}
 
 ---
 
 ## Clarification History
 
-### Round 1
+{% for round in clarification_rounds | default([]) %}
 
-**Date:** [ISO datetime]
+### Round {{ round.number }}
 
-**Orchestrator Questions:**
-1. [Question 1]
-2. [Question 2]
+**Date:** {{ round.timestamp | default("[ISO datetime]") }}
 
-**Researcher Responses:**
-1. [Response 1]
-2. [Response 2]
+**Clarity Progress:** {{ round.clarity_before | default("0.00") }} → {{ round.clarity_after | default("0.00") }}
 
-### Round 2
+| # | Question | Response |
+|---|----------|----------|
+{% for qa in round.qa_pairs | default([]) %}
+| {{ loop.index }} | {{ qa.question }} | {{ qa.response }} |
+{% endfor %}
 
-**Date:** [ISO datetime]
+{% if round.key_insights %}
+**Key Insights:**
+{% for insight in round.key_insights %}
+- {{ insight }}
+{% endfor %}
+{% endif %}
 
-**Orchestrator Questions:**
-1. [Question 1]
+{% else %}
+_No clarification rounds were needed - initial idea was sufficiently clear._
 
-**Researcher Responses:**
-1. [Response 1]
+{% endfor %}
 
 ---
 
@@ -123,13 +163,13 @@ What would exceed expectations:
 **Intent Confirmed:** [ ] Yes [ ] No
 
 **Confirmed By:**
-- Researcher: [Name/ID]
-- Date: [ISO datetime]
-- Session: [Session ID]
+- Researcher: {{ researcher_name | default("[Name/ID]") }}
+- Date: {{ confirmation_date | default("[ISO datetime]") }}
+- Session: {{ session_id | default("[Session ID]") }}
 
 **Orchestrator Notes:**
 
-[Any additional notes about the confirmation process]
+{{ orchestrator_notes | default("[Any additional notes about the confirmation process]") }}
 
 ---
 
@@ -152,3 +192,7 @@ Use this section if the research intent changes during the project:
 **Impact:**
 
 [How this affects the project]
+
+---
+
+_Generated by AI Research Orchestrator v{{ system_version | default("1.0.0") }}_
