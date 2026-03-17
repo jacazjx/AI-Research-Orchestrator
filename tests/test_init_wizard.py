@@ -125,6 +125,7 @@ class InitWizardNonInteractiveTest(unittest.TestCase):
     def tearDown(self) -> None:
         """Clean up test fixtures."""
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     def test_non_interactive_uses_defaults(self) -> None:
@@ -196,6 +197,7 @@ class InitWizardStepsTest(unittest.TestCase):
         if self.original_home:
             os.environ["HOME"] = self.original_home
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     @patch("builtins.input", return_value="y")
@@ -229,10 +231,7 @@ class InitWizardStepsTest(unittest.TestCase):
         )
         wizard.step_research_type()
 
-        self.assertIn(
-            wizard.responses.research_type,
-            INIT_WIZARD.RESEARCH_TYPES.keys()
-        )
+        self.assertIn(wizard.responses.research_type, INIT_WIZARD.RESEARCH_TYPES.keys())
 
     def test_step_user_profile_non_interactive(self) -> None:
         """Test user profile step in non-interactive mode."""
@@ -269,6 +268,7 @@ class InitWizardExistingResourcesTest(unittest.TestCase):
     def tearDown(self) -> None:
         """Clean up test fixtures."""
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     def test_empty_directory(self) -> None:
@@ -327,6 +327,7 @@ class RunWizardFunctionTest(unittest.TestCase):
     def tearDown(self) -> None:
         """Clean up test fixtures."""
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     def test_run_wizard_non_interactive(self) -> None:
@@ -380,15 +381,22 @@ class BuildParserTest(unittest.TestCase):
     def test_parser_all_args(self) -> None:
         """Test parser with all arguments."""
         parser = INIT_WIZARD.build_parser()
-        args = parser.parse_args([
-            "--project-root", "/tmp/test",
-            "--non-interactive",
-            "--idea", "Test idea",
-            "--research-type", "theory",
-            "--project-id", "test-project",
-            "--starting-phase", "pilot",
-            "--json",
-        ])
+        args = parser.parse_args(
+            [
+                "--project-root",
+                "/tmp/test",
+                "--non-interactive",
+                "--idea",
+                "Test idea",
+                "--research-type",
+                "theory",
+                "--project-id",
+                "test-project",
+                "--starting-phase",
+                "pilot",
+                "--json",
+            ]
+        )
 
         self.assertEqual(args.project_root, "/tmp/test")
         self.assertTrue(args.non_interactive)
@@ -402,19 +410,27 @@ class BuildParserTest(unittest.TestCase):
         """Test parser rejects invalid research type."""
         parser = INIT_WIZARD.build_parser()
         with self.assertRaises(SystemExit):
-            parser.parse_args([
-                "--project-root", "/tmp/test",
-                "--research-type", "invalid_type",
-            ])
+            parser.parse_args(
+                [
+                    "--project-root",
+                    "/tmp/test",
+                    "--research-type",
+                    "invalid_type",
+                ]
+            )
 
     def test_parser_invalid_starting_phase(self) -> None:
         """Test parser rejects invalid starting phase."""
         parser = INIT_WIZARD.build_parser()
         with self.assertRaises(SystemExit):
-            parser.parse_args([
-                "--project-root", "/tmp/test",
-                "--starting-phase", "invalid_phase",
-            ])
+            parser.parse_args(
+                [
+                    "--project-root",
+                    "/tmp/test",
+                    "--starting-phase",
+                    "invalid_phase",
+                ]
+            )
 
 
 class MainFunctionTest(unittest.TestCase):
@@ -431,9 +447,12 @@ class MainFunctionTest(unittest.TestCase):
         if self.original_home:
             os.environ["HOME"] = self.original_home
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
-    @patch("sys.argv", ["init_wizard.py", "--project-root", "/tmp/test", "--non-interactive", "--json"])
+    @patch(
+        "sys.argv", ["init_wizard.py", "--project-root", "/tmp/test", "--non-interactive", "--json"]
+    )
     def test_main_non_interactive_json(self) -> None:
         """Test main function with JSON output."""
         # Create the test directory
@@ -460,6 +479,7 @@ class ConfirmationStepTest(unittest.TestCase):
     def tearDown(self) -> None:
         """Clean up test fixtures."""
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     @patch("builtins.input", return_value="y")
@@ -503,6 +523,7 @@ class ProjectIdGenerationTest(unittest.TestCase):
     def tearDown(self) -> None:
         """Clean up test fixtures."""
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     @patch("builtins.input", side_effect=["neural network optimization", "END", "y"])
@@ -518,8 +539,11 @@ class ProjectIdGenerationTest(unittest.TestCase):
         self.assertIsNotNone(wizard.responses.project_id)
         # Should contain relevant words from the idea
         self.assertTrue(
-            any(word in wizard.responses.project_id for word in ["neural", "network", "optimization"]),
-            f"Project ID '{wizard.responses.project_id}' should contain words from idea"
+            any(
+                word in wizard.responses.project_id
+                for word in ["neural", "network", "optimization"]
+            ),
+            f"Project ID '{wizard.responses.project_id}' should contain words from idea",
         )
 
 
@@ -538,6 +562,7 @@ class InitWizardInteractiveModeTest(unittest.TestCase):
         if self.original_home:
             os.environ["HOME"] = self.original_home
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     @patch("builtins.input", side_effect=["neural networks", "END", "n", "my-custom-id"])
@@ -551,7 +576,9 @@ class InitWizardInteractiveModeTest(unittest.TestCase):
 
         self.assertEqual(wizard.responses.project_id, "my-custom-id")
 
-    @patch("builtins.input", side_effect=["1", "n", "3"])  # Select theory, no to survey start, select pilot
+    @patch(
+        "builtins.input", side_effect=["1", "n", "3"]
+    )  # Select theory, no to survey start, select pilot
     def test_custom_starting_phase(self, mock_input: callable) -> None:
         """Test that user can select custom starting phase."""
         wizard = INIT_WIZARD.InitWizard(
@@ -563,7 +590,10 @@ class InitWizardInteractiveModeTest(unittest.TestCase):
         self.assertEqual(wizard.responses.research_type, "ml_experiment")
         self.assertEqual(wizard.responses.starting_phase, "experiments")
 
-    @patch("builtins.input", side_effect=["Test User", "test@example.com", "Test University", "0000-0000-0000-0001"])
+    @patch(
+        "builtins.input",
+        side_effect=["Test User", "test@example.com", "Test University", "0000-0000-0000-0001"],
+    )
     def test_user_profile_interactive(self, mock_input: callable) -> None:
         """Test user profile collection in interactive mode."""
         wizard = INIT_WIZARD.InitWizard(
@@ -608,6 +638,7 @@ class ComputeResourcesTest(unittest.TestCase):
         if self.original_home:
             os.environ["HOME"] = self.original_home
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     @patch("builtins.input", return_value="2")  # Select local
@@ -667,6 +698,7 @@ class ConfirmationDisplayTest(unittest.TestCase):
     def tearDown(self) -> None:
         """Clean up test fixtures."""
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     @patch("builtins.input", return_value="y")
@@ -723,6 +755,7 @@ class RunWizardValidationTest(unittest.TestCase):
     def tearDown(self) -> None:
         """Clean up test fixtures."""
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     @patch("builtins.input", return_value="n")
@@ -759,6 +792,7 @@ class StepWelcomeTest(unittest.TestCase):
     def tearDown(self) -> None:
         """Clean up test fixtures."""
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     @patch("builtins.input", return_value="y")

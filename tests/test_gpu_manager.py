@@ -456,7 +456,12 @@ class GPUAllocationTest(unittest.TestCase):
 
             registry = {
                 "devices": [
-                    {"id": "local-0", "name": "RTX 4090", "status": "busy", "allocated_to": "job-0"},
+                    {
+                        "id": "local-0",
+                        "name": "RTX 4090",
+                        "status": "busy",
+                        "allocated_to": "job-0",
+                    },
                 ]
             }
             GPU_MANAGER.save_user_gpu_registry(registry)
@@ -472,7 +477,12 @@ class GPUAllocationTest(unittest.TestCase):
 
             registry = {
                 "devices": [
-                    {"id": "local-0", "name": "RTX 4090", "status": "busy", "allocated_to": "job-1"},
+                    {
+                        "id": "local-0",
+                        "name": "RTX 4090",
+                        "status": "busy",
+                        "allocated_to": "job-1",
+                    },
                 ]
             }
             GPU_MANAGER.save_user_gpu_registry(registry)
@@ -591,8 +601,20 @@ class SelectBestGPUTest(unittest.TestCase):
 
             registry = {
                 "devices": [
-                    {"id": "local-0", "name": "RTX 4090", "status": "available", "memory_gb": 24.0, "total_hours": 10.0},
-                    {"id": "local-1", "name": "RTX 3090", "status": "available", "memory_gb": 24.0, "total_hours": 5.0},
+                    {
+                        "id": "local-0",
+                        "name": "RTX 4090",
+                        "status": "available",
+                        "memory_gb": 24.0,
+                        "total_hours": 10.0,
+                    },
+                    {
+                        "id": "local-1",
+                        "name": "RTX 3090",
+                        "status": "available",
+                        "memory_gb": 24.0,
+                        "total_hours": 5.0,
+                    },
                 ]
             }
             GPU_MANAGER.save_user_gpu_registry(registry)
@@ -610,7 +632,13 @@ class SelectBestGPUTest(unittest.TestCase):
             registry = {
                 "devices": [
                     {"id": "local-0", "name": "RTX 3090", "status": "available", "memory_gb": 24.0},
-                    {"id": "remote-0", "name": "A100", "status": "available", "memory_gb": 80.0, "type": "ssh"},
+                    {
+                        "id": "remote-0",
+                        "name": "A100",
+                        "status": "available",
+                        "memory_gb": 80.0,
+                        "type": "ssh",
+                    },
                 ]
             }
             GPU_MANAGER.save_user_gpu_registry(registry)
@@ -626,8 +654,22 @@ class SelectBestGPUTest(unittest.TestCase):
 
             registry = {
                 "devices": [
-                    {"id": "local-0", "name": "RTX 4090", "status": "available", "memory_gb": 24.0, "type": "local", "total_hours": 0},
-                    {"id": "remote-0", "name": "A100", "status": "available", "memory_gb": 80.0, "type": "ssh", "total_hours": 0},
+                    {
+                        "id": "local-0",
+                        "name": "RTX 4090",
+                        "status": "available",
+                        "memory_gb": 24.0,
+                        "type": "local",
+                        "total_hours": 0,
+                    },
+                    {
+                        "id": "remote-0",
+                        "name": "A100",
+                        "status": "available",
+                        "memory_gb": 80.0,
+                        "type": "ssh",
+                        "total_hours": 0,
+                    },
                 ]
             }
             GPU_MANAGER.save_user_gpu_registry(registry)
@@ -643,8 +685,20 @@ class SelectBestGPUTest(unittest.TestCase):
 
             registry = {
                 "devices": [
-                    {"id": "local-0", "name": "RTX 4090", "status": "available", "memory_gb": 24.0, "total_hours": 0},
-                    {"id": "local-1", "name": "RTX 3090", "status": "available", "memory_gb": 24.0, "total_hours": 0},
+                    {
+                        "id": "local-0",
+                        "name": "RTX 4090",
+                        "status": "available",
+                        "memory_gb": 24.0,
+                        "total_hours": 0,
+                    },
+                    {
+                        "id": "local-1",
+                        "name": "RTX 3090",
+                        "status": "available",
+                        "memory_gb": 24.0,
+                        "total_hours": 0,
+                    },
                 ]
             }
             GPU_MANAGER.save_user_gpu_registry(registry)
@@ -660,7 +714,12 @@ class SelectBestGPUTest(unittest.TestCase):
 
             registry = {
                 "devices": [
-                    {"id": "local-0", "name": "RTX 4090", "status": "busy", "allocated_to": "job-1"},
+                    {
+                        "id": "local-0",
+                        "name": "RTX 4090",
+                        "status": "busy",
+                        "allocated_to": "job-1",
+                    },
                 ]
             }
             GPU_MANAGER.save_user_gpu_registry(registry)
@@ -690,7 +749,12 @@ class ListAvailableGPUsTest(unittest.TestCase):
             registry = {
                 "devices": [
                     {"id": "local-0", "name": "RTX 4090", "status": "available"},
-                    {"id": "local-1", "name": "RTX 3090", "status": "busy", "allocated_to": "job-1"},
+                    {
+                        "id": "local-1",
+                        "name": "RTX 3090",
+                        "status": "busy",
+                        "allocated_to": "job-1",
+                    },
                     {"id": "local-2", "name": "RTX 3080", "status": "available"},
                 ]
             }

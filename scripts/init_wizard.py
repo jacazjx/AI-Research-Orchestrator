@@ -36,24 +36,24 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 SKILL_DIR = SCRIPT_DIR.parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from exceptions import ValidationError
-
 # Import local modules
 import gpu_manager
 import legacy_handler
 import prompts
 import user_config
+from exceptions import ValidationError
 
 # Import intent clarification module
 try:
     from intent_clarification import (
-        assess_intent_clarity,
-        generate_clarification_questions,
-        format_assessment_summary,
-        should_trigger_brainstorming,
         MAX_CLARIFICATION_ROUNDS,
         MIN_CONFIRMATION_SCORE,
+        assess_intent_clarity,
+        format_assessment_summary,
+        generate_clarification_questions,
+        should_trigger_brainstorming,
     )
+
     INTENT_CLARIFICATION_AVAILABLE = True
 except ImportError:
     INTENT_CLARIFICATION_AVAILABLE = False
@@ -345,8 +345,10 @@ class InitWizard:
         current_idea = self.responses.research_idea
         current_score = self.responses.clarity_score
 
-        while (self.responses.clarification_rounds < MAX_CLARIFICATION_ROUNDS
-               and current_score < MIN_CONFIRMATION_SCORE):
+        while (
+            self.responses.clarification_rounds < MAX_CLARIFICATION_ROUNDS
+            and current_score < MIN_CONFIRMATION_SCORE
+        ):
 
             self.responses.clarification_rounds += 1
             round_num = self.responses.clarification_rounds
@@ -414,8 +416,7 @@ class InitWizard:
 
         # Build choices dict
         choices = {
-            key: f"{info['label']} - {info['description']}"
-            for key, info in RESEARCH_TYPES.items()
+            key: f"{info['label']} - {info['description']}" for key, info in RESEARCH_TYPES.items()
         }
 
         selected = prompts.prompt_choice(
@@ -440,8 +441,7 @@ class InitWizard:
             self.responses.starting_phase = "survey"
         else:
             phase_choices = {
-                phase: phase.replace("_", " ").title()
-                for phase in VALID_STARTING_PHASES
+                phase: phase.replace("_", " ").title() for phase in VALID_STARTING_PHASES
             }
             self.responses.starting_phase = prompts.prompt_choice(
                 "Select starting phase",

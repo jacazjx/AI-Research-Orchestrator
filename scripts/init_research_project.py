@@ -26,10 +26,10 @@ from orchestrator_common import (
 
 # Import new modules for interactive wizard support
 try:
-    from user_config import load_user_config, merge_configs
-    from legacy_handler import analyze_directory_contents, handle_non_empty_directory
     from init_wizard import run_wizard
+    from legacy_handler import analyze_directory_contents, handle_non_empty_directory
     from state_migrator import CURRENT_STATE_VERSION
+    from user_config import load_user_config, merge_configs
 
     INTERACTIVE_MODE_AVAILABLE = True
 except ImportError:
@@ -173,6 +173,7 @@ def initialize_research_project(
         if not analysis.is_empty and not interactive:
             # Non-interactive mode with non-empty directory - preserve existing files
             from legacy_handler import handle_non_empty_directory
+
             migration_result = handle_non_empty_directory(
                 project_root,
                 mode="preserve",
@@ -303,7 +304,8 @@ def build_parser() -> argparse.ArgumentParser:
         help="Phase to start the project at. Use for resuming work or skipping completed phases.",
     )
     parser.add_argument(
-        "--interactive", "-i",
+        "--interactive",
+        "-i",
         action="store_true",
         help="Run interactive initialization wizard to guide through project setup.",
     )
@@ -339,7 +341,10 @@ def main() -> int:
     if args.interactive:
         if not INTERACTIVE_MODE_AVAILABLE:
             print("Error: Interactive mode requires additional modules.", file=sys.stderr)
-            print("Please ensure user_config.py, legacy_handler.py, and init_wizard.py are available.", file=sys.stderr)
+            print(
+                "Please ensure user_config.py, legacy_handler.py, and init_wizard.py are available.",
+                file=sys.stderr,
+            )
             return 1
 
         print("=" * 60)

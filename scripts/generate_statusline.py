@@ -84,6 +84,7 @@ def _get_phase_loop_key(phase: str) -> str:
     normalized = normalize_phase_name(phase)
     return _PHASE_LOOP_KEY_MAP.get(normalized, "")
 
+
 # Agent definitions for each phase (using new semantic names)
 PHASE_AGENTS = {
     "survey": {

@@ -23,7 +23,6 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-
 from exceptions import ConfigurationError
 
 # Configure module logger
