@@ -27,8 +27,8 @@ SCRIPTS_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPTS_DIR))
 
 from orchestrator_common import (
-    gitmem_check_loop,
     gitmem_checkpoint,
+    gitmem_check_loop,
     gitmem_commit,
     gitmem_diff,
     gitmem_get_loop_info,

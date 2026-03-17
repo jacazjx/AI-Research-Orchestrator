@@ -262,7 +262,9 @@ class CreateLegacyBackupTest(unittest.TestCase):
             (project_root / "file1.xyz").write_text("content1", encoding="utf-8")
             (project_root / "file2.xyz").write_text("content2", encoding="utf-8")
 
-            legacy_path = LEGACY.create_legacy_backup(project_root, ["file1.xyz", "file2.xyz"])
+            legacy_path = LEGACY.create_legacy_backup(
+                project_root, ["file1.xyz", "file2.xyz"]
+            )
 
             # Original files should be gone
             self.assertFalse((project_root / "file1.xyz").exists())
@@ -298,7 +300,9 @@ class CreateLegacyBackupTest(unittest.TestCase):
             (project_root / "subdir").mkdir()
             (project_root / "subdir" / "nested.xyz").write_text("nested", encoding="utf-8")
 
-            legacy_path = LEGACY.create_legacy_backup(project_root, ["subdir/nested.xyz"])
+            legacy_path = LEGACY.create_legacy_backup(
+                project_root, ["subdir/nested.xyz"]
+            )
 
             self.assertTrue((legacy_path / "subdir" / "nested.xyz").exists())
 
@@ -320,7 +324,9 @@ class CreateLegacyBackupTest(unittest.TestCase):
             # Create one file, but try to migrate two
             (project_root / "exists.xyz").write_text("content", encoding="utf-8")
 
-            legacy_path = LEGACY.create_legacy_backup(project_root, ["exists.xyz", "missing.xyz"])
+            legacy_path = LEGACY.create_legacy_backup(
+                project_root, ["exists.xyz", "missing.xyz"]
+            )
 
             manifest_path = legacy_path / "manifest.json"
             with open(manifest_path, encoding="utf-8") as f:

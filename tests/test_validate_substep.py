@@ -663,7 +663,13 @@ class TestEdgeCases:
     def test_get_next_substep_with_single_substep(self, temp_project_root):
         """Test get_next_substep when phase has only one substep."""
         config = {
-            "phases": {"survey": {"substeps": [{"name": "only_substep", "primary_skill": "test"}]}}
+            "phases": {
+                "survey": {
+                    "substeps": [
+                        {"name": "only_substep", "primary_skill": "test"}
+                    ]
+                }
+            }
         }
 
         next_substep = get_next_substep(config, "survey", "only_substep")
@@ -672,13 +678,7 @@ class TestEdgeCases:
 
     def test_artifact_with_special_characters_in_path(self, temp_project_root):
         """Test artifact check with special characters in path."""
-        artifact = (
-            temp_project_root
-            / "docs"
-            / "reports"
-            / "survey"
-            / "file-with-dashes_and_underscores.md"
-        )
+        artifact = temp_project_root / "docs" / "reports" / "survey" / "file-with-dashes_and_underscores.md"
         artifact.parent.mkdir(parents=True, exist_ok=True)
         artifact.write_text("content", encoding="utf-8")
 

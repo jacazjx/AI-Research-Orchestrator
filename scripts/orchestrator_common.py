@@ -1167,7 +1167,7 @@ def load_state(project_root: Path) -> dict[str, Any]:
     state["language_policy"] = dict(config["languages"])
 
     # State version migration
-    from state_migrator import migrate_state, needs_migration
+    from state_migrator import needs_migration, migrate_state
 
     if needs_migration(state):
         state, migration_logs = migrate_state(state)

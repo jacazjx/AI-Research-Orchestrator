@@ -29,6 +29,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+
 # Constants
 MAX_CLARIFICATION_ROUNDS = 5
 MIN_CONFIRMATION_SCORE = 0.7
@@ -396,7 +397,10 @@ def assess_intent_clarity(
         all_gaps.extend(gaps)
 
     # Calculate weighted overall score
-    overall_score = sum(dimension_scores[dim] * weight for dim, weight in DIMENSION_WEIGHTS.items())
+    overall_score = sum(
+        dimension_scores[dim] * weight
+        for dim, weight in DIMENSION_WEIGHTS.items()
+    )
 
     # Determine suggested action
     if overall_score < BRAINSTORM_THRESHOLD:

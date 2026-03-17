@@ -517,9 +517,7 @@ class GitMemCommitEdgeCasesTest(unittest.TestCase):
         test_file.write_text("content\n", encoding="utf-8")
 
         # This should not raise an error, just log a warning
-        commit_hash = COMMON.gitmem_commit(
-            self.project_root, "other/file.md", "Commit outside tracked"
-        )
+        commit_hash = COMMON.gitmem_commit(self.project_root, "other/file.md", "Commit outside tracked")
         self.assertIsInstance(commit_hash, str)
 
     def test_commit_with_no_changes(self) -> None:
@@ -576,9 +574,7 @@ class GitMemRollbackEdgeCasesTest(unittest.TestCase):
             test_file.write_text("content\n", encoding="utf-8")
             COMMON.gitmem_commit(project_root, "docs/reports/test.md", "Initial")
 
-            result = COMMON.gitmem_rollback(
-                project_root, "docs/reports/test.md", to_rev="nonexistent"
-            )
+            result = COMMON.gitmem_rollback(project_root, "docs/reports/test.md", to_rev="nonexistent")
             self.assertFalse(result)
 
 

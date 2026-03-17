@@ -291,7 +291,9 @@ def get_migration_path(from_version: str, to_version: str) -> list[tuple[str, st
         raise ValueError(f"Unknown version in migration path: {e}") from e
 
     if from_idx > to_idx:
-        raise ValueError(f"Cannot migrate backwards from {from_version} to {to_version}")
+        raise ValueError(
+            f"Cannot migrate backwards from {from_version} to {to_version}"
+        )
 
     path = []
     for i in range(from_idx, to_idx):
@@ -399,7 +401,9 @@ def get_migration_info(state: dict[str, Any]) -> dict[str, Any]:
             try:
                 path = get_migration_path(current, CURRENT_STATE_VERSION)
                 result["migration_steps"] = len(path)
-                result["migration_path"] = [f"{frm} -> {to}" for frm, to in path]
+                result["migration_path"] = [
+                    f"{frm} -> {to}" for frm, to in path
+                ]
             except ValueError as e:
                 result["error"] = str(e)
 

@@ -317,9 +317,7 @@ class GenerateProjectIdFromIdeaTest(unittest.TestCase):
 
     def test_long_idea_truncated(self) -> None:
         """Test long idea is truncated."""
-        long_idea = (
-            "neural network optimization for deep learning models in computer vision applications"
-        )
+        long_idea = "neural network optimization for deep learning models in computer vision applications"
         result = PROMPTS.generate_project_id_from_idea(long_idea)
         self.assertLessEqual(len(result), 50)
 
