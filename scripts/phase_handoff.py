@@ -20,7 +20,6 @@ SKILL_DIR = SCRIPT_DIR.parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
 from orchestrator_common import (  # noqa: E402
-    PHASE_AGENT_PAIRS,
     ensure_project_structure,
     write_yaml,
 )

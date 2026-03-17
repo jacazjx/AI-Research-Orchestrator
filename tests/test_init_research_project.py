@@ -185,14 +185,14 @@ class InitializeResearchProjectTest(unittest.TestCase):
             project_root = Path(temp_dir) / "progress-project"
 
             # Test with survey phase (0%)
-            result1 = INIT.initialize_research_project(
+            _ = INIT.initialize_research_project(
                 project_root=project_root / "project1",
                 topic="Test project 1",
                 starting_phase="survey",
             )
 
             # Test with paper phase (60%)
-            result2 = INIT.initialize_research_project(
+            _ = INIT.initialize_research_project(
                 project_root=project_root / "project2",
                 topic="Test project 2",
                 starting_phase="paper",

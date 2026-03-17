@@ -23,74 +23,69 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-import yaml
+# Import all constants from constants module
+# noqa: I001,I004 -- Use simple imports (not scripts.*)
+# for script compatibility
+# type: ignore[import-untyped]
+from constants import (  # Version constants  # noqa: F401
+    AGENT_DIRECTORIES,
+    DEFAULT_DELIVERABLES,
+    DEFAULT_LOOP_LIMITS,
+    EXPECTED_DELIVERABLE_PREFIXES,
+    HANDOFF_REQUIREMENTS,
+    LEGACY_TO_SEMANTIC_PHASE,
+    LOOP_REQUIREMENTS,
+    MAIN_DIRECTORIES,
+    NEXT_PHASE,
+    NEXT_PHASE_LEGACY,
+    OLD_TO_NEW_PATH_MAPPING,
+    PHASE_AGENT_PAIRS,
+    PHASE_COMPLETION,
+    PHASE_DIRECTORIES,
+    PHASE_LOOP_KEY,
+    PHASE_REQUIRED_DELIVERABLES,
+    PHASE_SEQUENCE,
+    PHASE_TO_GATE,
+    PHASE_TO_GATE_LEGACY,
+    PHASE_TO_REVIEW,
+    REQUIRED_DIRECTORIES,
+    SCRIPT_DIR,
+    SEMANTIC_TO_LEGACY_PHASE,
+    SKILL_DIR,
+    STRUCTURED_SIGNAL_REQUIREMENTS,
+    SYSTEM_DIRECTORIES,
+    SYSTEM_VERSION,
+    SYSTEM_VERSION_NAME,
+    TEMPLATE_ROOT,
+    VERSION_HISTORY,
+    get_all_phase_aliases,
+    get_legacy_phase_name,
+    get_phase_agents,
+    normalize_phase_name,
+)
+
+# Import all utilities from utils module
+# noqa: I001,I004 -- Use simple imports (not scripts.*)
+# for script compatibility
+# type: ignore[import-untyped]
+from utils import (  # noqa: F401
+    build_template_variables,
+    normalize_relative_path,
+    read_yaml,
+    render_template_string,
+    render_template_tree,
+    slugify,
+    write_text_if_needed,
+    write_yaml,
+    yaml_dump,
+    yaml_load,
+)
 
 # ============================================================================
 # Import from new modular structure
 # Use direct imports for script-level compatibility (scripts run from scripts/ dir)
 # ============================================================================
 
-# Import all constants from constants module
-# noqa: I001,I004 -- Use simple imports (not scripts.*) for script compatibility
-from constants import (  # type: ignore[import-untyped]
-    # Version constants
-    SYSTEM_VERSION,
-    SYSTEM_VERSION_NAME,
-    VERSION_HISTORY,
-    # Path constants
-    SCRIPT_DIR,
-    SKILL_DIR,
-    TEMPLATE_ROOT,
-    PHASE_DIRECTORIES,
-    MAIN_DIRECTORIES,
-    AGENT_DIRECTORIES,
-    SYSTEM_DIRECTORIES,
-    REQUIRED_DIRECTORIES,
-    DEFAULT_DELIVERABLES,
-    EXPECTED_DELIVERABLE_PREFIXES,
-    OLD_TO_NEW_PATH_MAPPING,
-    # Phase constants
-    PHASE_SEQUENCE,
-    PHASE_AGENT_PAIRS,
-    LEGACY_TO_SEMANTIC_PHASE,
-    SEMANTIC_TO_LEGACY_PHASE,
-    PHASE_TO_GATE,
-    PHASE_TO_GATE_LEGACY,
-    NEXT_PHASE,
-    NEXT_PHASE_LEGACY,
-    HANDOFF_REQUIREMENTS,
-    LOOP_REQUIREMENTS,
-    PHASE_REQUIRED_DELIVERABLES,
-    PHASE_TO_REVIEW,
-    PHASE_LOOP_KEY,
-    PHASE_COMPLETION,
-    DEFAULT_LOOP_LIMITS,
-    STRUCTURED_SIGNAL_REQUIREMENTS,
-    # Phase helper functions
-    normalize_phase_name,
-    get_legacy_phase_name,
-    get_all_phase_aliases,
-    get_phase_agents,
-)
-
-# Import all utilities from utils module
-# noqa: I001,I004 -- Use simple imports (not scripts.*) for script compatibility
-from utils import (  # type: ignore[import-untyped]
-    # YAML utilities
-    yaml_dump,
-    yaml_load,
-    read_yaml,
-    write_yaml,
-    # Path utilities
-    normalize_relative_path,
-    # Text utilities
-    slugify,
-    # Template utilities
-    build_template_variables,
-    render_template_string,
-    render_template_tree,
-    write_text_if_needed,
-)
 
 # Configure module logger
 logger = logging.getLogger(__name__)
@@ -693,7 +688,7 @@ def load_state(project_root: Path) -> dict[str, Any]:
     state["language_policy"] = dict(config["languages"])
 
     # State version migration
-    from state_migrator import needs_migration, migrate_state  # type: ignore[import-untyped]
+    from state_migrator import migrate_state, needs_migration  # type: ignore[import-untyped]
 
     if needs_migration(state):
         state, migration_logs = migrate_state(state)

@@ -6,7 +6,6 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import yaml
-
 from generate_dashboard import generate_dashboard
 
 from orchestrator_common import (

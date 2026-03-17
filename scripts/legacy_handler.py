@@ -30,8 +30,11 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 SKILL_DIR = SCRIPT_DIR.parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from exceptions import OrchestratorError, ValidationError
-from orchestrator_common import REQUIRED_DIRECTORIES  # noqa: E402
+from exceptions import OrchestratorError, ValidationError  # noqa: E402
+
+from orchestrator_common import (  # noqa: E402,F401
+    REQUIRED_DIRECTORIES,
+)
 
 # Recognized file patterns for research projects
 RECOGNIZED_PATTERNS: dict[str, list[str]] = {
@@ -573,9 +576,9 @@ def generate_migration_report(
         if content.get("code_modules"):
             lines.append("**Code Modules**:")
             for module in content["code_modules"][:5]:
-                lines.append(
-                    f"- `{module['file']}`: {len(module['classes'])} classes, {len(module['functions'])} functions"
-                )
+                classes = len(module["classes"])
+                functions = len(module["functions"])
+                lines.append(f"- `{module['file']}`: {classes} classes, {functions} functions")
             lines.append("")
 
         if content.get("data_files"):

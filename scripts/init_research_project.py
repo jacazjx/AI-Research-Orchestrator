@@ -5,10 +5,10 @@ import json
 import logging
 import sys
 from json import JSONDecodeError
-
-import yaml
 from pathlib import Path
 from typing import Any
+
+import yaml
 
 from orchestrator_common import (
     DEFAULT_DELIVERABLES,
@@ -30,10 +30,9 @@ from orchestrator_common import (
 
 # Import new modules for interactive wizard support
 try:
-    from user_config import load_user_config, merge_configs
-    from legacy_handler import analyze_directory_contents, handle_non_empty_directory
     from init_wizard import run_wizard
-    from state_migrator import CURRENT_STATE_VERSION
+    from legacy_handler import analyze_directory_contents, handle_non_empty_directory
+    from user_config import load_user_config
 
     INTERACTIVE_MODE_AVAILABLE = True
 except ImportError:
@@ -176,8 +175,6 @@ def initialize_research_project(
         analysis = analyze_directory_contents(project_root)
         if not analysis.is_empty and not interactive:
             # Non-interactive mode with non-empty directory - preserve existing files
-            from legacy_handler import handle_non_empty_directory
-
             migration_result = handle_non_empty_directory(
                 project_root,
                 mode="preserve",
@@ -352,7 +349,8 @@ def main() -> int:
         if not INTERACTIVE_MODE_AVAILABLE:
             print("Error: Interactive mode requires additional modules.", file=sys.stderr)
             print(
-                "Please ensure user_config.py, legacy_handler.py, and init_wizard.py are available.",
+                "Please ensure user_config.py, legacy_handler.py, "
+                "and init_wizard.py are available.",
                 file=sys.stderr,
             )
             return 1

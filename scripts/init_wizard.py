@@ -36,23 +36,22 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 SKILL_DIR = SCRIPT_DIR.parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from exceptions import ValidationError
-
-# Import local modules
-import gpu_manager
-import legacy_handler
-import prompts
-import user_config
+# Import local modules  # noqa: E402
+import gpu_manager  # noqa: E402
+import legacy_handler  # noqa: E402
+import prompts  # noqa: E402
+import user_config  # noqa: E402
+from exceptions import ValidationError  # noqa: E402
 
 # Import intent clarification module
 try:
     from intent_clarification import (
-        assess_intent_clarity,
-        generate_clarification_questions,
-        format_assessment_summary,
-        should_trigger_brainstorming,
         MAX_CLARIFICATION_ROUNDS,
         MIN_CONFIRMATION_SCORE,
+        assess_intent_clarity,
+        format_assessment_summary,
+        generate_clarification_questions,
+        should_trigger_brainstorming,
     )
 
     INTENT_CLARIFICATION_AVAILABLE = True
@@ -262,7 +261,10 @@ class InitWizard:
                     default=suggested_id,
                     required=True,
                     validator=prompts.validate_project_id,
-                    error_message="Invalid project ID. Use lowercase letters, numbers, and hyphens only. Must start with a letter.",
+                    error_message=(
+                        "Invalid project ID. Use lowercase letters, numbers, and hyphens only. "
+                        "Must start with a letter."
+                    ),
                 )
 
     def step_intent_clarity_assessment(self) -> None:
@@ -736,10 +738,10 @@ class InitWizard:
         if self.responses.legacy_analysis.get("total_files"):
             print(f"  Files found: {self.responses.legacy_analysis['total_files']}")
 
-        print(f"\nCompute Config:")
+        print("\nCompute Config:")
         print(f"  GPU Preference: {self.responses.compute_config.get('gpu_preference', 'auto')}")
 
-        print(f"\nUser Profile:")
+        print("\nUser Profile:")
         print(f"  Name: {self.responses.user_profile.get('name', '(not set)')}")
         print(f"  Email: {self.responses.user_profile.get('email', '(not set)')}")
         print(f"  Institution: {self.responses.user_profile.get('institution', '(not set)')}")

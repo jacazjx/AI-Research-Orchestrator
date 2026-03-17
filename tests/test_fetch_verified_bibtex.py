@@ -1,6 +1,5 @@
 """Tests for citation/fetch_verified_bibtex.py module."""
 
-import json
 import sys
 import tempfile
 import unittest
@@ -15,13 +14,13 @@ sys.path.insert(0, str(SCRIPTS_DIR / "citation"))
 
 # Import after path setup
 from fetch_verified_bibtex import (
-    PersistentCache,
-    FetchError,
-    truncate_box_text,
-    current_date_iso,
-    codex_home_path,
-    STOPWORDS,
     EMPIRICAL_TERMS,
+    STOPWORDS,
+    FetchError,
+    PersistentCache,
+    codex_home_path,
+    current_date_iso,
+    truncate_box_text,
 )
 
 

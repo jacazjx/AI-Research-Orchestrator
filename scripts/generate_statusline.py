@@ -27,7 +27,6 @@ from orchestrator_common import (  # noqa: E402
     SYSTEM_VERSION,
     SYSTEM_VERSION_NAME,
     ensure_project_structure,
-    get_phase_agents,
     load_state,
     normalize_phase_name,
 )

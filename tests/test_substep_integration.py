@@ -10,7 +10,6 @@ These tests verify the complete substep workflow including:
 from __future__ import annotations
 
 import importlib.util
-import subprocess
 import sys
 import tempfile
 import unittest

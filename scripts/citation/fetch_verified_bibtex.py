@@ -228,10 +228,10 @@ class ProgressTracker:
         lines = [
             "+" + "-" * (self.BOX_WIDTH - 2) + "+",
             f"| {truncate_box_text('LaTeX Citation Curator Progress', inner):<{inner}} |",
-            f"| {truncate_box_text(f'Query {self.current_query}/{self.total_queries} | Mode: {self.mode}', inner):<{inner}} |",
+            f"| {truncate_box_text(f'Query {self.current_query}/{self.total_queries} | Mode: {self.mode}', inner):<{inner}} |",  # noqa: E501
             f"| {truncate_box_text(f'Stage: {self.stage}', inner):<{inner}} |",
             f"| {truncate_box_text(self.detail or '-', inner):<{inner}} |",
-            f"| {truncate_box_text(f'Cache hits: {self.cache_hits} | Network fetches: {self.network_fetches} | Retries: {self.retries}', inner):<{inner}} |",
+            f"| {truncate_box_text(f'Cache hits: {self.cache_hits} | Network fetches: {self.network_fetches} | Retries: {self.retries}', inner):<{inner}} |",  # noqa: E501
             "+" + "-" * (self.BOX_WIDTH - 2) + "+",
         ]
         print("\n".join(lines), file=sys.stderr, flush=True)
@@ -1939,11 +1939,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--existing-bib",
         action="append",
-        help="Existing BibTeX file to prioritize and sync with the project ledger. Repeat for multiple files.",
+        help=(
+            "Existing BibTeX file to prioritize and sync with the project ledger. "
+            "Repeat for multiple files."
+        ),
     )
     parser.add_argument(
         "--project-root",
-        help="Project root used for the local .latex-citation-curator ledger directory. Defaults to the BibTeX file directory or cwd.",
+        help=(
+            "Project root used for the local .latex-citation-curator ledger directory. "
+            "Defaults to the BibTeX file directory or cwd."
+        ),
     )
     parser.add_argument(
         "--semantic-scholar-api-key",
@@ -1953,7 +1959,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--no-key-prompt",
         action="store_true",
-        help="Do not prompt for a Semantic Scholar API key; continue with stored or shared mode only.",
+        help=(
+            "Do not prompt for a Semantic Scholar API key; continue with stored "
+            "or shared mode only."
+        ),
     )
     parser.add_argument(
         "--crossref-mailto",

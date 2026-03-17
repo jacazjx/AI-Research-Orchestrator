@@ -26,9 +26,9 @@ from pathlib import Path
 SCRIPTS_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPTS_DIR))
 
-from orchestrator_common import (
-    gitmem_checkpoint,
+from orchestrator_common import (  # noqa: E402
     gitmem_check_loop,
+    gitmem_checkpoint,
     gitmem_commit,
     gitmem_diff,
     gitmem_get_loop_info,

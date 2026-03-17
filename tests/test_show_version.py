@@ -162,7 +162,7 @@ class ShowVersionTest(unittest.TestCase):
         """Test main function with --no-color flag."""
         args = ["--no-color"]
         with patch("sys.argv", ["show_version.py"] + args):
-            with patch("builtins.print") as mock_print:
+            with patch("builtins.print") as _:
                 result = VERSION.main()
                 self.assertEqual(0, result)
 
@@ -188,7 +188,7 @@ class ShowVersionTest(unittest.TestCase):
         """Test main function with no flags."""
         args = []
         with patch("sys.argv", ["show_version.py"] + args):
-            with patch("builtins.print") as mock_print:
+            with patch("builtins.print") as _:
                 result = VERSION.main()
                 self.assertEqual(0, result)
 

@@ -59,7 +59,7 @@ class MaterializeTemplatesTest(unittest.TestCase):
 
             # Modify a template file (not the state file)
             idea_brief = project_root / ".autoresearch/idea-brief.md"
-            original_content = idea_brief.read_text(encoding="utf-8")
+            _ = idea_brief.read_text(encoding="utf-8")
             idea_brief.write_text("modified content\n", encoding="utf-8")
 
             result = MATERIALIZE.materialize_project_templates(project_root, overwrite=True)

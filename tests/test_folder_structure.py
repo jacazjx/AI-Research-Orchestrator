@@ -400,9 +400,7 @@ class TestMigrationScript(unittest.TestCase):
         (self.project_root / "04-paper").mkdir()
 
         # Run migration
-        results = self.migrate_module.migrate_project(
-            self.project_root, dry_run=False, backup=False
-        )
+        self.migrate_module.migrate_project(self.project_root, dry_run=False, backup=False)
 
         # Verify new structure exists
         self.assertTrue((self.project_root / "paper").exists())
@@ -419,9 +417,7 @@ class TestMigrationScript(unittest.TestCase):
         (self.project_root / "00-admin" / "research-state.yaml").write_text(state_content)
 
         # Run migration
-        results = self.migrate_module.migrate_project(
-            self.project_root, dry_run=False, backup=False
-        )
+        self.migrate_module.migrate_project(self.project_root, dry_run=False, backup=False)
 
         # Verify file was migrated
         new_state_path = self.project_root / ".autoresearch" / "state" / "research-state.yaml"
@@ -447,9 +443,7 @@ research_state:
         (self.project_root / "00-admin" / "orchestrator-config.yaml").write_text("{}")
 
         # Run migration - should handle state update gracefully
-        results = self.migrate_module.migrate_project(
-            self.project_root, dry_run=False, backup=False
-        )
+        self.migrate_module.migrate_project(self.project_root, dry_run=False, backup=False)
 
         # State file should exist at new path
         new_state_path = self.project_root / ".autoresearch" / "state" / "research-state.yaml"

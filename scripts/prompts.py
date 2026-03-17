@@ -15,7 +15,6 @@ Features:
 from __future__ import annotations
 
 import re
-import sys
 from typing import Any, Callable
 
 
