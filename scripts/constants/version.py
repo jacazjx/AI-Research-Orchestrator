@@ -1,0 +1,52 @@
+"""Version and version history constants."""
+
+# System version
+SYSTEM_VERSION = "1.12.0"
+SYSTEM_VERSION_NAME = "Research Orchestrator"
+
+VERSION_HISTORY = [
+    ("1.0.0", "2026-03-01", "Initial release with five-phase workflow"),
+    ("1.1.0", "2026-03-05", "Added agent responsibilities and literature verification"),
+    ("1.2.0", "2026-03-08", "Added system audit and quality enforcement"),
+    ("1.3.0", "2026-03-10", "Added project takeover capability"),
+    ("1.4.0", "2026-03-13", "Added starting phase selection"),
+    ("1.5.0", "2026-03-13", "Added statusline display and version tracking"),
+    (
+        "1.6.0",
+        "2026-03-13",
+        "Switched to PyYAML for full YAML support (comments, complex structures)",
+    ),
+    (
+        "1.7.0",
+        "2026-03-13",
+        "Fixed KeyError in deliverables, added sub-agent failure recovery protocol",
+    ),
+    (
+        "1.8.0",
+        "2026-03-13",
+        "Auto-complete missing deliverables on state load for backward compatibility",
+    ),
+    (
+        "1.9.0",
+        "2026-03-14",
+        "Integrated ralph-loop for phase iteration control with completion promises",
+    ),
+    (
+        "1.10.0",
+        "2026-03-14",
+        "Added experiment execution best practices (unbuffered output, "
+        "checkpoint, process management) and document sync rules",
+    ),
+    (
+        "1.11.0",
+        "2026-03-14",
+        "ARIS integration: cross-model review via Codex MCP, "
+        "REVIEW_STATE persistence for long-running loops",
+    ),
+    (
+        "1.12.0",
+        "2026-03-14",
+        "Full ARIS integration: 17 skills, three workflows, "
+        "IDEA_STATE persistence, GPU protection, AUTO_PROCEED switch",
+    ),
+]

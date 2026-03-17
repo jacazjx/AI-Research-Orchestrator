@@ -20,6 +20,7 @@ SKILL_DIR = SCRIPT_DIR.parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
 from orchestrator_common import (  # noqa: E402
+    PHASE_AGENT_PAIRS,
     ensure_project_structure,
     write_yaml,
 )
@@ -82,16 +83,14 @@ def load_handoff_summary(
 
 def get_phase_handoff_summaries(project_root: Path, phase: str) -> dict[str, Any]:
     """Get all handoff summaries for a phase."""
-    # Map phase to agent roles
-    phase_agents = {
-        "01-survey": ["survey", "critic"],
-        "02-pilot-analysis": ["code", "adviser"],
-        "03-full-experiments": ["code", "adviser"],
-        "04-paper": ["writer", "reviewer"],
-        "05-reflection-evolution": ["reflector", "curator"],
-    }
+    # Get agents from centralized PHASE_AGENT_PAIRS
+    from orchestrator_common import get_phase_agents
 
-    agents = phase_agents.get(phase, [])
+    try:
+        agents = list(get_phase_agents(phase))
+    except ValueError:
+        agents = []
+
     summaries = {}
 
     for agent in agents:

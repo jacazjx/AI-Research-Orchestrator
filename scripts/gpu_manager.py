@@ -155,7 +155,10 @@ class GPURegistry:
     def from_dict(cls, data: dict[str, Any]) -> GPURegistry:
         """Create from dictionary."""
         devices_data = data.get("devices", [])
-        devices = [GPUDevice.from_dict(d) if isinstance(d, dict) else GPUDevice(id=str(d)) for d in devices_data]
+        devices = [
+            GPUDevice.from_dict(d) if isinstance(d, dict) else GPUDevice(id=str(d))
+            for d in devices_data
+        ]
         return cls(
             version=data.get("version", REGISTRY_VERSION),
             devices=devices,
@@ -219,7 +222,9 @@ def load_user_gpu_registry() -> dict[str, Any]:
     if "devices" not in data:
         data["devices"] = []
 
-    logger.debug("Loaded GPU registry from %s with %d devices", registry_path, len(data.get("devices", [])))
+    logger.debug(
+        "Loaded GPU registry from %s with %d devices", registry_path, len(data.get("devices", []))
+    )
     return data
 
 
@@ -252,7 +257,9 @@ def save_user_gpu_registry(registry: dict[str, Any]) -> None:
         )
         try:
             with os.fdopen(fd, "w", encoding="utf-8") as f:
-                yaml.dump(registry, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
+                yaml.dump(
+                    registry, f, default_flow_style=False, allow_unicode=True, sort_keys=False
+                )
             os.replace(temp_path, registry_path)
         except Exception:
             # Clean up temp file on error
@@ -482,7 +489,12 @@ def update_gpu_usage(gpu_id: str, hours: float) -> None:
             devices[i]["last_used"] = datetime.now(timezone.utc).isoformat()
             registry["devices"] = devices
             save_user_gpu_registry(registry)
-            logger.info("Updated GPU %s usage: +%.2f hours (total: %.2f)", gpu_id, hours, devices[i]["total_hours"])
+            logger.info(
+                "Updated GPU %s usage: +%.2f hours (total: %.2f)",
+                gpu_id,
+                hours,
+                devices[i]["total_hours"],
+            )
             return
 
     raise ConfigurationError(

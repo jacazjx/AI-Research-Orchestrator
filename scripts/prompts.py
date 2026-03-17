@@ -16,14 +16,14 @@ from __future__ import annotations
 
 import re
 import sys
-from typing import Any
+from typing import Any, Callable
 
 
 def prompt_text(
     message: str,
     default: str = "",
     required: bool = False,
-    validator: callable[[str], bool] | None = None,
+    validator: Callable[[str], bool] | None = None,
     error_message: str = "Invalid input. Please try again.",
 ) -> str:
     """Prompt user for text input.

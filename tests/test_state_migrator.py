@@ -162,8 +162,7 @@ class TestMigrate1_1To1_12(unittest.TestCase):
         migrated, _ = STATE_MIGRATOR.migrate_1_1_to_1_12(state)
 
         self.assertEqual(
-            migrated["substep_status"]["survey"]["literature_survey"]["status"],
-            "completed"
+            migrated["substep_status"]["survey"]["literature_survey"]["status"], "completed"
         )
 
 
@@ -324,10 +323,7 @@ class TestStateVersions(unittest.TestCase):
 
     def test_current_version_is_last(self) -> None:
         """Test that current version is the last in order."""
-        self.assertEqual(
-            STATE_MIGRATOR.VERSION_ORDER[-1],
-            STATE_MIGRATOR.CURRENT_STATE_VERSION
-        )
+        self.assertEqual(STATE_MIGRATOR.VERSION_ORDER[-1], STATE_MIGRATOR.CURRENT_STATE_VERSION)
 
     def test_migrations_cover_all_steps(self) -> None:
         """Test that migrations cover all version steps."""

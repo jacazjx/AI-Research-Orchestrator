@@ -19,7 +19,6 @@ from orchestrator_common import (
     save_state,
 )
 
-
 # Default stale threshold in minutes
 DEFAULT_STALE_AFTER_MINUTES = 30
 

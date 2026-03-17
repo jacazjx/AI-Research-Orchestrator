@@ -2,7 +2,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 import sys
+from json import JSONDecodeError
+
+import yaml
 from pathlib import Path
 from typing import Any
 
@@ -113,8 +117,8 @@ def detect_codex_mcp() -> bool:
             for name in ["codex", "openai", "openai-codex"]:
                 if name in mcp_servers:
                     return True
-        except Exception:
-            pass
+        except (JSONDecodeError, PermissionError, OSError):
+            return False
 
     return False
 
@@ -173,6 +177,7 @@ def initialize_research_project(
         if not analysis.is_empty and not interactive:
             # Non-interactive mode with non-empty directory - preserve existing files
             from legacy_handler import handle_non_empty_directory
+
             migration_result = handle_non_empty_directory(
                 project_root,
                 mode="preserve",
@@ -210,8 +215,14 @@ def initialize_research_project(
                     "author": user_cfg.get("author", {}),
                     "preferences": user_cfg.get("preferences", {}),
                 }
-        except Exception:
-            pass  # User config is optional
+        except FileNotFoundError:
+            pass  # User config file doesn't exist
+        except (JSONDecodeError, yaml.YAMLError) as e:
+            logging.warning(f"User config file has invalid format: {e}")
+        except PermissionError as e:
+            logging.warning(f"Permission denied reading user config: {e}")
+        except OSError as e:
+            logging.warning(f"Error reading user config: {e}")
 
     state = build_state(
         project_id=project_identifier,
@@ -303,7 +314,8 @@ def build_parser() -> argparse.ArgumentParser:
         help="Phase to start the project at. Use for resuming work or skipping completed phases.",
     )
     parser.add_argument(
-        "--interactive", "-i",
+        "--interactive",
+        "-i",
         action="store_true",
         help="Run interactive initialization wizard to guide through project setup.",
     )
@@ -339,7 +351,10 @@ def main() -> int:
     if args.interactive:
         if not INTERACTIVE_MODE_AVAILABLE:
             print("Error: Interactive mode requires additional modules.", file=sys.stderr)
-            print("Please ensure user_config.py, legacy_handler.py, and init_wizard.py are available.", file=sys.stderr)
+            print(
+                "Please ensure user_config.py, legacy_handler.py, and init_wizard.py are available.",
+                file=sys.stderr,
+            )
             return 1
 
         print("=" * 60)

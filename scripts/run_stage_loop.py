@@ -19,6 +19,7 @@ from validate_substep import (
 
 from orchestrator_common import (
     NEXT_PHASE,
+    PHASE_AGENT_PAIRS,
     PHASE_LOOP_KEY,
     PHASE_TO_GATE,
     PHASE_TO_REVIEW,
@@ -36,15 +37,6 @@ from orchestrator_common import (
     save_state,
     suggest_return_phase,
 )
-
-PHASE_AGENT_PAIRS = {
-    # Semantic names only (legacy names are normalized)
-    "survey": ("survey", "critic"),
-    "pilot": ("code", "adviser"),
-    "experiments": ("code", "adviser"),
-    "paper": ("paper-writer", "reviewer-editor"),
-    "reflection": ("reflector", "curator"),
-}
 
 
 def run_stage_loop(

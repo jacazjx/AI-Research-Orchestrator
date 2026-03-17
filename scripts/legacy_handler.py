@@ -573,7 +573,9 @@ def generate_migration_report(
         if content.get("code_modules"):
             lines.append("**Code Modules**:")
             for module in content["code_modules"][:5]:
-                lines.append(f"- `{module['file']}`: {len(module['classes'])} classes, {len(module['functions'])} functions")
+                lines.append(
+                    f"- `{module['file']}`: {len(module['classes'])} classes, {len(module['functions'])} functions"
+                )
             lines.append("")
 
         if content.get("data_files"):
@@ -791,16 +793,18 @@ def main() -> int:
             result = handle_non_empty_directory(project_root, args.mode)
 
             if args.json:
-                print(json.dumps(
-                    {
-                        "success": result.success,
-                        "legacy_path": result.legacy_path,
-                        "migrated_files": result.migrated_files,
-                        "extracted_content": result.extracted_content,
-                    },
-                    indent=2,
-                    default=str,
-                ))
+                print(
+                    json.dumps(
+                        {
+                            "success": result.success,
+                            "legacy_path": result.legacy_path,
+                            "migrated_files": result.migrated_files,
+                            "extracted_content": result.extracted_content,
+                        },
+                        indent=2,
+                        default=str,
+                    )
+                )
             elif args.quiet:
                 print("success" if result.success else "failed")
             else:

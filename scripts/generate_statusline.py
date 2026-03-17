@@ -21,9 +21,13 @@ SKILL_DIR = SCRIPT_DIR.parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
 from orchestrator_common import (  # noqa: E402
+    PHASE_AGENT_PAIRS,
+    PHASE_LOOP_KEY,
+    PHASE_SEQUENCE,
     SYSTEM_VERSION,
     SYSTEM_VERSION_NAME,
     ensure_project_structure,
+    get_phase_agents,
     load_state,
     normalize_phase_name,
 )
@@ -45,15 +49,6 @@ COLORS = {
     "bg_blue": "\033[44m",
 }
 
-# Phase sequence for progress calculation (new semantic names)
-PHASE_SEQUENCE = [
-    "survey",
-    "pilot",
-    "experiments",
-    "paper",
-    "reflection",
-]
-
 # Phase display names (support both new and legacy names)
 PHASE_NAMES = {
     "survey": "Survey",
@@ -69,54 +64,54 @@ PHASE_NAMES = {
     "05-reflection-evolution": "Reflection",
 }
 
-# Phase loop key mapping
-_PHASE_LOOP_KEY_MAP = {
-    "survey": "survey_critic",
-    "pilot": "pilot_code_adviser",
-    "experiments": "experiment_code_adviser",
-    "paper": "writer_reviewer",
-    "reflection": "reflector_curator",
-}
-
 
 def _get_phase_loop_key(phase: str) -> str:
     """Get loop key for a phase, supporting both semantic and legacy names."""
     normalized = normalize_phase_name(phase)
-    return _PHASE_LOOP_KEY_MAP.get(normalized, "")
+    return PHASE_LOOP_KEY.get(normalized, "")
 
-# Agent definitions for each phase (using new semantic names)
-PHASE_AGENTS = {
-    "survey": {
-        "primary": "Survey",
-        "secondary": "Critic",
-        "loop_key": "survey_critic",
-        "description": "Literature survey and research readiness",
-    },
-    "pilot": {
-        "primary": "Code",
-        "secondary": "Adviser",
-        "loop_key": "pilot_code_adviser",
-        "description": "Pilot experiments and validation",
-    },
-    "experiments": {
-        "primary": "Code",
-        "secondary": "Adviser",
-        "loop_key": "experiment_code_adviser",
-        "description": "Full experiment execution",
-    },
-    "paper": {
-        "primary": "Writer",
-        "secondary": "Reviewer",
-        "loop_key": "writer_reviewer",
-        "description": "Paper development and review",
-    },
-    "reflection": {
-        "primary": "Reflector",
-        "secondary": "Curator",
-        "loop_key": "reflector_curator",
-        "description": "Lessons learned and improvements",
-    },
+
+def _agent_display_name(agent_role: str) -> str:
+    """Convert agent role to display name."""
+    # Map internal agent names to display names
+    name_map = {
+        "survey": "Survey",
+        "critic": "Critic",
+        "code": "Code",
+        "adviser": "Adviser",
+        "paper-writer": "Writer",
+        "reviewer-editor": "Reviewer",
+        "reflector": "Reflector",
+        "curator": "Curator",
+    }
+    return name_map.get(agent_role, agent_role.title())
+
+
+# Phase descriptions for display
+_PHASE_DESCRIPTIONS = {
+    "survey": "Literature survey and research readiness",
+    "pilot": "Pilot experiments and validation",
+    "experiments": "Full experiment execution",
+    "paper": "Paper development and review",
+    "reflection": "Lessons learned and improvements",
 }
+
+
+def _build_phase_agents() -> dict[str, dict[str, str]]:
+    """Build PHASE_AGENTS from centralized PHASE_AGENT_PAIRS."""
+    result = {}
+    for phase, (primary, secondary) in PHASE_AGENT_PAIRS.items():
+        result[phase] = {
+            "primary": _agent_display_name(primary),
+            "secondary": _agent_display_name(secondary),
+            "loop_key": PHASE_LOOP_KEY.get(phase, ""),
+            "description": _PHASE_DESCRIPTIONS.get(phase, ""),
+        }
+    return result
+
+
+# Agent definitions for each phase (built from centralized PHASE_AGENT_PAIRS)
+PHASE_AGENTS = _build_phase_agents()
 
 # Agent role descriptions
 AGENT_DESCRIPTIONS = {

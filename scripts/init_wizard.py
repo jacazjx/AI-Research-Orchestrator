@@ -54,6 +54,7 @@ try:
         MAX_CLARIFICATION_ROUNDS,
         MIN_CONFIRMATION_SCORE,
     )
+
     INTENT_CLARIFICATION_AVAILABLE = True
 except ImportError:
     INTENT_CLARIFICATION_AVAILABLE = False
@@ -345,8 +346,10 @@ class InitWizard:
         current_idea = self.responses.research_idea
         current_score = self.responses.clarity_score
 
-        while (self.responses.clarification_rounds < MAX_CLARIFICATION_ROUNDS
-               and current_score < MIN_CONFIRMATION_SCORE):
+        while (
+            self.responses.clarification_rounds < MAX_CLARIFICATION_ROUNDS
+            and current_score < MIN_CONFIRMATION_SCORE
+        ):
 
             self.responses.clarification_rounds += 1
             round_num = self.responses.clarification_rounds
@@ -414,8 +417,7 @@ class InitWizard:
 
         # Build choices dict
         choices = {
-            key: f"{info['label']} - {info['description']}"
-            for key, info in RESEARCH_TYPES.items()
+            key: f"{info['label']} - {info['description']}" for key, info in RESEARCH_TYPES.items()
         }
 
         selected = prompts.prompt_choice(
@@ -440,8 +442,7 @@ class InitWizard:
             self.responses.starting_phase = "survey"
         else:
             phase_choices = {
-                phase: phase.replace("_", " ").title()
-                for phase in VALID_STARTING_PHASES
+                phase: phase.replace("_", " ").title() for phase in VALID_STARTING_PHASES
             }
             self.responses.starting_phase = prompts.prompt_choice(
                 "Select starting phase",

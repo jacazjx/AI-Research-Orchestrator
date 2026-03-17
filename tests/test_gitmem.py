@@ -1,11 +1,13 @@
-"""Tests for GitMem integration in orchestrator_common.py."""
+"""Tests for GitMem integration in orchestrator_common.py and gitmem CLI."""
 
+import argparse
 import importlib.util
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 SKILL_DIR = Path(__file__).resolve().parents[1]
 SCRIPTS_DIR = SKILL_DIR / "scripts"
@@ -22,6 +24,7 @@ def load_script_module(name: str):
 
 COMMON = load_script_module("orchestrator_common")
 INIT = load_script_module("init_research_project")
+GITMEM = load_script_module("gitmem")
 
 
 class GitMemInitTest(unittest.TestCase):
@@ -517,7 +520,9 @@ class GitMemCommitEdgeCasesTest(unittest.TestCase):
         test_file.write_text("content\n", encoding="utf-8")
 
         # This should not raise an error, just log a warning
-        commit_hash = COMMON.gitmem_commit(self.project_root, "other/file.md", "Commit outside tracked")
+        commit_hash = COMMON.gitmem_commit(
+            self.project_root, "other/file.md", "Commit outside tracked"
+        )
         self.assertIsInstance(commit_hash, str)
 
     def test_commit_with_no_changes(self) -> None:
@@ -574,7 +579,9 @@ class GitMemRollbackEdgeCasesTest(unittest.TestCase):
             test_file.write_text("content\n", encoding="utf-8")
             COMMON.gitmem_commit(project_root, "docs/reports/test.md", "Initial")
 
-            result = COMMON.gitmem_rollback(project_root, "docs/reports/test.md", to_rev="nonexistent")
+            result = COMMON.gitmem_rollback(
+                project_root, "docs/reports/test.md", to_rev="nonexistent"
+            )
             self.assertFalse(result)
 
 
@@ -612,6 +619,485 @@ class GitMemDiffEdgeCasesTest(unittest.TestCase):
 
             diff = COMMON.gitmem_diff(project_root, "docs/reports/test.md")
             self.assertIn("not initialized", diff.lower())
+
+
+class GitMemCLITest(unittest.TestCase):
+    """Tests for gitmem.py CLI functions."""
+
+    # ==================== cmd_init tests ====================
+
+    def test_cmd_init_already_initialized(self) -> None:
+        """Test init when already initialized."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "test-project"
+            project_root.mkdir()
+            COMMON.gitmem_init(project_root)
+
+            args = argparse.Namespace(project_root=str(project_root))
+            result = GITMEM.cmd_init(args)
+            self.assertEqual(result, 0)
+
+    def test_cmd_init_not_initialized(self) -> None:
+        """Test init when not initialized."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "test-project"
+            project_root.mkdir()
+
+            args = argparse.Namespace(project_root=str(project_root))
+            result = GITMEM.cmd_init(args)
+            self.assertEqual(result, 0)
+            self.assertTrue(COMMON.gitmem_is_initialized(project_root))
+
+    def test_cmd_init_creates_gitmem_directory(self) -> None:
+        """Test that cmd_init creates .gitmem directory."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "test-project"
+            project_root.mkdir()
+
+            args = argparse.Namespace(project_root=str(project_root))
+            GITMEM.cmd_init(args)
+
+            gitmem_path = project_root / ".gitmem"
+            self.assertTrue(gitmem_path.exists())
+
+    def test_cmd_init_creates_gitignore_in_gitmem(self) -> None:
+        """Test that cmd_init creates .gitignore in .gitmem."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "test-project"
+            project_root.mkdir()
+
+            args = argparse.Namespace(project_root=str(project_root))
+            GITMEM.cmd_init(args)
+
+            gitignore = project_root / ".gitmem" / ".gitignore"
+            self.assertTrue(gitignore.exists())
+
+    # ==================== cmd_commit tests ====================
+
+    def test_cmd_commit_not_initialized(self) -> None:
+        """Test commit when not initialized."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "test-project"
+            project_root.mkdir()
+
+            args = argparse.Namespace(
+                project_root=str(project_root), file="test.md", message="test commit"
+            )
+            result = GITMEM.cmd_commit(args)
+            self.assertEqual(result, 1)
+
+    def test_cmd_commit_initialized(self) -> None:
+        """Test commit when initialized."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "test-project"
+            project_root.mkdir()
+            COMMON.gitmem_init(project_root)
+
+            # Create test file
+            test_file = project_root / "test.md"
+            test_file.write_text("# Test", encoding="utf-8")
+
+            args = argparse.Namespace(
+                project_root=str(project_root), file="test.md", message="test commit"
+            )
+            result = GITMEM.cmd_commit(args)
+            self.assertEqual(result, 0)
+
+    def test_cmd_commit_nonexistent_file_returns_error(self) -> None:
+        """Test commit with nonexistent file returns error code 1."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "test-project"
+            project_root.mkdir()
+            COMMON.gitmem_init(project_root)
+
+            args = argparse.Namespace(
+                project_root=str(project_root), file="nonexistent.md", message="test commit"
+            )
+            result = GITMEM.cmd_commit(args)
+            self.assertEqual(result, 1)
+
+    def test_cmd_commit_returns_zero_on_success(self) -> None:
+        """Test that cmd_commit returns 0 on successful commit."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "test-project"
+            project_root.mkdir()
+            COMMON.gitmem_init(project_root)
+
+            test_file = project_root / "docs/test.md"
+            test_file.parent.mkdir(parents=True, exist_ok=True)
+            test_file.write_text("# Content", encoding="utf-8")
+
+            args = argparse.Namespace(
+                project_root=str(project_root), file="docs/test.md", message="initial commit"
+            )
+            result = GITMEM.cmd_commit(args)
+            self.assertEqual(result, 0)
+
+    def test_cmd_commit_multiple_times(self) -> None:
+        """Test multiple commits via CLI."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "test-project"
+            project_root.mkdir()
+            COMMON.gitmem_init(project_root)
+
+            test_file = project_root / "test.md"
+            test_file.write_text("# Version 1", encoding="utf-8")
+
+            args1 = argparse.Namespace(
+                project_root=str(project_root), file="test.md", message="first commit"
+            )
+            result1 = GITMEM.cmd_commit(args1)
+            self.assertEqual(result1, 0)
+
+            test_file.write_text("# Version 2", encoding="utf-8")
+
+            args2 = argparse.Namespace(
+                project_root=str(project_root), file="test.md", message="second commit"
+            )
+            result2 = GITMEM.cmd_commit(args2)
+            self.assertEqual(result2, 0)
+
+    # ==================== cmd_checkpoint tests ====================
+
+    def test_cmd_checkpoint_not_initialized(self) -> None:
+        """Test checkpoint when not initialized."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "test-project"
+            project_root.mkdir()
+
+            args = argparse.Namespace(project_root=str(project_root), name="test-checkpoint")
+            result = GITMEM.cmd_checkpoint(args)
+            self.assertEqual(result, 1)
+
+    def test_cmd_checkpoint_initialized(self) -> None:
+        """Test checkpoint when initialized returns 0."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "test-project"
+            project_root.mkdir()
+            COMMON.gitmem_init(project_root)
+
+            # Create and commit a file first
+            test_file = project_root / "test.md"
+            test_file.write_text("# Test", encoding="utf-8")
+            COMMON.gitmem_commit(project_root, "test.md", "initial")
+
+            args = argparse.Namespace(project_root=str(project_root), name="checkpoint-1")
+            result = GITMEM.cmd_checkpoint(args)
+            self.assertEqual(result, 0)
+
+    # ==================== cmd_check_loop tests ====================
+
+    def test_cmd_check_loop_not_initialized(self) -> None:
+        """Test check-loop when not initialized."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "test-project"
+            project_root.mkdir()
+
+            args = argparse.Namespace(project_root=str(project_root), file="test.md")
+            result = GITMEM.cmd_check_loop(args)
+            self.assertEqual(result, 0)
+
+    def test_cmd_check_loop_initialized_no_loop(self) -> None:
+        """Test check-loop when initialized and no loop."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "test-project"
+            project_root.mkdir()
+            COMMON.gitmem_init(project_root)
+
+            test_file = project_root / "test.md"
+            test_file.write_text("# Test", encoding="utf-8")
+            COMMON.gitmem_commit(project_root, "test.md", "initial")
+
+            args = argparse.Namespace(project_root=str(project_root), file="test.md")
+            result = GITMEM.cmd_check_loop(args)
+            self.assertEqual(result, 0)
+
+    # ==================== cmd_history tests ====================
+
+    def test_cmd_history_not_initialized(self) -> None:
+        """Test history when not initialized."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "test-project"
+            project_root.mkdir()
+
+            args = argparse.Namespace(
+                project_root=str(project_root), file="test.md", limit=20, json=False
+            )
+            result = GITMEM.cmd_history(args)
+            self.assertEqual(result, 1)
+
+    def test_cmd_history_initialized(self) -> None:
+        """Test history when initialized."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "test-project"
+            project_root.mkdir()
+            COMMON.gitmem_init(project_root)
+
+            test_file = project_root / "test.md"
+            test_file.write_text("# Test", encoding="utf-8")
+            COMMON.gitmem_commit(project_root, "test.md", "initial")
+
+            args = argparse.Namespace(
+                project_root=str(project_root), file="test.md", limit=20, json=False
+            )
+            result = GITMEM.cmd_history(args)
+            self.assertEqual(result, 0)
+
+    def test_cmd_history_json_output(self) -> None:
+        """Test history with JSON output."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "test-project"
+            project_root.mkdir()
+            COMMON.gitmem_init(project_root)
+
+            test_file = project_root / "test.md"
+            test_file.write_text("# Test", encoding="utf-8")
+            COMMON.gitmem_commit(project_root, "test.md", "initial")
+
+            args = argparse.Namespace(
+                project_root=str(project_root), file="test.md", limit=20, json=True
+            )
+            result = GITMEM.cmd_history(args)
+            self.assertEqual(result, 0)
+
+    # ==================== cmd_diff tests ====================
+
+    def test_cmd_diff_not_initialized(self) -> None:
+        """Test diff when not initialized."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "test-project"
+            project_root.mkdir()
+
+            args = argparse.Namespace(
+                project_root=str(project_root), file="test.md", from_rev=None, to_rev=None
+            )
+            result = GITMEM.cmd_diff(args)
+            self.assertEqual(result, 1)
+
+    def test_cmd_diff_initialized(self) -> None:
+        """Test diff when initialized with explicit revisions."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "test-project"
+            project_root.mkdir()
+            COMMON.gitmem_init(project_root)
+
+            # Use tracked directory
+            test_file = project_root / "docs/reports/test.md"
+            test_file.parent.mkdir(parents=True, exist_ok=True)
+            test_file.write_text("# Version 1", encoding="utf-8")
+            COMMON.gitmem_commit(project_root, "docs/reports/test.md", "v1")
+            test_file.write_text("# Version 2", encoding="utf-8")
+            COMMON.gitmem_commit(project_root, "docs/reports/test.md", "v2")
+
+            args = argparse.Namespace(
+                project_root=str(project_root),
+                file="docs/reports/test.md",
+                from_rev="HEAD~1",
+                to_rev="HEAD",
+            )
+            result = GITMEM.cmd_diff(args)
+            self.assertEqual(result, 0)
+
+    # ==================== cmd_rollback tests ====================
+
+    def test_cmd_rollback_not_initialized(self) -> None:
+        """Test rollback when not initialized."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "test-project"
+            project_root.mkdir()
+
+            args = argparse.Namespace(project_root=str(project_root), file="test.md", to_rev=None)
+            result = GITMEM.cmd_rollback(args)
+            self.assertEqual(result, 1)
+
+    def test_cmd_rollback_initialized(self) -> None:
+        """Test rollback when initialized with explicit revision."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "test-project"
+            project_root.mkdir()
+            COMMON.gitmem_init(project_root)
+
+            # Use tracked directory
+            test_file = project_root / "docs/reports/test.md"
+            test_file.parent.mkdir(parents=True, exist_ok=True)
+            test_file.write_text("# Version 1", encoding="utf-8")
+            COMMON.gitmem_commit(project_root, "docs/reports/test.md", "v1")
+            test_file.write_text("# Version 2", encoding="utf-8")
+            COMMON.gitmem_commit(project_root, "docs/reports/test.md", "v2")
+
+            args = argparse.Namespace(
+                project_root=str(project_root), file="docs/reports/test.md", to_rev="HEAD~1"
+            )
+            result = GITMEM.cmd_rollback(args)
+            self.assertEqual(result, 0)
+
+    # ==================== build_parser tests ====================
+
+    def test_build_parser_has_all_commands(self) -> None:
+        """Test parser has all required subcommands."""
+        parser = GITMEM.build_parser()
+        subparsers = ["init", "commit", "checkpoint", "check-loop", "history", "diff", "rollback"]
+        for cmd in subparsers:
+            # Parse each command with --help to verify it exists
+            try:
+                args = parser.parse_args(
+                    [
+                        cmd,
+                        "--project-root",
+                        "/tmp",
+                        "--file",
+                        "test.md",
+                        "--message",
+                        "test",
+                        "--name",
+                        "test",
+                    ]
+                )
+                self.assertEqual(args.command, cmd)
+            except SystemExit:
+                # --help causes SystemExit, which is fine
+                pass
+
+    def test_build_parser_init_required_args(self) -> None:
+        """Test that init command requires --project-root."""
+        parser = GITMEM.build_parser()
+        args = parser.parse_args(["init", "--project-root", "/tmp/test"])
+        self.assertEqual(args.command, "init")
+        self.assertEqual(args.project_root, "/tmp/test")
+
+    def test_build_parser_commit_required_args(self) -> None:
+        """Test that commit command requires --project-root, --file, --message."""
+        parser = GITMEM.build_parser()
+        args = parser.parse_args(
+            [
+                "commit",
+                "--project-root",
+                "/tmp/test",
+                "--file",
+                "test.md",
+                "--message",
+                "test commit",
+            ]
+        )
+        self.assertEqual(args.command, "commit")
+        self.assertEqual(args.project_root, "/tmp/test")
+        self.assertEqual(args.file, "test.md")
+        self.assertEqual(args.message, "test commit")
+
+    def test_build_parser_checkpoint_required_args(self) -> None:
+        """Test that checkpoint command requires --project-root and --name."""
+        parser = GITMEM.build_parser()
+        args = parser.parse_args(["checkpoint", "--project-root", "/tmp/test", "--name", "v1.0"])
+        self.assertEqual(args.command, "checkpoint")
+        self.assertEqual(args.project_root, "/tmp/test")
+        self.assertEqual(args.name, "v1.0")
+
+    def test_build_parser_check_loop_required_args(self) -> None:
+        """Test that check-loop command requires --project-root and --file."""
+        parser = GITMEM.build_parser()
+        args = parser.parse_args(["check-loop", "--project-root", "/tmp/test", "--file", "test.md"])
+        self.assertEqual(args.command, "check-loop")
+        self.assertEqual(args.project_root, "/tmp/test")
+        self.assertEqual(args.file, "test.md")
+
+    def test_build_parser_history_args(self) -> None:
+        """Test history command arguments."""
+        parser = GITMEM.build_parser()
+        args = parser.parse_args(
+            [
+                "history",
+                "--project-root",
+                "/tmp/test",
+                "--file",
+                "test.md",
+                "--limit",
+                "10",
+                "--json",
+            ]
+        )
+        self.assertEqual(args.command, "history")
+        self.assertEqual(args.project_root, "/tmp/test")
+        self.assertEqual(args.file, "test.md")
+        self.assertEqual(args.limit, 10)
+        self.assertTrue(args.json)
+
+    def test_build_parser_diff_args(self) -> None:
+        """Test diff command arguments."""
+        parser = GITMEM.build_parser()
+        args = parser.parse_args(
+            [
+                "diff",
+                "--project-root",
+                "/tmp/test",
+                "--file",
+                "test.md",
+                "--from",
+                "HEAD~2",
+                "--to",
+                "HEAD",
+            ]
+        )
+        self.assertEqual(args.command, "diff")
+        self.assertEqual(args.project_root, "/tmp/test")
+        self.assertEqual(args.file, "test.md")
+        self.assertEqual(args.from_rev, "HEAD~2")
+        self.assertEqual(args.to_rev, "HEAD")
+
+    def test_build_parser_rollback_args(self) -> None:
+        """Test rollback command arguments."""
+        parser = GITMEM.build_parser()
+        args = parser.parse_args(
+            ["rollback", "--project-root", "/tmp/test", "--file", "test.md", "--to", "HEAD~2"]
+        )
+        self.assertEqual(args.command, "rollback")
+        self.assertEqual(args.project_root, "/tmp/test")
+        self.assertEqual(args.file, "test.md")
+        self.assertEqual(args.to_rev, "HEAD~2")
+
+    def test_build_parser_history_default_limit(self) -> None:
+        """Test that history command has default limit of 20."""
+        parser = GITMEM.build_parser()
+        args = parser.parse_args(["history", "--project-root", "/tmp/test", "--file", "test.md"])
+        self.assertEqual(args.limit, 20)
+
+    def test_build_parser_sets_func_for_init(self) -> None:
+        """Test that build_parser sets func for init command."""
+        parser = GITMEM.build_parser()
+        args = parser.parse_args(["init", "--project-root", "/tmp/test"])
+        self.assertEqual(args.func, GITMEM.cmd_init)
+
+    def test_build_parser_sets_func_for_commit(self) -> None:
+        """Test that build_parser sets func for commit command."""
+        parser = GITMEM.build_parser()
+        args = parser.parse_args(
+            ["commit", "--project-root", "/tmp/test", "--file", "test.md", "--message", "test"]
+        )
+        self.assertEqual(args.func, GITMEM.cmd_commit)
+
+    # ==================== main tests ====================
+
+    def test_main_no_command_prints_help(self) -> None:
+        """Test main with no command prints help and returns 1."""
+        with patch.object(GITMEM, "build_parser") as mock_build_parser:
+            mock_parser = MagicMock()
+            mock_parser.parse_args.return_value = argparse.Namespace(command=None)
+            mock_build_parser.return_value = mock_parser
+
+            result = GITMEM.main()
+            self.assertEqual(result, 1)
+            mock_parser.print_help.assert_called_once()
+
+    def test_main_calls_command_func(self) -> None:
+        """Test main calls the command function."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "test-project"
+            project_root.mkdir()
+
+            parser = GITMEM.build_parser()
+            args = parser.parse_args(["init", "--project-root", str(project_root)])
+
+            result = args.func(args)
+            self.assertEqual(result, 0)
 
 
 if __name__ == "__main__":

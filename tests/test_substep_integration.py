@@ -156,9 +156,7 @@ class TestSubstepRevisionCycle(unittest.TestCase):
         )
 
         state = COMMON.read_yaml(self.project_root / ".autoresearch/state/research-state.yaml")
-        initial_attempts = state["substep_status"]["survey"]["literature_survey"].get(
-            "attempts", 1
-        )
+        initial_attempts = state["substep_status"]["survey"]["literature_survey"].get("attempts", 1)
 
         # Reviewer rejects
         result = STAGE.run_stage_loop(
@@ -429,9 +427,7 @@ class TestGitMemCheckpointsThroughWorkflow(unittest.TestCase):
         """Set up a test project."""
         self.temp_dir = tempfile.TemporaryDirectory()
         self.project_root = Path(self.temp_dir.name) / "checkpoint-test"
-        INIT.initialize_research_project(
-            project_root=self.project_root, topic="Checkpoint test"
-        )
+        INIT.initialize_research_project(project_root=self.project_root, topic="Checkpoint test")
 
     def tearDown(self) -> None:
         self.temp_dir.cleanup()
@@ -567,9 +563,7 @@ class TestSubstepValidationIntegration(unittest.TestCase):
         """Set up a test project."""
         self.temp_dir = tempfile.TemporaryDirectory()
         self.project_root = Path(self.temp_dir.name) / "validation-test"
-        INIT.initialize_research_project(
-            project_root=self.project_root, topic="Validation test"
-        )
+        INIT.initialize_research_project(project_root=self.project_root, topic="Validation test")
 
     def tearDown(self) -> None:
         self.temp_dir.cleanup()
@@ -577,9 +571,7 @@ class TestSubstepValidationIntegration(unittest.TestCase):
     def test_cannot_skip_substeps(self) -> None:
         """Test that substeps cannot be skipped."""
         # Try to validate idea_definition without completing literature_survey
-        result = VALIDATE.validate_substep(
-            self.project_root, "survey", "idea_definition"
-        )
+        result = VALIDATE.validate_substep(self.project_root, "survey", "idea_definition")
 
         self.assertFalse(result["can_proceed"])
         self.assertFalse(result["previous_substeps_complete"])
@@ -602,9 +594,7 @@ class TestSubstepValidationIntegration(unittest.TestCase):
         )
 
         # Now validate second substep
-        result = VALIDATE.validate_substep(
-            self.project_root, "survey", "idea_definition"
-        )
+        result = VALIDATE.validate_substep(self.project_root, "survey", "idea_definition")
 
         self.assertTrue(result["can_proceed"])
         self.assertTrue(result["previous_substeps_complete"])
@@ -617,9 +607,7 @@ class TestSubstepStatePersistence(unittest.TestCase):
         """Set up a test project."""
         self.temp_dir = tempfile.TemporaryDirectory()
         self.project_root = Path(self.temp_dir.name) / "persistence-test"
-        INIT.initialize_research_project(
-            project_root=self.project_root, topic="Persistence test"
-        )
+        INIT.initialize_research_project(project_root=self.project_root, topic="Persistence test")
 
     def tearDown(self) -> None:
         self.temp_dir.cleanup()
@@ -1067,7 +1055,9 @@ class TestFullResearchProjectWorkflow(unittest.TestCase):
         )
         # Gate should advance, but transitioned_to is None because we don't auto-transition
         self.assertEqual("advance", result["decision"])
-        self.assertIsNone(result["transitioned_to"])  # No transition since archive not in PHASE_SEQUENCE
+        self.assertIsNone(
+            result["transitioned_to"]
+        )  # No transition since archive not in PHASE_SEQUENCE
         all_checkpoints.append("phase-gate-reflection-approved")
 
         # ==================== FINAL VERIFICATION ====================
@@ -1133,9 +1123,7 @@ class TestMultiPhaseSubstepWorkflow(unittest.TestCase):
         """Set up a test project."""
         self.temp_dir = tempfile.TemporaryDirectory()
         self.project_root = Path(self.temp_dir.name) / "multi-phase-test"
-        INIT.initialize_research_project(
-            project_root=self.project_root, topic="Multi-phase test"
-        )
+        INIT.initialize_research_project(project_root=self.project_root, topic="Multi-phase test")
 
     def tearDown(self) -> None:
         self.temp_dir.cleanup()
