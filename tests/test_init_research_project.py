@@ -365,12 +365,8 @@ class InitializeResearchProjectTest(unittest.TestCase):
     def test_build_parser_accepts_all_valid_phases(self) -> None:
         """Test that parser accepts both new and legacy phase names."""
         parser = INIT.build_parser()
-        # Test new semantic names
-        for phase in INIT.VALID_PHASES:
-            args = parser.parse_args(["--project-root", "/tmp", "--starting-phase", phase])
-            self.assertEqual(phase, args.starting_phase)
-        # Test legacy names
-        for phase in INIT.VALID_PHASES_LEGACY:
+        # Test all valid phases (semantic + legacy)
+        for phase in INIT.ALL_VALID_PHASES:
             args = parser.parse_args(["--project-root", "/tmp", "--starting-phase", phase])
             self.assertEqual(phase, args.starting_phase)
 

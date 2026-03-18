@@ -10,6 +10,7 @@ from typing import Any
 
 import yaml
 
+from constants.phases import LEGACY_TO_SEMANTIC_PHASE, PHASE_SEQUENCE
 from orchestrator_common import (
     DEFAULT_DELIVERABLES,
     DEFAULT_LANGUAGE_POLICY,
@@ -21,6 +22,7 @@ from orchestrator_common import (
     detect_client_profile,
     ensure_project_structure,
     gitmem_init,
+    normalize_phase_name,
     normalize_relative_path,
     render_template_tree,
     slugify,
@@ -44,42 +46,8 @@ try:
 except ImportError:
     PREFLIGHT_AVAILABLE = False
 
-# New semantic phase names
-VALID_PHASES = ["survey", "pilot", "experiments", "paper", "reflection"]
-
-# Legacy phase names for backward compatibility
-VALID_PHASES_LEGACY = [
-    "01-survey",
-    "02-pilot-analysis",
-    "03-full-experiments",
-    "04-paper",
-    "05-reflection-evolution",
-]
-
-# Combined valid phases for argument parsing
-ALL_VALID_PHASES = VALID_PHASES + VALID_PHASES_LEGACY
-
-# Phase name normalization mapping (legacy -> new)
-PHASE_NAME_MAP = {
-    "01-survey": "survey",
-    "02-pilot-analysis": "pilot",
-    "03-full-experiments": "experiments",
-    "04-paper": "paper",
-    "05-reflection-evolution": "reflection",
-}
-
-
-def normalize_phase_name(phase: str) -> str:
-    """Normalize phase name from legacy to new semantic format.
-
-    Args:
-        phase: Phase name (legacy or new format)
-
-    Returns:
-        Normalized phase name in new semantic format
-    """
-    return PHASE_NAME_MAP.get(phase, phase)
-
+# Combined valid phases for argument parsing (semantic + legacy)
+ALL_VALID_PHASES = list(PHASE_SEQUENCE) + list(LEGACY_TO_SEMANTIC_PHASE.keys())
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 SKILL_DIR = SCRIPT_DIR.parent
