@@ -192,7 +192,9 @@ def initialize_research_project(
     ensure_project_structure(project_root, create_if_missing=True)
 
     # Advisory preflight checks — never raises, never blocks
-    if PREFLIGHT_AVAILABLE:
+    # Skip during test runs to avoid live network calls causing test interference
+    _in_test = "pytest" in sys.modules
+    if PREFLIGHT_AVAILABLE and not _in_test:
         try:
             preflight_results = run_preflight_checks()
             warning_text = format_preflight_warnings(preflight_results)
