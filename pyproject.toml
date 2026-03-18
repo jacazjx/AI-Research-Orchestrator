@@ -9,6 +9,9 @@ description = "Initialize and run a gated five-phase AI research project from id
 readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.9"
+dependencies = [
+    "PyYAML>=6.0",
+]
 authors = [
     {name = "AI Research Orchestrator Team"}
 ]

@@ -9,6 +9,10 @@ AI Research Orchestrator is a Claude Code skill that turns a research IDEA into 
 ## Development Commands
 
 ```bash
+# On Debian/Ubuntu, create a venv first (pip install is blocked system-wide):
+python3 -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
+
 # Run all tests
 python -m pytest tests/ -v --tb=short
 
@@ -137,9 +141,9 @@ project/
 ```
 AI-Research-Orchestrator/
 ├── SKILL.md                 # Main skill definition
-├── commands/                # User-facing commands (6)
-├── skills/                  # Sub-skills (17+)
-├── scripts/                 # Python scripts (29)
+├── commands/                # User-facing commands (9)
+├── skills/                  # Sub-skills (52+)
+├── scripts/                 # Python scripts (38)
 ├── agents/                  # Agent configurations
 ├── assets/templates/        # Project templates
 ├── assets/prompts/          # Agent prompt templates

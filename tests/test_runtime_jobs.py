@@ -323,7 +323,7 @@ class RunRemoteJobTest(unittest.TestCase):
 
             scheduled = SCHEDULE.schedule_job(
                 project_root,
-                command="exit 1",
+                command="bash -c 'exit 1'",
                 backend="local",
             )
 
