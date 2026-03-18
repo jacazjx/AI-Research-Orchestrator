@@ -557,6 +557,7 @@ my-project/
 |---------|-------------|----------|
 | `/airesearchorchestrator:insight` | Clarify research intent | "insight", "clarify intent" |
 | `/airesearchorchestrator:init-research` | Initialize new project | "init research", "start research project" |
+| `/airesearchorchestrator:status` | Show project status | "status", "查看状态", "项目状态" |
 | `/airesearchorchestrator:run-survey` | Run Survey phase | "run survey", "literature review" |
 | `/airesearchorchestrator:run-pilot` | Run Pilot phase | "run pilot", "pilot experiment" |
 | `/airesearchorchestrator:run-experiments` | Run full experiments | "run experiments", "full experiments" |

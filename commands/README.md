@@ -10,6 +10,7 @@ commands/
 ├── reload/COMMAND.md           # Reload project state and configuration
 ├── configure/COMMAND.md        # Configure system parameters
 ├── insight/COMMAND.md          # Interactive intent clarification
+├── status/COMMAND.md           # Show live project status
 ├── run-survey/COMMAND.md       # Literature survey and readiness assessment
 ├── run-pilot/COMMAND.md        # Pilot validation and feasibility check
 ├── run-experiments/COMMAND.md  # Full experiments and evidence collection
@@ -26,6 +27,7 @@ commands/
 | `/reload` | Any | - | "reload", "重新加载", "恢复状态" |
 | `/configure` | Any | - | "configure", "配置", "设置参数" |
 | `/insight` | Init | - | "insight", "澄清意图", "明确想法" |
+| `/status` | Any | - | "status", "查看状态", "项目状态" |
 | `/run-survey` | Survey | Survey, Critic | "run survey", "文献调研" |
 | `/run-pilot` | Pilot | Code, Adviser | "run pilot", "Pilot验证" |
 | `/run-experiments` | Experiments | Code, Adviser | "run experiments", "完整实验" |
@@ -46,6 +48,7 @@ These commands can be used at any point in the workflow:
 - **`/reload`** - Restore context when starting a new session
 - **`/configure`** - Modify project or user settings
 - **`/insight`** - Clarify research intent before or during a project
+- **`/status`** - Show live project status with gate scores and blockers
 
 ## COMMAND.md Frontmatter Schema
 
