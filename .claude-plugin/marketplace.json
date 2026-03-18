@@ -14,7 +14,7 @@
       "name": "airesearchorchestrator",
       "source": "./",
       "description": "Initialize and run a gated five-phase AI research project from idea through paper. Includes 40+ skills for literature survey, pilot validation, experiments, paper writing, and reflection.",
-      "version": "1.2.1",
+      "version": "1.2.2",
       "author": {
         "name": "AI Research Orchestrator Team",
         "email": "autoresearch@example.com"
