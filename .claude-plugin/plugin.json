@@ -1,6 +1,6 @@
 {
   "name": "airesearchorchestrator",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Initialize and run a gated five-phase AI research project from idea through paper. Supports Survey, Pilot, Experiments, Paper, and Reflection phases with explicit human gates.",
   "author": {
     "name": "AI Research Orchestrator Team",

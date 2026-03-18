@@ -1,5 +1,5 @@
 ---
-name: run-pilot
+name: airesearchorchestrator:run-pilot
 description: "Run the Pilot phase for preliminary experiment validation"
 script: scripts/run_stage_loop.py
 triggers:

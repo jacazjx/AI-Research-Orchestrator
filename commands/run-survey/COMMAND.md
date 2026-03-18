@@ -1,5 +1,5 @@
 ---
-name: run-survey
+name: airesearchorchestrator:run-survey
 description: "Run the Survey phase for literature review and research gap identification"
 script: scripts/run_stage_loop.py
 triggers:

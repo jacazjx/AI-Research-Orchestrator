@@ -1,5 +1,5 @@
 ---
-name: status
+name: airesearchorchestrator:status
 description: "Show live research project status: phase progress, gate scores, blockers, and next-action recommendation"
 script: scripts/run_status.py
 triggers:

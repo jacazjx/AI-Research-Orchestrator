@@ -1,5 +1,5 @@
 ---
-name: insight
+name: airesearchorchestrator:insight
 description: "Interactive intent clarification — helps users sharpen their research idea before initialization"
 script: scripts/run_insight.py
 triggers:

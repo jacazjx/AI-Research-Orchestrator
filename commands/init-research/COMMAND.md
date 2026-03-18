@@ -1,5 +1,5 @@
 ---
-name: init-research
+name: airesearchorchestrator:init-research
 description: "Initialize a new AI research project with proper directory structure and state management"
 script: scripts/init_research_project.py
 triggers:

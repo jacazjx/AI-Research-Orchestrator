@@ -1,5 +1,5 @@
 ---
-name: run-experiments
+name: airesearchorchestrator:run-experiments
 description: "Run the full Experiments phase for comprehensive evaluation"
 script: scripts/run_stage_loop.py
 triggers:

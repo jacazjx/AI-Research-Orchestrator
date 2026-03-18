@@ -1,5 +1,5 @@
 ---
-name: write-paper
+name: airesearchorchestrator:write-paper
 description: "Run the Paper phase for manuscript writing and review"
 script: scripts/run_stage_loop.py
 triggers:

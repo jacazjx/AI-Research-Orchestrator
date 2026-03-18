@@ -1,5 +1,5 @@
 ---
-name: reload
+name: airesearchorchestrator:reload
 description: "Reload project state and configuration to restore research context in a new session"
 script: scripts/reload_project.py
 triggers:

@@ -1,5 +1,5 @@
 ---
-name: configure
+name: airesearchorchestrator:configure
 description: "Configure system parameters including research idea, GPU settings, loop limits, and author info"
 script: scripts/configure_project.py
 triggers:

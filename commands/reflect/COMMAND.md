@@ -1,5 +1,5 @@
 ---
-name: reflect
+name: airesearchorchestrator:reflect
 description: "Run the Reflection phase for lessons learned and system improvement"
 script: scripts/run_stage_loop.py
 triggers:
