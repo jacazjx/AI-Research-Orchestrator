@@ -43,6 +43,7 @@ except ImportError:
 
 try:
     from preflight import format_preflight_warnings, run_preflight_checks
+
     PREFLIGHT_AVAILABLE = True
 except ImportError:
     PREFLIGHT_AVAILABLE = False

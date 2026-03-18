@@ -155,6 +155,7 @@ class QualityGateTest(unittest.TestCase):
     def test_phase_loop_key_mapping(self) -> None:
         """Test PHASE_LOOP_KEY constant returns correct mapping for semantic phase names."""
         from constants.phases import PHASE_LOOP_KEY
+
         self.assertEqual("survey_critic", PHASE_LOOP_KEY["survey"])
         self.assertEqual("pilot_code_adviser", PHASE_LOOP_KEY["pilot"])
         self.assertEqual("experiment_code_adviser", PHASE_LOOP_KEY["experiments"])
@@ -164,6 +165,7 @@ class QualityGateTest(unittest.TestCase):
     def test_phase_loop_key_legacy_names(self) -> None:
         """Test PHASE_LOOP_KEY constant covers legacy phase names."""
         from constants.phases import PHASE_LOOP_KEY
+
         self.assertEqual("survey_critic", PHASE_LOOP_KEY["01-survey"])
         self.assertEqual("pilot_code_adviser", PHASE_LOOP_KEY["02-pilot-analysis"])
 
@@ -263,12 +265,14 @@ class QualityGateTest(unittest.TestCase):
     def test_phase_loop_key_covers_all_semantic_phases(self) -> None:
         """verify PHASE_LOOP_KEY in constants covers all semantic phases."""
         from constants.phases import PHASE_LOOP_KEY, PHASE_SEQUENCE
+
         for phase in PHASE_SEQUENCE:
             assert phase in PHASE_LOOP_KEY, f"PHASE_LOOP_KEY missing semantic phase '{phase}'"
 
     def test_evaluate_gate_reads_loop_count_from_correct_key(self) -> None:
         """survey phase loop_count should be read from survey_critic key."""
         import tempfile
+
         with tempfile.TemporaryDirectory() as tmp:
             project_root = Path(tmp)
             # initialize minimal project
@@ -283,6 +287,6 @@ class QualityGateTest(unittest.TestCase):
             COMMON.save_state(project_root, state)
             # evaluate
             result = QUALITY.evaluate_quality_gate(project_root, phase="survey")
-            assert result["loop_count"] == 2, (
-                f"loop_count should be 2 from survey_critic key, got {result['loop_count']}"
-            )
+            assert (
+                result["loop_count"] == 2
+            ), f"loop_count should be 2 from survey_critic key, got {result['loop_count']}"

@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 """Tests for preflight.py module."""
+
 from __future__ import annotations
 
 import sys
 from pathlib import Path
 from unittest.mock import MagicMock, patch
-
-import pytest
 
 SCRIPT_DIR = Path(__file__).resolve().parent.parent / "scripts"
 sys.path.insert(0, str(SCRIPT_DIR))
@@ -38,6 +37,7 @@ class TestCheckLatexAvailable:
 
     def test_latex_timeout(self) -> None:
         import subprocess
+
         with patch("subprocess.run", side_effect=subprocess.TimeoutExpired("pdflatex", 10)):
             result = check_latex_available()
         assert result["available"] is False
@@ -56,14 +56,17 @@ class TestCheckSemanticScholarReachable:
 
     def test_unreachable(self) -> None:
         import urllib.error
-        with patch("urllib.request.urlopen",
-                   side_effect=urllib.error.URLError("Network unreachable")):
+
+        with patch(
+            "urllib.request.urlopen", side_effect=urllib.error.URLError("Network unreachable")
+        ):
             result = check_semantic_scholar_reachable(timeout=5)
         assert result["reachable"] is False
         assert "message" in result
 
     def test_timeout(self) -> None:
         import socket
+
         with patch("urllib.request.urlopen", side_effect=socket.timeout("timed out")):
             result = check_semantic_scholar_reachable(timeout=1)
         assert result["reachable"] is False
@@ -138,6 +141,7 @@ class TestVerifySystemIntegration:
     def test_run_all_checks_includes_preflight(self, tmp_path: Path) -> None:
         import init_research_project as INIT
         from verify_system import run_all_checks
+
         INIT.initialize_research_project(project_root=tmp_path, topic="Preflight test")
         report = run_all_checks(tmp_path)
         assert "preflight" in report

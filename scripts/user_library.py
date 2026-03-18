@@ -12,7 +12,6 @@ This enables knowledge accumulation and reuse across multiple research projects.
 
 from __future__ import annotations
 
-import json
 import logging
 import os
 import tempfile
@@ -329,16 +328,18 @@ def load_all_overlays() -> list[dict[str, Any]]:
         overlay_path = overlays_dir / metadata.get("path", f"{overlay_id}.yaml")
         if overlay_path.exists():
             overlay_data = _load_yaml_file(overlay_path)
-            overlays.append({
-                "id": overlay_id,
-                "title": overlay_data.get("title", ""),
-                "description": overlay_data.get("description", ""),
-                "roles": overlay_data.get("roles", []),
-                "phases": overlay_data.get("phases", []),
-                "content": overlay_data.get("content", ""),
-                "created_at": overlay_data.get("created_at", ""),
-                "source_project": overlay_data.get("source_project", ""),
-            })
+            overlays.append(
+                {
+                    "id": overlay_id,
+                    "title": overlay_data.get("title", ""),
+                    "description": overlay_data.get("description", ""),
+                    "roles": overlay_data.get("roles", []),
+                    "phases": overlay_data.get("phases", []),
+                    "content": overlay_data.get("content", ""),
+                    "created_at": overlay_data.get("created_at", ""),
+                    "source_project": overlay_data.get("source_project", ""),
+                }
+            )
 
     return overlays
 
@@ -365,15 +366,17 @@ def load_all_lessons() -> list[dict[str, Any]]:
         lesson_path = lessons_dir / metadata.get("path", "")
         if lesson_path.exists():
             lesson_data = _load_yaml_file(lesson_path)
-            lessons.append({
-                "id": lesson_id,
-                "title": lesson_data.get("title", ""),
-                "category": lesson_data.get("category", ""),
-                "content": lesson_data.get("content", ""),
-                "tags": lesson_data.get("tags", []),
-                "created_at": lesson_data.get("created_at", ""),
-                "source_project": lesson_data.get("source_project", ""),
-            })
+            lessons.append(
+                {
+                    "id": lesson_id,
+                    "title": lesson_data.get("title", ""),
+                    "category": lesson_data.get("category", ""),
+                    "content": lesson_data.get("content", ""),
+                    "tags": lesson_data.get("tags", []),
+                    "created_at": lesson_data.get("created_at", ""),
+                    "source_project": lesson_data.get("source_project", ""),
+                }
+            )
 
     return lessons
 
@@ -464,7 +467,7 @@ def search_lessons_by_tag(tag: str) -> list[dict[str, Any]]:
         List of matching lessons.
     """
     all_lessons = load_all_lessons()
-    return [l for l in all_lessons if tag in l.get("tags", [])]
+    return [lesson for lesson in all_lessons if tag in lesson.get("tags", [])]
 
 
 def search_lessons_by_category(category: str) -> list[dict[str, Any]]:
@@ -477,7 +480,7 @@ def search_lessons_by_category(category: str) -> list[dict[str, Any]]:
         List of matching lessons.
     """
     all_lessons = load_all_lessons()
-    return [l for l in all_lessons if l.get("category") == category]
+    return [lesson for lesson in all_lessons if lesson.get("category") == category]
 
 
 def search_overlays_by_role(role: str) -> list[dict[str, Any]]:

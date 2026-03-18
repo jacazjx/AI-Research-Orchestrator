@@ -38,8 +38,6 @@ class ShowVersionTest(unittest.TestCase):
 
     def test_version_format(self) -> None:
         """Test that version follows semver format."""
-        import re
-
         version_pattern = r"^\d+\.\d+\.\d+$"
         self.assertRegex(COMMON.SYSTEM_VERSION, version_pattern)
 

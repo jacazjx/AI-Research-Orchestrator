@@ -107,12 +107,21 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--scope-role", action="append", dest="scope_roles")
     parser.add_argument("--scope-phase", action="append", dest="scope_phases")
     parser.add_argument("--skip-approval-check", action="store_true")
-    parser.add_argument("--save-to-library", action="store_true",
-                        help="Save the overlay to the user-level library for cross-project reuse.")
-    parser.add_argument("--library-title", default="",
-                        help="Title for the overlay in the library (used with --save-to-library).")
-    parser.add_argument("--library-description", default="",
-                        help="Description of the overlay (used with --save-to-library).")
+    parser.add_argument(
+        "--save-to-library",
+        action="store_true",
+        help="Save the overlay to the user-level library for cross-project reuse.",
+    )
+    parser.add_argument(
+        "--library-title",
+        default="",
+        help="Title for the overlay in the library (used with --save-to-library).",
+    )
+    parser.add_argument(
+        "--library-description",
+        default="",
+        help="Description of the overlay (used with --save-to-library).",
+    )
     parser.add_argument("--json", action="store_true")
     return parser
 

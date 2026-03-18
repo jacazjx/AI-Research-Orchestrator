@@ -12,7 +12,8 @@ Usage:
     python3 scripts/configure_project.py --project-root /path/to/project --action interactive
 
     # Set specific configuration
-    python3 scripts/configure_project.py --project-root /path/to/project --action set --key max-loops --value 5
+    python3 scripts/configure_project.py --project-root /path/to/project \
+        --action set --key max-loops --value 5
 """
 
 from __future__ import annotations
@@ -523,9 +524,7 @@ def run_interactive_config(
 
         elif choice == "5":
             try:
-                current_lang = updated_state.get(
-                    "language_policy", DEFAULT_LANGUAGE_POLICY
-                )
+                current_lang = updated_state.get("language_policy", DEFAULT_LANGUAGE_POLICY)
                 current_process = current_lang.get("process_docs", "zh-CN")
                 current_paper = current_lang.get("paper_docs", "en-US")
                 prompt = f"输入语言设置 (process,paper) [{current_process},{current_paper}]: "

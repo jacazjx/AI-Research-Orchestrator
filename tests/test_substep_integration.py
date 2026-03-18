@@ -49,7 +49,7 @@ class TestCompleteSubstepWorkflow(unittest.TestCase):
         self.temp_dir.cleanup()
 
     def test_complete_substep_workflow(self) -> None:
-        """Test complete workflow: Primary agent -> Reviewer approves -> Checkpoint created -> Next substep."""
+        """Test complete workflow: Primary -> Reviewer approves -> Checkpoint -> Next substep."""
         # Create required artifact for literature_survey
         artifact = self.project_root / "docs/reports/survey/literature-review.md"
         artifact.parent.mkdir(parents=True, exist_ok=True)
@@ -299,7 +299,9 @@ class TestPhaseTransitionWithSubsteps(unittest.TestCase):
         artifacts = {
             "docs/reports/survey/literature-review.md": "# Literature Review\n",
             "docs/reports/survey/idea-definition.md": "# Idea Definition\n",
-            "docs/reports/survey/research-readiness-report.md": "# Research Readiness\n- Recommendation: `approve`\n",
+            "docs/reports/survey/research-readiness-report.md": (
+                "# Research Readiness\n- Recommendation: `approve`\n"
+            ),
             "docs/reports/survey/survey-round-summary.md": "# Summary\n",
             "docs/reports/survey/critic-round-review.md": "# Review\n",
             "docs/reports/survey/phase-scorecard.md": "# Scorecard\n- Gate readiness: `approve`\n",
@@ -381,7 +383,9 @@ class TestPhaseTransitionWithSubsteps(unittest.TestCase):
         artifacts = {
             "docs/reports/survey/literature-review.md": "# Lit Review\n",
             "docs/reports/survey/idea-definition.md": "# Idea\n",
-            "docs/reports/survey/research-readiness-report.md": "# Readiness\n- Recommendation: `approve`\n",
+            "docs/reports/survey/research-readiness-report.md": (
+                "# Readiness\n- Recommendation: `approve`\n"
+            ),
             "docs/reports/survey/survey-round-summary.md": "# Summary\n",
             "docs/reports/survey/critic-round-review.md": "# Review\n",
             "docs/reports/survey/phase-scorecard.md": "# Scorecard\n- Gate readiness: `approve`\n",
@@ -474,7 +478,9 @@ class TestGitMemCheckpointsThroughWorkflow(unittest.TestCase):
         artifacts = {
             "docs/reports/survey/literature-review.md": "# Lit\n",
             "docs/reports/survey/idea-definition.md": "# Idea\n",
-            "docs/reports/survey/research-readiness-report.md": "# Ready\n- Recommendation: `approve`\n",
+            "docs/reports/survey/research-readiness-report.md": (
+                "# Ready\n- Recommendation: `approve`\n"
+            ),
             "docs/reports/survey/survey-round-summary.md": "# Summary\n",
             "docs/reports/survey/critic-round-review.md": "# Review\n",
             "docs/reports/survey/phase-scorecard.md": "# Scorecard\n- Gate readiness: `approve`\n",
@@ -706,12 +712,20 @@ class TestFullResearchProjectWorkflow(unittest.TestCase):
         # ==================== SURVEY PHASE ====================
         # Create survey artifacts
         survey_artifacts = {
-            "docs/reports/survey/literature-review.md": "# Literature Review\n\nComprehensive review of related work.\n",
-            "docs/reports/survey/idea-definition.md": "# Idea Definition\n\nNovel research contribution.\n",
-            "docs/reports/survey/research-readiness-report.md": "# Research Readiness Report\n\n- Recommendation: `approve`\n",
+            "docs/reports/survey/literature-review.md": (
+                "# Literature Review\n\nComprehensive review of related work.\n"
+            ),
+            "docs/reports/survey/idea-definition.md": (
+                "# Idea Definition\n\nNovel research contribution.\n"
+            ),
+            "docs/reports/survey/research-readiness-report.md": (
+                "# Research Readiness Report\n\n- Recommendation: `approve`\n"
+            ),
             "docs/reports/survey/survey-round-summary.md": "# Survey Round Summary\n",
             "docs/reports/survey/critic-round-review.md": "# Critic Round Review\n",
-            "docs/reports/survey/phase-scorecard.md": "# Phase Scorecard\n\n- Gate readiness: `approve`\n",
+            "docs/reports/survey/phase-scorecard.md": (
+                "# Phase Scorecard\n\n- Gate readiness: `approve`\n"
+            ),
         }
         for path, content in survey_artifacts.items():
             file_path = self.project_root / path
@@ -766,21 +780,37 @@ class TestFullResearchProjectWorkflow(unittest.TestCase):
 
         # ==================== PILOT PHASE ====================
         # Create pilot artifacts for both substep advancement and quality gate
-        # Substep artifacts: problem-validation-report.md, problem-analysis.md, pilot-design.md, pilot-validation-report.md
-        # Phase deliverables: problem_validation_report, problem_analysis, pilot_plan, pilot_validation_report, pilot_scorecard, pilot_adviser_review
+        # Substep artifacts: problem-validation-report.md, problem-analysis.md,
+        #   pilot-design.md, pilot-validation-report.md
+        # Phase deliverables: problem_validation_report, problem_analysis, pilot_plan,
+        #   pilot_validation_report, pilot_scorecard, pilot_adviser_review
         pilot_artifacts = {
             # Substep artifacts
-            "docs/reports/pilot/problem-validation-report.md": "# Problem Validation Report\n\n- Validation verdict: `validated`\n",
-            "docs/reports/pilot/problem-analysis.md": "# Problem Analysis\n\nDetailed problem breakdown.\n",
-            "docs/reports/pilot/pilot-design.md": "# Pilot Design\n\nExperimental design for pilot.\n",
-            "docs/reports/pilot/pilot-validation-report.md": "# Pilot Validation Report\n\n- Continue to full experiments: `yes`\n",
+            "docs/reports/pilot/problem-validation-report.md": (
+                "# Problem Validation Report\n\n- Validation verdict: `validated`\n"
+            ),
+            "docs/reports/pilot/problem-analysis.md": (
+                "# Problem Analysis\n\nDetailed problem breakdown.\n"
+            ),
+            "docs/reports/pilot/pilot-design.md": (
+                "# Pilot Design\n\nExperimental design for pilot.\n"
+            ),
+            "docs/reports/pilot/pilot-validation-report.md": (
+                "# Pilot Validation Report\n\n- Continue to full experiments: `yes`\n"
+            ),
             # Additional phase deliverables for quality gate
-            "code/configs/pilot-experiment-plan.md": "# Pilot Experiment Plan\n\nPlan for pilot experiments.\n",
-            "docs/reports/pilot/pilot-adviser-review.md": "# Pilot Adviser Review\n\n- Status: `approved`\n- Recommendation: `approve`\n",
+            "code/configs/pilot-experiment-plan.md": (
+                "# Pilot Experiment Plan\n\nPlan for pilot experiments.\n"
+            ),
+            "docs/reports/pilot/pilot-adviser-review.md": (
+                "# Pilot Adviser Review\n\n- Status: `approved`\n- Recommendation: `approve`\n"
+            ),
             # Other artifacts
             "docs/reports/pilot/pilot-round-summary.md": "# Pilot Round Summary\n",
             "docs/reports/pilot/adviser-round-review.md": "# Adviser Round Review\n",
-            "docs/reports/pilot/phase-scorecard.md": "# Phase Scorecard\n\n- Gate readiness: `approve`\n",
+            "docs/reports/pilot/phase-scorecard.md": (
+                "# Phase Scorecard\n\n- Gate readiness: `approve`\n"
+            ),
         }
         for path, content in pilot_artifacts.items():
             file_path = self.project_root / path
@@ -856,20 +886,40 @@ class TestFullResearchProjectWorkflow(unittest.TestCase):
         # ==================== EXPERIMENTS PHASE ====================
         # Create experiments artifacts for both substep advancement and quality gate
         # Substep artifacts: experiment-spec.md, run-registry.md, evidence-package-index.md
-        # Phase deliverables: experiment_spec, results_summary, evidence_package_index, experiment_scorecard, experiment_adviser_review
+        # Phase deliverables: experiment_spec, results_summary, evidence_package_index,
+        #   experiment_scorecard, experiment_adviser_review
         experiments_artifacts = {
             # Substep artifacts
-            "docs/reports/experiments/experiment-spec.md": "# Experiment Specification\n\nDetailed experiment design.\n",
-            "docs/reports/experiments/run-registry.md": "# Run Registry\n\nExperiment run logs.\n",
-            "docs/reports/experiments/evidence-package-index.md": "# Evidence Package Index\n\n- Results: `positive`\n",
+            "docs/reports/experiments/experiment-spec.md": (
+                "# Experiment Specification\n\nDetailed experiment design.\n"
+            ),
+            "docs/reports/experiments/run-registry.md": (
+                "# Run Registry\n\nExperiment run logs.\n"
+            ),
+            "docs/reports/experiments/evidence-package-index.md": (
+                "# Evidence Package Index\n\n- Results: `positive`\n"
+            ),
             # Additional phase deliverables for quality gate
-            "code/configs/experiment-spec.md": "# Experiment Specification\n\nDetailed experiment design.\n",
-            "docs/reports/experiments/results-summary.md": "# Results Summary\n\nSummary of experiment results.\n",
-            "docs/reports/experiments/experiment-adviser-review.md": "# Experiment Adviser Review\n\n- Status: `approved`\n- Recommendation: `approve`\n- Handoff decision: `approve`\n",
+            "code/configs/experiment-spec.md": (
+                "# Experiment Specification\n\nDetailed experiment design.\n"
+            ),
+            "docs/reports/experiments/results-summary.md": (
+                "# Results Summary\n\nSummary of experiment results.\n"
+            ),
+            "docs/reports/experiments/experiment-adviser-review.md": (
+                "# Experiment Adviser Review\n\n"
+                "- Status: `approved`\n"
+                "- Recommendation: `approve`\n"
+                "- Handoff decision: `approve`\n"
+            ),
             # Other artifacts
-            "docs/reports/experiments/experiments-round-summary.md": "# Experiments Round Summary\n",
+            "docs/reports/experiments/experiments-round-summary.md": (
+                "# Experiments Round Summary\n"
+            ),
             "docs/reports/experiments/adviser-round-review.md": "# Adviser Round Review\n",
-            "docs/reports/experiments/phase-scorecard.md": "# Phase Scorecard\n\n- Gate readiness: `approve`\n",
+            "docs/reports/experiments/phase-scorecard.md": (
+                "# Phase Scorecard\n\n- Gate readiness: `approve`\n"
+            ),
         }
         for path, content in experiments_artifacts.items():
             file_path = self.project_root / path
@@ -934,16 +984,29 @@ class TestFullResearchProjectWorkflow(unittest.TestCase):
         # ==================== PAPER PHASE ====================
         # Create paper artifacts with correct structured signals for quality gate
         # Substep artifacts: paper-outline.md, paper-draft.md, citation-audit-report.md
-        # Phase deliverables: paper_draft, citation_audit_report, final_acceptance_report, paper_scorecard, reviewer_report
+        # Phase deliverables: paper_draft, citation_audit_report, final_acceptance_report,
+        #   paper_scorecard, reviewer_report
         paper_artifacts = {
             # Substep artifacts
             "paper/paper-outline.md": "# Paper Outline\n\nStructure of the paper.\n",
             "paper/paper-draft.md": "# Paper Draft\n\nFull paper draft.\n",
-            "paper/citation-audit-report.md": "# Citation Audit Report\n\n- Citation authenticity status: `verified`\n",
+            "paper/citation-audit-report.md": (
+                "# Citation Audit Report\n\n- Citation authenticity status: `verified`\n"
+            ),
             # Additional phase deliverables for quality gate
-            "paper/reviewer-report.md": "# Reviewer Report\n\n- Submission bar: `top-tier journal/conference ready`\n- Verdict: `accept`\n",
-            "docs/reports/paper/final-acceptance-report.md": "# Final Acceptance Report\n\n- Meets top-tier venue bar: `yes`\n- Recommendation: `approve`\n",
-            "docs/reports/paper/phase-scorecard.md": "# Phase Scorecard\n\n- Gate readiness: `approve`\n",
+            "paper/reviewer-report.md": (
+                "# Reviewer Report\n\n"
+                "- Submission bar: `top-tier journal/conference ready`\n"
+                "- Verdict: `accept`\n"
+            ),
+            "docs/reports/paper/final-acceptance-report.md": (
+                "# Final Acceptance Report\n\n"
+                "- Meets top-tier venue bar: `yes`\n"
+                "- Recommendation: `approve`\n"
+            ),
+            "docs/reports/paper/phase-scorecard.md": (
+                "# Phase Scorecard\n\n- Gate readiness: `approve`\n"
+            ),
             # Other artifacts
             "paper/paper-round-summary.md": "# Paper Round Summary\n",
             "paper/reviewer-round-review.md": "# Reviewer Round Review\n",
@@ -1012,11 +1075,17 @@ class TestFullResearchProjectWorkflow(unittest.TestCase):
         # Create reflection artifacts
         # Note: runtime_improvement_report needs 'Recommendation: approve' for gate signal
         reflection_artifacts = {
-            "docs/reports/reflection/lessons-learned.md": "# Lessons Learned\n\nKey takeaways from the project.\n",
-            "docs/reports/reflection/runtime-improvement-report.md": "# Runtime Improvement Report\n\n- Recommendation: `approve`\n",
-            "docs/reports/reflection/reflection-round-summary.md": "# Reflection Round Summary\n",
+            "docs/reports/reflection/lessons-learned.md": (
+                "# Lessons Learned\n\nKey takeaways from the project.\n"
+            ),
+            "docs/reports/reflection/runtime-improvement-report.md": (
+                "# Runtime Improvement Report\n\n- Recommendation: `approve`\n"
+            ),
+            "docs/reports/reflection/reflection-round-summary.md": ("# Reflection Round Summary\n"),
             "docs/reports/reflection/curator-round-review.md": "# Curator Round Review\n",
-            "docs/reports/reflection/phase-scorecard.md": "# Phase Scorecard\n\n- Gate readiness: `approve`\n",
+            "docs/reports/reflection/phase-scorecard.md": (
+                "# Phase Scorecard\n\n- Gate readiness: `approve`\n"
+            ),
         }
         for path, content in reflection_artifacts.items():
             file_path = self.project_root / path

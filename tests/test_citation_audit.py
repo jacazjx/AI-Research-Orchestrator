@@ -64,7 +64,8 @@ class CitationAuditTest(unittest.TestCase):
                 "\n".join(
                     [
                         "@inproceedings{fedavg,",
-                        "  title = {Communication-Efficient Learning of Deep Networks from Decentralized Data},",
+                        "  title = {Communication-Efficient Learning of Deep Networks "
+                        "from Decentralized Data},",
                         "  doi = {10.48550/arXiv.1602.05629},",
                         "  x-verification-status = {verified-doi},",
                         "  x-bib-source = {doi-content-negotiation},",

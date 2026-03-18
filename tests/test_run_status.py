@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 """Tests for run_status.py module."""
+
 from __future__ import annotations
 
 import json
 import sys
-import tempfile
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 

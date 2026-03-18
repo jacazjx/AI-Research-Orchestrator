@@ -392,7 +392,7 @@ class PromptMultilineTest(unittest.TestCase):
     @patch("builtins.input", side_effect=["line 1", "END", "line 2", "END"])
     def test_required_empty_then_valid(self, mock_input: callable) -> None:
         """Test required prompts again on empty."""
-        result = PROMPTS.prompt_multiline("Enter text", required=True, default="")
+        PROMPTS.prompt_multiline("Enter text", required=True, default="")
         # First iteration returns empty, required triggers retry
         # But the side_effect will be consumed
         # This test checks the required behavior

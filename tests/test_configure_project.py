@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 
-import json
-import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
@@ -20,13 +18,11 @@ sys.path.insert(0, str(SCRIPT_DIR))
 from constants import DEFAULT_DELIVERABLES
 from configure_project import (
     get_nested_value,
-    get_user_config_path,
     load_project_config,
     load_project_state,
     load_user_config,
     save_project_config,
     save_project_state,
-    save_user_config,
     set_nested_value,
     show_current_config,
     update_config,

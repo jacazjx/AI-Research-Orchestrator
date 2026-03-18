@@ -1,4 +1,5 @@
 """Tests for state schema validation."""
+
 import importlib.util
 import sys
 import tempfile
@@ -22,8 +23,11 @@ INIT = _load("init_research_project")
 
 class StateSchemaValidationTest(unittest.TestCase):
     REQUIRED_KEYS = [
-        "current_phase", "deliverables", "approval_status",
-        "phase_reviews", "loop_counts",
+        "current_phase",
+        "deliverables",
+        "approval_status",
+        "phase_reviews",
+        "loop_counts",
     ]
 
     def _valid_state(self) -> dict:
@@ -43,15 +47,19 @@ class StateSchemaValidationTest(unittest.TestCase):
         state = self._valid_state()
         del state["current_phase"]
         errors = COMMON.validate_state_schema(state)
-        self.assertTrue(any("current_phase" in e for e in errors),
-                        f"Should error on missing current_phase: {errors}")
+        self.assertTrue(
+            any("current_phase" in e for e in errors),
+            f"Should error on missing current_phase: {errors}",
+        )
 
     def test_validate_reports_missing_deliverables(self) -> None:
         state = self._valid_state()
         del state["deliverables"]
         errors = COMMON.validate_state_schema(state)
-        self.assertTrue(any("deliverables" in e for e in errors),
-                        f"Should error on missing deliverables: {errors}")
+        self.assertTrue(
+            any("deliverables" in e for e in errors),
+            f"Should error on missing deliverables: {errors}",
+        )
 
     def test_validate_reports_missing_approval_status(self) -> None:
         state = self._valid_state()
@@ -71,7 +79,7 @@ class StateSchemaValidationTest(unittest.TestCase):
         errors = COMMON.validate_state_schema(state)
         self.assertTrue(
             any("current_phase" in e or "nonexistent_phase" in e for e in errors),
-            f"Should error on unknown phase: {errors}"
+            f"Should error on unknown phase: {errors}",
         )
 
     def test_validate_accepts_archive_phase(self) -> None:
@@ -93,6 +101,7 @@ class StateSchemaValidationTest(unittest.TestCase):
             config_path.parent.mkdir(parents=True)
             config_path.write_text("{}\n", encoding="utf-8")
             from exceptions import StateSchemaError  # type: ignore
+
             with self.assertRaises(StateSchemaError):
                 COMMON.load_state(project_root)
 

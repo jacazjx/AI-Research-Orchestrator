@@ -389,8 +389,9 @@ class InitializeResearchProjectTest(unittest.TestCase):
     def test_warn_starting_phase_returns_empty_for_pilot_first_arg(self) -> None:
         # pilot 跳过了 survey，应该有警告
         warnings = COMMON.warn_starting_phase_prerequisites("pilot")
-        self.assertEqual(1, len([w for w in warnings if "survey" in w.lower()]),
-                         "pilot 起始应警告 survey 被跳过")
+        self.assertEqual(
+            1, len([w for w in warnings if "survey" in w.lower()]), "pilot 起始应警告 survey 被跳过"
+        )
 
 
 if __name__ == "__main__":

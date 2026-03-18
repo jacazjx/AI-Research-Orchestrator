@@ -93,9 +93,7 @@ class SentinelRecoverTest(unittest.TestCase):
             registry_path = project_root / ".autoresearch/runtime/job-registry.yaml"
             registry = COMMON.read_yaml(registry_path)
 
-            result = RECOVER.recover_stage(
-                project_root, mode="retry-job", job_id=scheduled["job_id"]
-            )
+            RECOVER.recover_stage(project_root, mode="retry-job", job_id=scheduled["job_id"])
             registry = COMMON.read_yaml(registry_path)
             self.assertEqual(1, registry["jobs"][scheduled["job_id"]]["retry_count"])
 
@@ -112,9 +110,8 @@ class SentinelRecoverTest(unittest.TestCase):
                 "regen-dashboard",
             ]
             with patch("sys.argv", ["recover_stage.py"] + args):
-                with patch("builtins.print") as mock_print:
-                    result = RECOVER.main()
-                    self.assertEqual(0, result)
+                result = RECOVER.main()
+                self.assertEqual(0, result)
 
     def test_main_retry_job(self) -> None:
         """Test main with retry-job mode."""
@@ -133,9 +130,8 @@ class SentinelRecoverTest(unittest.TestCase):
                 scheduled["job_id"],
             ]
             with patch("sys.argv", ["recover_stage.py"] + args):
-                with patch("builtins.print") as mock_print:
-                    result = RECOVER.main()
-                    self.assertEqual(0, result)
+                result = RECOVER.main()
+                self.assertEqual(0, result)
 
     def test_main_with_json_output(self) -> None:
         """Test main with --json flag."""
@@ -233,7 +229,7 @@ class SentinelTest(unittest.TestCase):
                 file_path.write_text("content\n", encoding="utf-8")
 
             # Schedule a job first to have proper registry structure
-            scheduled = SCHEDULE.schedule_job(project_root, command="echo test", backend="local")
+            SCHEDULE.schedule_job(project_root, command="echo test", backend="local")
 
             # Add active job that doesn't exist in registry
             state_path = project_root / ".autoresearch/state/research-state.yaml"
@@ -270,7 +266,7 @@ class SentinelTest(unittest.TestCase):
             ]
             with patch("sys.argv", ["sentinel.py"] + args):
                 with patch("builtins.print") as mock_print:
-                    result = SENTINEL.main()
+                    SENTINEL.main()
                     call_args = mock_print.call_args[0][0]
                     parsed = json.loads(call_args)
                     self.assertIn("status", parsed)
@@ -305,7 +301,7 @@ class SentinelTest(unittest.TestCase):
             ]
             with patch("sys.argv", ["sentinel.py"] + args):
                 with patch("builtins.print") as mock_print:
-                    result = SENTINEL.main()
+                    SENTINEL.main()
                     call_args = mock_print.call_args[0][0]
                     parsed = json.loads(call_args)
                     self.assertIn("status", parsed)

@@ -80,7 +80,7 @@ class PivotManagerTest(unittest.TestCase):
                 rationale="Need to go back to pilot.",
             )
 
-            reviewed = PIVOT.review_pivot(project_root, proposed["pivot_id"], "approve")
+            PIVOT.review_pivot(project_root, proposed["pivot_id"], "approve")
             state = COMMON.read_yaml(project_root / ".autoresearch/state/research-state.yaml")
             # Should be legacy format for downgrade
             self.assertIn("pilot", state["current_phase"])
@@ -97,7 +97,7 @@ class PivotManagerTest(unittest.TestCase):
                 rationale="Project should be archived.",
             )
 
-            reviewed = PIVOT.review_pivot(project_root, proposed["pivot_id"], "approve")
+            PIVOT.review_pivot(project_root, proposed["pivot_id"], "approve")
             state = COMMON.read_yaml(project_root / ".autoresearch/state/research-state.yaml")
             self.assertEqual("complete", state["current_gate"])
 
@@ -107,7 +107,7 @@ class PivotManagerTest(unittest.TestCase):
             project_root = Path(temp_dir) / "alternative"
             INIT.initialize_research_project(project_root=project_root, topic="Alternative test")
 
-            proposed = PIVOT.propose_pivot(
+            PIVOT.propose_pivot(
                 project_root,
                 pivot_type="methodology_change",
                 rationale="Current approach not working.",

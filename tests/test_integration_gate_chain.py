@@ -1,4 +1,5 @@
 """Integration tests: init → quality_gate pipeline."""
+
 from __future__ import annotations
 
 import importlib.util
@@ -42,9 +43,10 @@ class IntegrationGateChainTest(unittest.TestCase):
             project_root = self._init_project(tmp)
             result = QUALITY.evaluate_quality_gate(project_root, phase="survey")
             self.assertEqual(
-                "revise", result["decision"],
+                "revise",
+                result["decision"],
                 f"Fresh project should need revisions.\nDecision: {result['decision']}\n"
-                f"Blockers: {result['blockers']}"
+                f"Blockers: {result['blockers']}",
             )
             # A fresh project materializes template files; they exist but contain placeholders.
             # The gate therefore reports deliverables_still_template (not missing).
@@ -54,7 +56,7 @@ class IntegrationGateChainTest(unittest.TestCase):
             )
             self.assertTrue(
                 has_deliverable_blocker,
-                f"Expected a deliverable blocker but got: {result['blockers']}"
+                f"Expected a deliverable blocker but got: {result['blockers']}",
             )
 
     def test_fresh_project_has_correct_current_phase(self) -> None:
@@ -84,9 +86,12 @@ class IntegrationGateChainTest(unittest.TestCase):
             COMMON.save_state(project_root, state)
             # Gate blocker should be gone
             result_after = QUALITY.evaluate_quality_gate(project_root, phase="survey")
-            self.assertNotIn("user_gate_pending", result_after["blockers"],
-                            f"Gate blocker should be removed after approval. "
-                            f"Remaining blockers: {result_after['blockers']}")
+            self.assertNotIn(
+                "user_gate_pending",
+                result_after["blockers"],
+                f"Gate blocker should be removed after approval. "
+                f"Remaining blockers: {result_after['blockers']}",
+            )
 
     def test_warn_prerequisites_invoked_for_non_survey_start(self) -> None:
         """warn_starting_phase_prerequisites should return warnings for non-survey start."""
@@ -108,6 +113,7 @@ class IntegrationGateChainTest(unittest.TestCase):
             (state_dir / "research-state.yaml").write_text("current_phase: survey\n")
             (config_dir / "orchestrator-config.yaml").write_text("{}\n")
             from exceptions import StateSchemaError  # type: ignore
+
             with self.assertRaises(StateSchemaError):
                 COMMON.load_state(project_root)
 

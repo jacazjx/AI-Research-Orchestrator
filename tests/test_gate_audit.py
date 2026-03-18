@@ -1,4 +1,5 @@
 """Tests for gate decision audit logging in save_state."""
+
 import importlib.util
 import json
 import sys
@@ -38,13 +39,20 @@ class GateAuditTest(unittest.TestCase):
             state = COMMON.load_state(project_root)
             sentinel_path = project_root / COMMON.DEFAULT_DELIVERABLES["sentinel_events"]
             # record initial line count
-            initial_lines = sentinel_path.read_text().strip().splitlines() if sentinel_path.exists() else []
-            initial_gate_events = [l for l in initial_lines if '"gate_decision"' in l]
+            initial_lines = (
+                sentinel_path.read_text().strip().splitlines() if sentinel_path.exists() else []
+            )
+            initial_gate_events = [line for line in initial_lines if '"gate_decision"' in line]
             COMMON.save_state(project_root, state)
-            new_lines = sentinel_path.read_text().strip().splitlines() if sentinel_path.exists() else []
-            new_gate_events = [l for l in new_lines if '"gate_decision"' in l]
-            self.assertEqual(len(initial_gate_events), len(new_gate_events),
-                            "No gate events should be added without previous_state")
+            new_lines = (
+                sentinel_path.read_text().strip().splitlines() if sentinel_path.exists() else []
+            )
+            new_gate_events = [line for line in new_lines if '"gate_decision"' in line]
+            self.assertEqual(
+                len(initial_gate_events),
+                len(new_gate_events),
+                "No gate events should be added without previous_state",
+            )
 
     def test_save_state_logs_gate_approval_event(self) -> None:
         """save_state with previous_state should log when approval_status changes."""
@@ -58,7 +66,9 @@ class GateAuditTest(unittest.TestCase):
 
             sentinel_path = project_root / COMMON.DEFAULT_DELIVERABLES["sentinel_events"]
             self.assertTrue(sentinel_path.exists(), "sentinel_events.ndjson should exist")
-            events = [json.loads(l) for l in sentinel_path.read_text().splitlines() if l.strip()]
+            events = [
+                json.loads(line) for line in sentinel_path.read_text().splitlines() if line.strip()
+            ]
             gate_events = [e for e in events if e.get("type") == "gate_decision"]
             self.assertGreater(len(gate_events), 0, "Should have at least one gate_decision event")
             last_event = gate_events[-1]
@@ -72,11 +82,28 @@ class GateAuditTest(unittest.TestCase):
             project_root = self._init_project(tmp)
             state = COMMON.load_state(project_root)
             sentinel_path = project_root / COMMON.DEFAULT_DELIVERABLES["sentinel_events"]
-            initial_events = [l for l in sentinel_path.read_text().splitlines() if '"gate_decision"' in l] if sentinel_path.exists() else []
+            initial_events = (
+                [
+                    line
+                    for line in sentinel_path.read_text().splitlines()
+                    if '"gate_decision"' in line
+                ]
+                if sentinel_path.exists()
+                else []
+            )
             COMMON.save_state(project_root, state, previous_state=state)
-            new_events = [l for l in sentinel_path.read_text().splitlines() if '"gate_decision"' in l] if sentinel_path.exists() else []
-            self.assertEqual(len(initial_events), len(new_events),
-                            "No gate events when status unchanged")
+            new_events = (
+                [
+                    line
+                    for line in sentinel_path.read_text().splitlines()
+                    if '"gate_decision"' in line
+                ]
+                if sentinel_path.exists()
+                else []
+            )
+            self.assertEqual(
+                len(initial_events), len(new_events), "No gate events when status unchanged"
+            )
 
     def test_gate_event_has_iso_timestamp(self) -> None:
         """Gate events should have valid ISO 8601 timestamp."""
@@ -88,7 +115,9 @@ class GateAuditTest(unittest.TestCase):
             COMMON.save_state(project_root, new_state, previous_state=old_state)
 
             sentinel_path = project_root / COMMON.DEFAULT_DELIVERABLES["sentinel_events"]
-            events = [json.loads(l) for l in sentinel_path.read_text().splitlines() if l.strip()]
+            events = [
+                json.loads(line) for line in sentinel_path.read_text().splitlines() if line.strip()
+            ]
             gate_events = [e for e in events if e.get("type") == "gate_decision"]
             self.assertGreater(len(gate_events), 0)
             ts = gate_events[-1]["timestamp"]

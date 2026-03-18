@@ -614,7 +614,7 @@ class InitWizardInteractiveModeTest(unittest.TestCase):
     @patch("builtins.input", side_effect=["n"])  # Don't start from survey
     def test_starting_phase_selection_cancelled(self, mock_input: callable) -> None:
         """Test starting phase selection when user doesn't want survey."""
-        wizard = INIT_WIZARD.InitWizard(
+        INIT_WIZARD.InitWizard(
             project_root=self.project_root,
             interactive=True,
         )

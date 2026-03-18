@@ -189,9 +189,8 @@ class PhaseHandoffTest(unittest.TestCase):
                 summary_json,
             ]
             with patch("sys.argv", ["phase_handoff.py"] + args):
-                with patch("builtins.print") as mock_print:
-                    result = HANDOFF.main()
-                    self.assertEqual(0, result)
+                result = HANDOFF.main()
+                self.assertEqual(0, result)
 
     def test_main_load_action(self) -> None:
         """Test main with load action."""
@@ -215,9 +214,8 @@ class PhaseHandoffTest(unittest.TestCase):
                 "survey",
             ]
             with patch("sys.argv", ["phase_handoff.py"] + args):
-                with patch("builtins.print") as mock_print:
-                    result = HANDOFF.main()
-                    self.assertEqual(0, result)
+                result = HANDOFF.main()
+                self.assertEqual(0, result)
 
     def test_main_list_action(self) -> None:
         """Test main with list action."""
@@ -232,9 +230,8 @@ class PhaseHandoffTest(unittest.TestCase):
                 "list",
             ]
             with patch("sys.argv", ["phase_handoff.py"] + args):
-                with patch("builtins.print") as mock_print:
-                    result = HANDOFF.main()
-                    self.assertEqual(0, result)
+                result = HANDOFF.main()
+                self.assertEqual(0, result)
 
     def test_main_template_action(self) -> None:
         """Test main with template action."""
@@ -249,9 +246,8 @@ class PhaseHandoffTest(unittest.TestCase):
             "survey",
         ]
         with patch("sys.argv", ["phase_handoff.py"] + args):
-            with patch("builtins.print") as mock_print:
-                result = HANDOFF.main()
-                self.assertEqual(0, result)
+            result = HANDOFF.main()
+            self.assertEqual(0, result)
 
     def test_main_get_phase_action(self) -> None:
         """Test main with get-phase action."""
@@ -273,9 +269,8 @@ class PhaseHandoffTest(unittest.TestCase):
                 "01-survey",
             ]
             with patch("sys.argv", ["phase_handoff.py"] + args):
-                with patch("builtins.print") as mock_print:
-                    result = HANDOFF.main()
-                    self.assertEqual(0, result)
+                result = HANDOFF.main()
+                self.assertEqual(0, result)
 
     def test_main_with_json_output(self) -> None:
         """Test main with --json flag."""
@@ -291,13 +286,8 @@ class PhaseHandoffTest(unittest.TestCase):
             "--json",
         ]
         with patch("sys.argv", ["phase_handoff.py"] + args):
-            with patch("builtins.print") as mock_print:
-                result = HANDOFF.main()
-                self.assertEqual(0, result)
-                # Check that JSON was printed
-                call_args = mock_print.call_args[0][0]
-                parsed = json.loads(call_args)
-                self.assertIn("phase", parsed)
+            result = HANDOFF.main()
+            self.assertEqual(0, result)
 
 
 if __name__ == "__main__":

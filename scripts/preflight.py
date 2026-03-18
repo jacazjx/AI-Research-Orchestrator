@@ -4,6 +4,7 @@
 Checks for LaTeX, Semantic Scholar API reachability, and GPU availability.
 All checks are advisory — they never raise or block initialization.
 """
+
 from __future__ import annotations
 
 import socket
@@ -36,14 +37,15 @@ def check_latex_available() -> dict[str, Any]:
         if result.returncode == 0:
             version = result.stdout.splitlines()[0] if result.stdout else "unknown"
             return {"available": True, "version": version, "message": ""}
-        return {"available": False, "version": None,
-                "message": f"pdflatex exited with code {result.returncode}"}
+        return {
+            "available": False,
+            "version": None,
+            "message": f"pdflatex exited with code {result.returncode}",
+        }
     except FileNotFoundError:
-        return {"available": False, "version": None,
-                "message": "pdflatex not found on PATH"}
+        return {"available": False, "version": None, "message": "pdflatex not found on PATH"}
     except subprocess.TimeoutExpired:
-        return {"available": False, "version": None,
-                "message": "pdflatex check timed out"}
+        return {"available": False, "version": None, "message": "pdflatex check timed out"}
     except Exception as exc:  # noqa: BLE001
         return {"available": False, "version": None, "message": str(exc)}
 
@@ -56,13 +58,11 @@ def check_semantic_scholar_reachable(timeout: int = 5) -> dict[str, Any]:
             latency_ms = int((time.monotonic() - t0) * 1000)
             if resp.status == 200:
                 return {"reachable": True, "latency_ms": latency_ms, "message": ""}
-            return {"reachable": False, "latency_ms": latency_ms,
-                    "message": f"HTTP {resp.status}"}
+            return {"reachable": False, "latency_ms": latency_ms, "message": f"HTTP {resp.status}"}
     except urllib.error.URLError as exc:
         return {"reachable": False, "latency_ms": None, "message": str(exc.reason)}
     except socket.timeout:
-        return {"reachable": False, "latency_ms": None,
-                "message": f"timed out after {timeout}s"}
+        return {"reachable": False, "latency_ms": None, "message": f"timed out after {timeout}s"}
     except Exception as exc:  # noqa: BLE001
         return {"reachable": False, "latency_ms": None, "message": str(exc)}
 
@@ -78,16 +78,27 @@ def check_gpu_available() -> dict[str, Any]:
         )
         if result.returncode == 0 and result.stdout.strip():
             names = [n.strip() for n in result.stdout.strip().splitlines() if n.strip()]
-            return {"available": True, "gpu_count": len(names),
-                    "gpu_names": names, "message": ""}
-        return {"available": False, "gpu_count": 0, "gpu_names": [],
-                "message": f"nvidia-smi exited with code {result.returncode}"}
+            return {"available": True, "gpu_count": len(names), "gpu_names": names, "message": ""}
+        return {
+            "available": False,
+            "gpu_count": 0,
+            "gpu_names": [],
+            "message": f"nvidia-smi exited with code {result.returncode}",
+        }
     except FileNotFoundError:
-        return {"available": False, "gpu_count": 0, "gpu_names": [],
-                "message": "nvidia-smi not found on PATH"}
+        return {
+            "available": False,
+            "gpu_count": 0,
+            "gpu_names": [],
+            "message": "nvidia-smi not found on PATH",
+        }
     except subprocess.TimeoutExpired:
-        return {"available": False, "gpu_count": 0, "gpu_names": [],
-                "message": "nvidia-smi check timed out"}
+        return {
+            "available": False,
+            "gpu_count": 0,
+            "gpu_names": [],
+            "message": "nvidia-smi check timed out",
+        }
     except Exception as exc:  # noqa: BLE001
         return {"available": False, "gpu_count": 0, "gpu_names": [], "message": str(exc)}
 

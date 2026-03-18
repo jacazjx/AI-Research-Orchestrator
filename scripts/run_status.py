@@ -6,6 +6,7 @@ Usage:
     python3 scripts/run_status.py --project-root /path/to/project --verbose
     python3 scripts/run_status.py --project-root /path/to/project --json
 """
+
 from __future__ import annotations
 
 import argparse
@@ -178,8 +179,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> int:
     args = build_parser().parse_args()
     try:
-        result = run_status(args.project_root, verbose=args.verbose,
-                            json_output=args.json_output)
+        result = run_status(args.project_root, verbose=args.verbose, json_output=args.json_output)
         if args.json_output:
             print(json.dumps(result, indent=2))
         else:

@@ -62,7 +62,10 @@ class ValidateHandoffTest(unittest.TestCase):
                     f"ready: {relative_path}\n", encoding="utf-8"
                 )
             (project_root / "docs/reports/experiments/experiment-adviser-review.md").write_text(
-                "# Experiment Adviser Review\n\n- Status: `approved`\n- Recommendation: `approve`\n- Handoff decision: `approve`\n",
+                "# Experiment Adviser Review\n\n"
+                "- Status: `approved`\n"
+                "- Recommendation: `approve`\n"
+                "- Handoff decision: `approve`\n",
                 encoding="utf-8",
             )
             (project_root / "docs/reports/experiments/phase-scorecard.md").write_text(

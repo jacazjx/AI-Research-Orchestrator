@@ -513,7 +513,10 @@ class GitMemCommitEdgeCasesTest(unittest.TestCase):
         self.temp_dir.cleanup()
 
     def test_commit_file_outside_tracked_directories(self) -> None:
-        """Test committing a file outside tracked directories (should still work but log warning)."""
+        """Test committing a file outside tracked directories.
+
+        Should still work but log warning.
+        """
         # Create file outside tracked directories
         test_file = self.project_root / "other/file.md"
         test_file.parent.mkdir(parents=True, exist_ok=True)

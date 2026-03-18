@@ -85,7 +85,7 @@ class MigrateProjectTest(unittest.TestCase):
             project_root = Path(temp_dir) / "migrate-test"
             project_root.mkdir()
 
-            results = MIGRATE.migrate_project(
+            MIGRATE.migrate_project(
                 project_root,
                 topic="Test migration",
                 dry_run=False,
@@ -103,7 +103,7 @@ class MigrateProjectTest(unittest.TestCase):
             project_root = Path(temp_dir) / "state-test"
             project_root.mkdir()
 
-            results = MIGRATE.migrate_project(
+            MIGRATE.migrate_project(
                 project_root,
                 topic="State test",
                 project_id="test-project-001",
@@ -119,7 +119,7 @@ class MigrateProjectTest(unittest.TestCase):
             project_root = Path(temp_dir) / "idea-test"
             project_root.mkdir()
 
-            results = MIGRATE.migrate_project(
+            MIGRATE.migrate_project(
                 project_root,
                 topic="Idea test topic",
                 dry_run=False,
@@ -175,7 +175,7 @@ class MigrateProjectTest(unittest.TestCase):
             # Create a paper draft (would normally auto-detect as paper)
             (project_root / "draft.md").write_text("# Paper Draft\n\n## Abstract\n...")
 
-            results = MIGRATE.migrate_project(
+            MIGRATE.migrate_project(
                 project_root,
                 topic="Explicit phase test",
                 starting_phase="pilot",  # Use new semantic name
@@ -205,7 +205,7 @@ class MigrateProjectTest(unittest.TestCase):
             (project_root / "experiment.py").write_text("# experiment")
             (project_root / "results.csv").write_text("col1,col2")
 
-            results = MIGRATE.migrate_project(
+            MIGRATE.migrate_project(
                 project_root,
                 topic="Auto phase test",
                 dry_run=False,

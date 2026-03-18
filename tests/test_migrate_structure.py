@@ -166,7 +166,7 @@ class MigrateStructureTest(unittest.TestCase):
             state["phase_reviews"] = {"01-survey": {"score": 4.0}}
             COMMON.save_state(project_root, state)
 
-            result = MIGRATE.update_state_file(project_root, dry_run=False)
+            MIGRATE.update_state_file(project_root, dry_run=False)
 
             # Check state was updated
             updated_state = COMMON.load_state(project_root)

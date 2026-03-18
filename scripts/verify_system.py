@@ -27,6 +27,7 @@ from orchestrator_common import (  # noqa: E402
 
 try:
     from preflight import run_preflight_checks
+
     _PREFLIGHT_AVAILABLE = True
 except ImportError:
     _PREFLIGHT_AVAILABLE = False

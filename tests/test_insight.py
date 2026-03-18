@@ -3,9 +3,7 @@
 
 from __future__ import annotations
 
-import tempfile
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 import yaml
@@ -16,7 +14,6 @@ import sys
 SCRIPT_DIR = Path(__file__).resolve().parent.parent / "scripts"
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from constants import DEFAULT_DELIVERABLES
 from run_insight import (
     detect_project_root,
     format_assessment_output,

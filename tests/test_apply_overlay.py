@@ -161,9 +161,8 @@ class ApplyOverlayTest(unittest.TestCase):
                 "survey",
             ]
             with patch("sys.argv", ["apply_overlay.py"] + args):
-                with patch("builtins.print") as mock_print:
-                    result = OVERLAY.main()
-                    self.assertEqual(0, result)
+                result = OVERLAY.main()
+                self.assertEqual(0, result)
 
     def test_build_parser_accepts_all_options(self) -> None:
         """Test that parser accepts all options."""

@@ -745,9 +745,7 @@ def _append_gate_audit_events(
     old_approvals = old_state.get("approval_status", {})
     new_approvals = new_state.get("approval_status", {})
     changed = {
-        gate: status
-        for gate, status in new_approvals.items()
-        if status != old_approvals.get(gate)
+        gate: status for gate, status in new_approvals.items() if status != old_approvals.get(gate)
     }
     if not changed:
         return
@@ -815,7 +813,9 @@ def validate_state_schema(state: dict[str, Any]) -> list[str]:
 
     if "current_phase" in state:
         phase = state["current_phase"]
-        valid_phases = set(PHASE_SEQUENCE) | set(LEGACY_TO_SEMANTIC_PHASE) | {"archive", "06-archive"}
+        valid_phases = (
+            set(PHASE_SEQUENCE) | set(LEGACY_TO_SEMANTIC_PHASE) | {"archive", "06-archive"}
+        )
         if phase not in valid_phases:
             errors.append(
                 f"State 'current_phase' has unknown value: '{phase}'. "

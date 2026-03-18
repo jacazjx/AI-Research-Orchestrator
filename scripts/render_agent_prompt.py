@@ -197,9 +197,7 @@ def _build_overlay_section(
                 continue
             overlay_id = overlay.get("id", "unknown")
             overlay_title = overlay.get("title", "User Library Overlay")
-            sections.append(
-                f"### User Library: `{overlay_id}` - {overlay_title}\n\n{content}"
-            )
+            sections.append(f"### User Library: `{overlay_id}` - {overlay_title}\n\n{content}")
     except Exception:
         # If user library is not available, continue without it
         pass
