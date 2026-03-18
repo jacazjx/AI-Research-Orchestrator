@@ -47,7 +47,8 @@ def evaluate_quality_gate(project_root: Path, phase: str | None = None) -> dict[
     )
     review_status = state["phase_reviews"][review_key]
     gate_status = state["approval_status"][gate_key]
-    _loop_key = PHASE_LOOP_KEY.get(normalize_phase_name(phase_name), f"{normalize_phase_name(phase_name)}_loop")
+    _normalized_phase = normalize_phase_name(phase_name)
+    _loop_key = PHASE_LOOP_KEY.get(_normalized_phase, f"{_normalized_phase}_loop")
     loop_count = int(state["loop_counts"].get(_loop_key, 0))
     loop_limit = int(state["loop_limits"].get(_loop_key, 0))
     pivot_candidates = list(state.get("pivot_candidates", []))
