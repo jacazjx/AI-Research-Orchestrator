@@ -373,7 +373,7 @@ class TestPhaseTransitionWithSubsteps(unittest.TestCase):
             note="Starting pilot phase",
         )
 
-        self.assertEqual("problem_analysis", result["current_substep"])
+        self.assertEqual("problem_validation", result["current_substep"])
 
     def test_substep_resets_on_phase_transition(self) -> None:
         """Test that current_substep resets when transitioning phases."""
@@ -416,7 +416,7 @@ class TestPhaseTransitionWithSubsteps(unittest.TestCase):
             note="Start pilot",
         )
 
-        self.assertEqual("problem_analysis", result["current_substep"])
+        self.assertEqual("problem_validation", result["current_substep"])
 
 
 class TestGitMemCheckpointsThroughWorkflow(unittest.TestCase):
@@ -766,10 +766,11 @@ class TestFullResearchProjectWorkflow(unittest.TestCase):
 
         # ==================== PILOT PHASE ====================
         # Create pilot artifacts for both substep advancement and quality gate
-        # Substep artifacts: problem-analysis.md, pilot-design.md, pilot-validation-report.md
-        # Phase deliverables: problem_analysis, pilot_plan, pilot_validation_report, pilot_scorecard, pilot_adviser_review
+        # Substep artifacts: problem-validation-report.md, problem-analysis.md, pilot-design.md, pilot-validation-report.md
+        # Phase deliverables: problem_validation_report, problem_analysis, pilot_plan, pilot_validation_report, pilot_scorecard, pilot_adviser_review
         pilot_artifacts = {
             # Substep artifacts
+            "docs/reports/pilot/problem-validation-report.md": "# Problem Validation Report\n\n- Validation verdict: `validated`\n",
             "docs/reports/pilot/problem-analysis.md": "# Problem Analysis\n\nDetailed problem breakdown.\n",
             "docs/reports/pilot/pilot-design.md": "# Pilot Design\n\nExperimental design for pilot.\n",
             "docs/reports/pilot/pilot-validation-report.md": "# Pilot Validation Report\n\n- Continue to full experiments: `yes`\n",
@@ -793,7 +794,18 @@ class TestFullResearchProjectWorkflow(unittest.TestCase):
             actor="code",
             note="Starting pilot phase",
         )
+        self.assertEqual("problem_validation", result["current_substep"])
+
+        # Pilot substep 0: problem_validation (NEW - first substep)
+        result = STAGE.run_stage_loop(
+            self.project_root,
+            phase="pilot",
+            actor="adviser",
+            review_status="approved",
+            note="Approved problem_validation",
+        )
         self.assertEqual("problem_analysis", result["current_substep"])
+        all_checkpoints.append("pilot-problem_validation-approved")
 
         # Pilot substep 1: problem_analysis
         result = STAGE.run_stage_loop(
@@ -806,7 +818,7 @@ class TestFullResearchProjectWorkflow(unittest.TestCase):
         self.assertEqual("pilot_design", result["current_substep"])
         all_checkpoints.append("pilot-problem_analysis-approved")
 
-        # Pilot substep 2: pilot_design
+        # Pilot substep 3: pilot_design
         result = STAGE.run_stage_loop(
             self.project_root,
             phase="pilot",
@@ -817,7 +829,7 @@ class TestFullResearchProjectWorkflow(unittest.TestCase):
         self.assertEqual("pilot_execution", result["current_substep"])
         all_checkpoints.append("pilot-pilot_design-approved")
 
-        # Pilot substep 3: pilot_execution (last substep)
+        # Pilot substep 4: pilot_execution (last substep)
         result = STAGE.run_stage_loop(
             self.project_root,
             phase="pilot",
@@ -1111,8 +1123,8 @@ class TestFullResearchProjectWorkflow(unittest.TestCase):
                 f"Reflection substep {substep} not approved",
             )
 
-        # Verify checkpoint count: 14 substeps + 5 phase gates = 19 checkpoints
-        self.assertEqual(19, len(tags), f"Expected 19 checkpoints, got {len(tags)}: {tags}")
+        # Verify checkpoint count: 15 substeps + 5 phase gates = 20 checkpoints
+        self.assertEqual(20, len(tags), f"Expected 20 checkpoints, got {len(tags)}: {tags}")
 
 
 class TestMultiPhaseSubstepWorkflow(unittest.TestCase):

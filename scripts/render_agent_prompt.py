@@ -12,6 +12,7 @@ from orchestrator_common import (
     load_state,
     render_template_string,
 )
+from user_library import load_all_overlays
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 SKILL_DIR = SCRIPT_DIR.parent
@@ -168,6 +169,8 @@ def _build_overlay_section(
 ) -> str:
     overlay_paths = state.get("overlay_stack", [])
     sections: list[str] = []
+
+    # 1. Project-level overlays
     for raw_entry in overlay_paths:
         entry = _parse_overlay_entry(raw_entry)
         if entry["roles"] and role not in entry["roles"]:
@@ -181,6 +184,26 @@ def _build_overlay_section(
         if not text:
             continue
         sections.append(f"### `{entry['path']}`\n\n{text}")
+
+    # 2. User library overlays (cross-project reusable overlays)
+    try:
+        for overlay in load_all_overlays():
+            if overlay["roles"] and role not in overlay["roles"]:
+                continue
+            if overlay["phases"] and phase_name not in overlay["phases"]:
+                continue
+            content = overlay.get("content", "")
+            if not content:
+                continue
+            overlay_id = overlay.get("id", "unknown")
+            overlay_title = overlay.get("title", "User Library Overlay")
+            sections.append(
+                f"### User Library: `{overlay_id}` - {overlay_title}\n\n{content}"
+            )
+    except Exception:
+        # If user library is not available, continue without it
+        pass
+
     return "\n\n".join(sections)
 
 

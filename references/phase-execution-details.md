@@ -27,20 +27,58 @@ Internal progress pattern:
 - identify what pilot validation must prove or falsify
 - recommend same-phase revision or fallback to an earlier framing
 
-## Phase 2: Problem Analysis and Pilot Validation
+## Phase 2: Problem Validation and Pilot Analysis
 
 Internal progress pattern:
 
-1. operational problem analysis
-2. pilot design
-3. low-cost execution
-4. pilot interpretation
-5. pilot go/no-go recommendation
+1. problem validation (NEW)
+2. operational problem analysis
+3. pilot design
+4. low-cost execution
+5. pilot interpretation
+6. pilot go/no-go recommendation
+
+### Substep: Problem Validation (NEW)
+
+Before committing resources to problem analysis, validate that:
+
+- **Problem Exists**: Evidence from literature, data, or practical sources
+- **Problem Matters**: Academic, practical, or social significance
+- **Problem Is Unsolved**: Gap analysis shows room for contribution
+
+`Code` substeps (problem_validation):
+
+- gather evidence that the problem actually exists
+- assess significance across academic/practical/timeliness/feasibility
+- identify what would be lost if this problem is not addressed
+- produce validation verdict: Validated/Reformulate/Defer/Pivot
+
+`Adviser` substeps (audit-validation):
+
+- verify evidence quality and source credibility
+- challenge significance assessment
+- ensure verdict follows logically from evidence
+
+### Substep: Problem Analysis
+
+`Code` substeps (problem_analysis):
+
+- translate the validated problem into operational hypotheses
+- define minimal data/model/metric setup
+- identify technical challenges and solution approaches
+- summarize feasibility assessment
+
+`Adviser` substeps (audit-analysis):
+
+- verify the problem decomposition is complete
+- challenge solution approach assumptions
+- ensure feasibility assessment is honest
+
+### Substep: Pilot Design & Execution
 
 `Code` substeps:
 
-- translate the approved idea into operational hypotheses
-- define minimal data/model/metric setup
+- design minimal experiment that validates core hypothesis
 - run low-cost validation
 - summarize outcomes and anomalies
 

@@ -189,7 +189,7 @@ class RunStageLoopTest(unittest.TestCase):
             )
 
             # Should have initialized the first pilot substep
-            self.assertEqual("problem_analysis", result["current_substep"])
+            self.assertEqual("problem_validation", result["current_substep"])
 
     def test_revise_review_increments_loop_and_switches_back_to_authoring_agent(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

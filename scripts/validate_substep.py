@@ -47,6 +47,12 @@ DEFAULT_SUBSTEPS = {
     ],
     "pilot": [
         {
+            "name": "problem_validation",
+            "primary_skill": "validate-problem",
+            "reviewer_skill": "audit-validation",
+            "required_artifacts": ["docs/reports/pilot/problem-validation-report.md"],
+        },
+        {
             "name": "problem_analysis",
             "primary_skill": "analyze-problem",
             "reviewer_skill": "audit-analysis",

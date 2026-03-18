@@ -64,6 +64,7 @@ HANDOFF_REQUIREMENTS = {
             ("approval_status", "gate_2"),
         ),
         "deliverables": (
+            "problem_validation_report",
             "problem_analysis",
             "pilot_plan",
             "pilot_results",
@@ -124,6 +125,7 @@ PHASE_REQUIRED_DELIVERABLES = {
     # Legacy phase names (kept for backward compatibility)
     "01-survey": ("survey_round_log", "critic_round_log", "readiness_report", "survey_scorecard"),
     "02-pilot-analysis": (
+        "problem_validation_report",
         "problem_analysis",
         "pilot_plan",
         "pilot_results",
@@ -156,7 +158,13 @@ PHASE_REQUIRED_DELIVERABLES = {
     ),
     # New semantic phase names
     "survey": ("readiness_report", "survey_scorecard"),
-    "pilot": ("problem_analysis", "pilot_plan", "pilot_validation_report", "pilot_scorecard"),
+    "pilot": (
+        "problem_validation_report",
+        "problem_analysis",
+        "pilot_plan",
+        "pilot_validation_report",
+        "pilot_scorecard",
+    ),
     "experiments": (
         "experiment_spec",
         "results_summary",
@@ -187,6 +195,7 @@ DEFAULT_DELIVERABLES = {
     "critic_round_log": "agents/critic/critic-round-review.md",
     "readiness_report": "docs/reports/survey/research-readiness-report.md",
     "survey_scorecard": "docs/reports/survey/phase-scorecard.md",
+    "problem_validation_report": "docs/reports/pilot/problem-validation-report.md",
     "problem_analysis": "docs/reports/pilot/problem-analysis.md",
     "pilot_plan": "code/configs/pilot-experiment-plan.md",
     "pilot_results": "docs/reports/pilot/pilot-results.md",
@@ -322,6 +331,7 @@ STRUCTURED_SIGNAL_REQUIREMENTS = {
         "pilot_scorecard": {"Gate readiness": {"approve", "advance"}},
         "pilot_adviser_review": {"Status": {"approved"}, "Recommendation": {"approve", "advance"}},
         "pilot_validation_report": {"Continue to full experiments": {"yes", "approved", "true"}},
+        "problem_validation_report": {"Validation verdict": {"validated"}},
     },
     "experiments": {
         "experiment_scorecard": {"Gate readiness": {"approve", "advance"}},

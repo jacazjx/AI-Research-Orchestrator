@@ -218,8 +218,8 @@ class TestGetPhaseSubsteps:
         """Test getting substeps from default config."""
         substeps = get_phase_substeps({}, "pilot")
 
-        # Uses DEFAULT_SUBSTEPS
-        assert len(substeps) == 3
+        # Uses DEFAULT_SUBSTEPS (now includes problem_validation)
+        assert len(substeps) == 4
 
 
 class TestGetSubstepConfig:

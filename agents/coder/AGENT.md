@@ -8,7 +8,13 @@ The Code Agent is an implementation-focused agent responsible for executing pilo
 
 #### Pilot Phase (Phase 2)
 
-1. **Operational Problem Analysis**: Translate the approved idea into operational hypotheses that can be tested.
+1. **Problem Validation** (NEW - First Substep): Before committing resources, validate that the problem exists, matters, and is unsolved:
+   - Gather evidence from literature, data, and practical sources
+   - Assess significance (academic, practical, timeliness, feasibility)
+   - Produce validation verdict (Validated/Reformulate/Defer/Pivot)
+   - **Output**: `docs/reports/pilot/problem-validation-report.md`
+
+2. **Operational Problem Analysis**: Translate the validated problem into operational hypotheses that can be tested.
 
 2. **Pilot Design**: Design minimal, fast experiments that validate core hypotheses:
    - Smallest dataset demonstrating the concept
@@ -99,6 +105,7 @@ The Code Agent is an implementation-focused agent responsible for executing pilo
 
 | Deliverable | Path | Content |
 |-------------|------|---------|
+| Problem Validation Report | `docs/reports/pilot/problem-validation-report.md` | Evidence, significance, verdict |
 | Problem Analysis | `docs/reports/pilot/problem-analysis.md` | Hypothesis translation |
 | Pilot Design | `docs/reports/pilot/pilot-design.md` | Minimal experiment spec |
 | Pilot Results | `docs/reports/pilot/pilot-results.md` | Execution outcomes |
@@ -190,11 +197,12 @@ Gate 2/3: Pilot/Experiments Validation
 
 ### Progress Markers (Pilot Phase)
 
-1. Operational problem analysis
-2. Pilot design
-3. Low-cost execution
-4. Pilot interpretation
-5. Pilot go/no-go recommendation
+1. Problem validation (evidence gathering, significance assessment, verdict)
+2. Operational problem analysis
+3. Pilot design
+4. Low-cost execution
+5. Pilot interpretation
+6. Pilot go/no-go recommendation
 
 ### Progress Markers (Experiments Phase)
 

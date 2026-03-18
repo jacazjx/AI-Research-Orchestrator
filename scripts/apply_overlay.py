@@ -7,6 +7,7 @@ from pathlib import Path
 
 from exceptions import PhaseTransitionError
 from generate_dashboard import generate_dashboard
+from user_library import save_overlay_to_library
 
 from orchestrator_common import append_state_log, load_state, normalize_relative_path, save_state
 
@@ -18,6 +19,9 @@ def activate_overlay(
     require_gate: bool = True,
     scope_roles: list[str] | None = None,
     scope_phases: list[str] | None = None,
+    save_to_library: bool = False,
+    library_title: str = "",
+    library_description: str = "",
 ) -> dict[str, object]:
     project_root = project_root.resolve()
     state = load_state(project_root)
@@ -68,12 +72,28 @@ def activate_overlay(
     state["progress"]["next_action"] = "overlay-active"
     save_state(project_root, state)
     generate_dashboard(project_root)
+
+    # Save to user library if requested
+    library_path = None
+    if save_to_library:
+        overlay_content = candidate.read_text(encoding="utf-8")
+        library_path = save_overlay_to_library(
+            overlay_content=overlay_content,
+            target_roles=scope_roles,
+            target_phases=scope_phases,
+            source_project=project_root.name,
+            title=library_title or f"Overlay: {relative_path}",
+            description=library_description,
+        )
+
     return {
         "project_root": str(project_root),
         "overlay_path": relative_path,
         "scope_roles": scope_roles,
         "scope_phases": scope_phases,
         "status": "active",
+        "saved_to_library": save_to_library,
+        "library_path": str(library_path) if library_path else None,
     }
 
 
@@ -87,6 +107,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--scope-role", action="append", dest="scope_roles")
     parser.add_argument("--scope-phase", action="append", dest="scope_phases")
     parser.add_argument("--skip-approval-check", action="store_true")
+    parser.add_argument("--save-to-library", action="store_true",
+                        help="Save the overlay to the user-level library for cross-project reuse.")
+    parser.add_argument("--library-title", default="",
+                        help="Title for the overlay in the library (used with --save-to-library).")
+    parser.add_argument("--library-description", default="",
+                        help="Description of the overlay (used with --save-to-library).")
     parser.add_argument("--json", action="store_true")
     return parser
 
@@ -101,6 +127,9 @@ def main() -> int:
         require_gate=not args.skip_approval_check,
         scope_roles=args.scope_roles,
         scope_phases=args.scope_phases,
+        save_to_library=args.save_to_library,
+        library_title=args.library_title,
+        library_description=args.library_description,
     )
     if args.json:
         print(json.dumps(result, ensure_ascii=False, indent=2))

@@ -66,6 +66,7 @@ EXPECTED_DELIVERABLE_PREFIXES = {
     "critic_round_log": "agents/",
     "readiness_report": "docs/",
     "survey_scorecard": "agents/",
+    "problem_validation_report": "docs/",
     "problem_analysis": "docs/",
     "pilot_plan": "code/",
     "pilot_results": "code/",
