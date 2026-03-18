@@ -1,6 +1,6 @@
 ---
 name: insight
-description: "交互式意图澄清，帮助用户明确研究想法"
+description: "Interactive intent clarification — helps users sharpen their research idea before initialization"
 script: scripts/run_insight.py
 triggers:
   - "insight"
@@ -14,153 +14,141 @@ arguments:
   required: []
   optional:
     - name: project-root
-      description: 研究项目根目录的绝对路径 (可选，如不提供则检测当前目录)
+      description: Absolute path to research project root (auto-detected if omitted)
       type: path
     - name: idea
-      description: 初始研究想法
+      description: Initial research idea
       type: string
     - name: interactive
-      description: 是否启用交互模式
+      description: Enable interactive Q&A mode
       type: boolean
       default: true
     - name: max-rounds
-      description: 最大澄清轮数
+      description: Maximum clarification rounds
       type: int
       default: 5
     - name: json
-      description: 输出JSON格式
+      description: Output JSON format
       type: boolean
       default: false
 ---
 
-# 交互式意图澄清
+# Interactive Intent Clarification
 
-和用户进行反复交互，询问用户问题，搞清楚用户的真实意图。
+Engages the user in a focused Q&A loop to surface and sharpen the true research intent before committing to a project. Run this **before** `/init-research`.
 
-## 使用场景
+## Use Cases
 
-- 新研究项目启动前明确研究方向
-- 研究想法模糊，需要细化
-- 验证研究想法的可行性
-- 识别研究约束和目标
+- Clarify a vague or broad research direction
+- Validate feasibility before initializing a full project
+- Identify constraints (deadline, venue, resources) early
+- Surface novelty gaps before the literature survey
 
-## 用法
+## Usage
 
 ```bash
-# 交互式澄清 (默认)
+# Interactive clarification (default)
 python3 scripts/run_insight.py
 
-# 带初始想法启动
-python3 scripts/run_insight.py --idea "我想研究时间序列预测"
+# Provide an initial idea
+python3 scripts/run_insight.py --idea "I want to study time-series forecasting"
 
-# 指定项目路径
+# Point at an existing project
 python3 scripts/run_insight.py --project-root /abs/path/to/project
 
-# 非交互模式 (仅评估)
-python3 scripts/run_insight.py --idea "研究想法" --interactive false --json
+# Non-interactive assessment only (outputs JSON)
+python3 scripts/run_insight.py --idea "research idea" --interactive false --json
 ```
 
-## 执行流程
+## Execution Flow
 
 ```
 /insight
     │
-    ├─→ 1. 检测是否有现有项目
-    │       ├─→ 有: 基于现有Idea继续澄清
-    │       └─→ 无: 从零开始收集Idea
+    ├─→ 1. Detect existing project
+    │       ├─→ Found: continue clarifying the existing idea
+    │       └─→ Not found: collect idea from scratch
     │
-    ├─→ 2. 意图清晰度评估
-    │       └─→ 评估五个维度:
-    │           ├── Problem (问题定义) - 25%
-    │           ├── Solution (解决方案) - 25%
-    │           ├── Contribution (贡献类型) - 20%
-    │           ├── Constraints (约束条件) - 15%
-    │           └── Novelty (新颖性) - 15%
+    ├─→ 2. Clarity assessment (five dimensions)
+    │       ├── Problem (25%)
+    │       ├── Solution (25%)
+    │       ├── Contribution (20%)
+    │       ├── Constraints (15%)
+    │       └── Novelty (15%)
     │
-    ├─→ 3. 生成针对性问题
-    │       └─→ 基于评分较低的维度生成问题
+    ├─→ 3. Generate targeted questions
+    │       └─→ Focus on lowest-scoring dimensions
     │
-    ├─→ 4. 交互式问答循环
-    │       └─→ 直到清晰度 >= 0.7 或达到最大轮数
+    ├─→ 4. Interactive Q&A loop
+    │       └─→ Until clarity >= 0.7 or max rounds reached
     │
-    ├─→ 5. 判断是否需要Brainstorming
-    │       └─→ 清晰度 < 0.4: 建议触发research-ideation技能
+    ├─→ 5. Recommend next step
+    │       └─→ clarity < 0.4: suggest /idea-brainstorm
     │
-    └─→ 6. 输出澄清结果
-            ├── 澄清后的Idea
-            ├── 清晰度评分
-            ├── 各维度评分
-            └── 建议的下一步
+    └─→ 6. Output clarification result
+            ├── Sharpened idea statement
+            ├── Clarity score
+            ├── Per-dimension scores
+            └── Recommended next action
 ```
 
-## 五维度评估
+## Five-Dimension Assessment
 
-| 维度 | 权重 | 关键问题 |
-|------|------|----------|
-| Problem | 25% | 要解决什么问题？为什么重要？ |
-| Solution | 25% | 可能的解决方案是什么？有什么直觉？ |
-| Contribution | 20% | 想做出什么类型的贡献？成功标准是什么？ |
-| Constraints | 15% | 有什么时间、资源、目标期刊约束？ |
-| Novelty | 15% | 与现有工作的区别是什么？关键洞察是什么？ |
+| Dimension | Weight | Key question |
+|-----------|--------|--------------|
+| Problem | 25% | What specific problem are you solving, and why does it matter? |
+| Solution | 25% | What approach or intuition do you have in mind? |
+| Contribution | 20% | What type of contribution? What is the success criterion? |
+| Constraints | 15% | What time, resource, or venue constraints apply? |
+| Novelty | 15% | How is this different from existing work? What is the key insight? |
 
-## 输出示例
+## Output Example
 
 ```
-💡 意图澄清助手
+💡 Intent Clarification
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-当前研究想法:
-"我想研究时间序列预测的优化方法"
+Current idea:
+"I want to study optimization methods for time-series forecasting"
 
-清晰度评估: 0.35/1.0 (需要进一步澄清)
+Clarity: 0.35/1.0 (needs further clarification)
 
-维度评分:
+Dimension scores:
   Problem:      0.3 ████████░░░░░░░░░░░░
   Solution:     0.2 ██████░░░░░░░░░░░░░░
   Contribution: 0.4 ████████████░░░░░░░░
   Constraints:  0.3 ████████░░░░░░░░░░░░
   Novelty:      0.5 ███████████████░░░░░
 
-让我问您几个问题:
+Question 1: What specific failure mode are you targeting?
+  (e.g. accuracy degrades on long horizons? high compute cost? poor generalization?)
 
-Q1: 您试图解决的具体问题是什么?
-    (例如: 长序列预测精度低? 计算效率低? 泛化能力差?)
-
-> 长序列预测的精度问题，特别是预测窗口超过100步时精度下降明显
+> Accuracy degrades badly when the forecast horizon exceeds 100 steps
 
 ...
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-澄清后的研究想法:
-"针对长序列时间序列预测(>100步)中精度下降的问题，
-提出一种改进的注意力机制，增强模型对长期依赖的捕获能力。
-目标投稿ICML 2026 (截止: 2026年5月)"
+Sharpened idea:
+"Improve long-horizon time-series forecasting (>100 steps) accuracy by
+proposing an enhanced attention mechanism that better captures long-range
+dependencies. Target venue: ICML 2026 (deadline: May 2026)."
 
-清晰度评分: 0.78/1.0 ✅
+Clarity: 0.78/1.0 ✅
 
-维度评分:
-  Problem:      0.8 ████████████████████░
-  Solution:     0.7 ██████████████████░░░
-  Contribution: 0.8 ████████████████████░
-  Constraints:  0.9 ████████████████████░
-  Novelty:      0.6 █████████████████░░░░
-
-建议下一步:
-1. 运行 /init-research 初始化项目
-2. 或继续细化特定方面 (输入: /insight --focus novelty)
+Recommended next step:
+  Run /init-research to initialize the project with this idea.
 ```
 
-## 清晰度阈值
+## Clarity Thresholds
 
-| 分数 | 状态 | 建议 |
-|------|------|------|
-| >= 0.7 | 清晰 | 可以开始研究 |
-| 0.4-0.7 | 需澄清 | 继续问答循环 |
-| < 0.4 | 模糊 | 建议brainstorming |
+| Score | Status | Recommendation |
+|-------|--------|----------------|
+| >= 0.7 | Clear | Proceed to `/init-research` |
+| 0.4–0.7 | Needs work | Continue Q&A rounds |
+| < 0.4 | Too vague | Brainstorm before proceeding |
 
-## 与其他命令的关系
+## Relationship to Other Commands
 
-- **`/init-research`** - 内部集成了insight功能
-- **`/configure`** - 可修改澄清后的idea
-- **research-ideation技能** - 清晰度过低时触发
+- **`/init-research`** — run after `/insight`; internally also calls insight if no idea is provided
+- **`/configure`** — can update the idea after initialization
