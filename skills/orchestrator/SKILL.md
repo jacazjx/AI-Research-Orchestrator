@@ -957,6 +957,94 @@ completion:
 └─────────────────────────────────────────────────────────────┘
 ```
 
+---
+
+## Gate Score Presentation Protocol
+
+When `quality_gate.py` returns results, the Orchestrator MUST follow this 4-step procedure before asking the researcher what to do next. Never skip directly to asking "what do you want to do?" — always show the score card first.
+
+### Step 1: Display the Score Card
+
+Present the gate result as a formatted score card. Map `decision` to an interpretation using the table below.
+
+```
+Gate [N] Score Card
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Phase        : [phase]       Gate: [gate]
+Loop count   : [loop_count] / [loop_limit]
+
+Evidence completeness : [evidence_completeness]%
+Review readiness      : [review_readiness]%
+Human gate            : [human_gate]%
+
+Overall decision: [DECISION_LABEL]
+```
+
+Decision label mapping:
+
+| `decision` value | Label to display |
+|-----------------|-----------------|
+| `advance` | ✅ ADVANCE — all criteria met, ready to proceed |
+| `revise` | 🔄 REVISE — work is incomplete, continue this phase |
+| `pivot` | ⚠️  PIVOT — reviewer flagged fundamental problems |
+| `escalate_to_user` | 🔔 ESCALATE — loop limit reached, your decision required |
+
+### Step 2: Explain Each Blocker in Plain Language
+
+For each entry in the `blockers` list, show a human-readable explanation:
+
+| Blocker key | Plain-language explanation |
+|-------------|---------------------------|
+| `required_deliverables_missing` | "The following required files have not been created yet: [list missing_deliverables]" |
+| `deliverables_still_template` | "The following files still contain placeholder text and need real content: [list placeholder_deliverables]" |
+| `structured_gate_signals_invalid` | "The phase scorecard contains invalid or missing structured signals" |
+| `phase_review_pending` | "The reviewer agent has not submitted an approval yet" |
+| `phase_review_revise` | "The reviewer agent has requested revisions" |
+| `user_gate_pending` | "This gate is waiting for your explicit approval" |
+| `loop_limit_reached` | "This phase has used all [loop_limit] allowed loops without approval" |
+
+If `blockers` is empty: say "No blockers — all quality criteria are satisfied."
+
+### Step 3: Present Three Named Options
+
+Always present exactly these three options, but grey out any that are not applicable given the current `decision`:
+
+```
+What would you like to do next?
+
+  A) CONTINUE  — accept the current result and move to the next phase
+     [Show only if decision == "advance". Otherwise: "⛔ Not available until all blockers are resolved"]
+
+  B) REVISE    — stay in this phase and address the blockers
+     [Always available]
+     Suggested focus areas: [derived from blockers, e.g. "complete pilot-validation-report.md"]
+     Loops remaining: [loop_limit - loop_count]
+
+  C) PIVOT     — change research direction or roll back to an earlier phase
+     [Always available]
+     Allowed rollback targets: [allowed_return_phases from state, or survey/pilot as defaults]
+
+Please reply with A, B, or C.
+```
+
+### Step 4: Execute the Chosen Action
+
+| Choice | Action |
+|--------|--------|
+| **A — CONTINUE** | Run: `python3 scripts/run_stage_loop.py --project-root [root] --gate-status approved` then transition to the next phase |
+| **B — REVISE** | Run: `python3 scripts/run_stage_loop.py --project-root [root] --review-status revise` then present the specific revision targets from the blockers list |
+| **C — PIVOT** | Ask: "Which phase do you want to return to? [list allowed targets]" then run: `python3 scripts/run_stage_loop.py --project-root [root] --gate-status rejected --return-phase [chosen]` |
+
+### Critical Integrity Rules
+
+1. **Never present option A as available when `decision != "advance"`**. Allowing premature advancement corrupts the research record.
+2. **Never skip Steps 1–3 and jump straight to action**. The researcher must see the full picture before deciding.
+3. **Never make the decision autonomously**. Even when `decision == "advance"`, wait for the researcher to type "A" or equivalent confirmation.
+4. **Document the decision**: After the researcher chooses, confirm: "Recorded: [choice] for [gate]. [Description of what happens next]."
+
+---
+
 ## Phase Gate Checklist
 
 Before advancing to the next phase, ALL items in the corresponding gate checklist must be verified.
