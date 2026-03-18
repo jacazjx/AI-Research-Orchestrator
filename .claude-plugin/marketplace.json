@@ -1,5 +1,10 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "airesearchorchestrator",
+  "owner": {
+    "name": "AI Research Orchestrator Team",
+    "email": "autoresearch@example.com"
+  },
   "plugins": [
     {
       "name": "airesearchorchestrator",
