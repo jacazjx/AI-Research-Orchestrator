@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:orchestrator
 description: "Initialize and run a gated five-phase AI research project from idea through paper. Use when user says 'start research project', '帮我做一个研究', 'research workflow', '五阶段研究流程', 'research orchestrator', or needs structured AI/ML research management with Survey, Pilot, Experiments, Paper, and Reflection phases."
+user-invocable: false
 argument-hint: [research-topic-or-idea]
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, Skill, mcp__codex__codex, mcp__codex__codex-reply
 ---
-
 # AI Research Orchestrator
 
 ## Overview

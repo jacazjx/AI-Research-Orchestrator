@@ -1,4 +1,5 @@
 ---
+name: airesearchorchestrator:init-research
 description: "Initialize a new AI research project with proper directory structure and state management"
 argument-hint: "[--project-root <path>] [--topic <string>] [--interactive]"
 allowed-tools: "Read, Write, Bash(${CLAUDE_PLUGIN_ROOT}/scripts/*:*)"

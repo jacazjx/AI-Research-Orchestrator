@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:paper-write
 description: Generate LaTeX sections for paper following IMRAD structure with proper academic writing style. Writes section-by-section with detailed guidance for each section. Use when user says "write paper", "写论文", "generate LaTeX", "draft manuscript".
+user-invocable: false
 argument-hint: [paper-plan-path]
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, mcp__codex__codex
 ---
-
 ## Purpose
 
 Generate LaTeX sections for paper from plan following IMRAD (Introduction, Methods, Results, And Discussion) structure with proper academic writing style, citation integration, and figure/table formatting.

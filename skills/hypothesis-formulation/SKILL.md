@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:hypothesis-formulation
 description: Formulate research hypotheses through systematic 8-stage process including literature synthesis, competing hypothesis generation, and quality evaluation. Use when user says "formulate hypothesis", "generate hypothesis", "构建假设", or needs to develop testable research hypotheses.
+user-invocable: false
 argument-hint: [research-topic-or-phenomenon]
 allowed-tools: Bash(curl), Read, Write, Edit, Grep, Glob, WebFetch
 ---
-
 ## Purpose
 
 Transform research observations into well-formed, testable hypotheses through a systematic 8-stage process that ensures scientific rigor, falsifiability, and clear experimental predictions.

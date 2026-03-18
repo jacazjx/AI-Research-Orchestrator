@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:paper-writing-guide
 description: Comprehensive manuscript writing guide covering paragraph structure, transitions, common mistakes, and peer review criteria. Use as reference for writing high-quality academic manuscripts.
+user-invocable: false
 argument-hint: [section-type]
 allowed-tools: Read, Grep, Glob
 ---
-
 ## Purpose
 
 Provide comprehensive guidance for academic manuscript writing, including paragraph structure, transition phrases, common mistakes to avoid, and peer review criteria awareness. Use this skill as a reference during paper writing.

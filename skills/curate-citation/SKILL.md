@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:curate-citation
 description: Finalize all citations with verification status and ensure authenticity. Use when user says "curate citations", "verify references", "整理引用", or needs to finalize paper citations.
+user-invocable: false
 argument-hint: [paper-directory]
 allowed-tools: Bash(curl), Read, Write, Edit, Grep, Glob, WebFetch
 ---
-
 ## Purpose
 
 Verify all paper citations are authentic, properly formatted, and complete the citation index.

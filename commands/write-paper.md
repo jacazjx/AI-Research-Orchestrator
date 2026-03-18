@@ -1,4 +1,5 @@
 ---
+name: airesearchorchestrator:write-paper
 description: "Run the Paper phase for manuscript writing and review"
 argument-hint: "[--project-root <path>] [--max-loops <number>]"
 allowed-tools: "Read, Write, Edit, Grep, Glob, Bash(${CLAUDE_PLUGIN_ROOT}/scripts/*:*), Agent"

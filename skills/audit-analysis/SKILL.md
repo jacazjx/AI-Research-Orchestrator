@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:audit-analysis
 description: Audit problem analysis for completeness, challenge identification, and solution feasibility. Use when user says "audit analysis", "review problem analysis", "审核问题分析", or needs to verify analysis quality.
+user-invocable: false
 argument-hint: [problem-analysis-path]
 allowed-tools: Read, Write, Edit, Grep, Glob
 ---
-
 ## Purpose
 
 Critically review the problem analysis for thoroughness and solution approach viability.

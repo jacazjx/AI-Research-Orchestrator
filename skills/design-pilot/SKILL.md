@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:design-pilot
 description: Design minimal pilot experiment to validate core hypothesis. Use when user says "design pilot", "pilot experiment", "设计 Pilot", or needs to create a small-scale validation experiment.
+user-invocable: false
 argument-hint: [problem-analysis-path]
 allowed-tools: Read, Write, Edit, Grep, Glob
 ---
-
 ## Purpose
 
 Design a minimal, fast pilot experiment that validates the core hypothesis with minimal resources.

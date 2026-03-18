@@ -1,4 +1,5 @@
 ---
+name: airesearchorchestrator:run-experiments
 description: "Run the full Experiments phase for comprehensive evaluation"
 argument-hint: "[--project-root <path>] [--max-loops <number>]"
 allowed-tools: "Read, Write, Edit, Grep, Glob, Bash(${CLAUDE_PLUGIN_ROOT}/scripts/*:*), Agent"

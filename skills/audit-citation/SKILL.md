@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:audit-citation
 description: Audit citation authenticity with detailed verification of each reference. Use when user says "audit citations", "verify citations", "验证引用", or needs deep citation verification.
+user-invocable: false
 argument-hint: [paper-directory]
 allowed-tools: Bash(curl), Read, Write, Edit, Grep, Glob, WebFetch
 ---
-
 ## Purpose
 
 Deep verification of all citations for authenticity and proper attribution.

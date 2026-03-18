@@ -1,4 +1,5 @@
 ---
+name: airesearchorchestrator:reload
 description: "Reload project state and configuration to restore research context in a new session"
 argument-hint: "[--project-root <path>] [--verbose] [--json]"
 allowed-tools: "Read, Bash(${CLAUDE_PLUGIN_ROOT}/scripts/*:*)"

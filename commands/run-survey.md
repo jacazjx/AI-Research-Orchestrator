@@ -1,4 +1,5 @@
 ---
+name: airesearchorchestrator:run-survey
 description: "Run the Survey phase for literature review and research gap identification"
 argument-hint: "[--project-root <path>] [--max-loops <number>]"
 allowed-tools: "Read, Write, Edit, Grep, Glob, Bash(${CLAUDE_PLUGIN_ROOT}/scripts/*:*), Agent"

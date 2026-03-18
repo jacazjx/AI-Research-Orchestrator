@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:paper-compile
 description: Compile LaTeX paper to PDF. Handles multi-pass compilation and auto-fixes common errors. Use when user says "compile paper", "编译论文", "build PDF".
+user-invocable: false
 argument-hint: [paper-directory]
 allowed-tools: Bash(*), Read, Write, Edit
 ---
-
 ## Purpose
 
 Build PDF from LaTeX source.

@@ -1,4 +1,5 @@
 ---
+name: airesearchorchestrator:configure
 description: "Configure system parameters including research idea, GPU settings, loop limits, and language preferences"
 argument-hint: "[--project-root <path>] [--action <show|set|interactive>] [--key <config-key>] [--value <config-value>]"
 allowed-tools: "Read, Write, Bash(${CLAUDE_PLUGIN_ROOT}/scripts/*:*)"

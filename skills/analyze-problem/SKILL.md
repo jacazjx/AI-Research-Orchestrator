@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:analyze-problem
 description: Analyze research problem with decomposition, technical challenges, and solution approach. Use when user says "analyze problem", "problem analysis", "问题分析", or needs to break down a research challenge.
+user-invocable: false
 argument-hint: [problem-description]
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(curl), WebFetch
 ---
-
 ## Purpose
 
 Decompose a research problem into manageable components, identify technical challenges, and propose solution approaches.

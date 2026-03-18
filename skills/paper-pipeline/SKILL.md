@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:paper-pipeline
 description: "Workflow 3: Full paper writing pipeline. Orchestrates paper-plan → paper-figure → paper-write → paper-compile → auto-paper-improvement-loop to go from a narrative report to a polished, submission-ready PDF. Use when user says '写论文全流程', 'write paper pipeline', '从报告到PDF', 'paper pipeline', or wants the complete paper generation workflow."
+user-invocable: false
 argument-hint: [narrative-report-path-or-topic]
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, Skill, mcp__codex__codex, mcp__codex__codex-reply
 ---
-
 # Workflow 3: Paper Writing Pipeline
 
 Orchestrate a complete paper writing workflow for: **$ARGUMENTS**

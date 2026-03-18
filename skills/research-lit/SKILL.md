@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:research-lit
 description: Quick literature landscape check using academic APIs. A lightweight alternative to literature-survey for rapid exploration. Use when user says "quick literature search", "check literature", "find papers", or needs fast paper discovery without full systematic review.
+user-invocable: false
 argument-hint: [research-topic]
 allowed-tools: Bash(curl), Read, Write, Edit, Grep, Glob, WebFetch, Agent
 ---
-
 ## Purpose
 
 Map the research landscape for a given topic using academic database APIs. This is a **lightweight, rapid** literature exploration skill.

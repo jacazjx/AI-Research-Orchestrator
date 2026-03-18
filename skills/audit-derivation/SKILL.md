@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:audit-derivation
 description: Audit theoretical derivation for mathematical rigor, proof correctness, assumption validity, and completeness. Use when user says "audit derivation", "审核推导", "review theory", or after theoretical derivation is complete.
+user-invocable: false
 argument-hint: [derivation-report-path]
 allowed-tools: Bash(python, sympy), Read, Write, Edit, Grep, Glob
 ---
-
 # Audit Derivation
 
 ## Overview

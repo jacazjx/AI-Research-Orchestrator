@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:design-exp
 description: Design full experiment matrix with hyperparameter ranges, evaluation metrics, and statistical tests. Use when user says "design experiments", "experiment matrix", "设计实验", or needs to plan comprehensive experiments.
+user-invocable: false
 argument-hint: [pilot-validation-report-path]
 allowed-tools: Read, Write, Edit, Grep, Glob
 ---
-
 ## Purpose
 
 Design a comprehensive experiment matrix based on pilot results, with proper hyperparameter ranges, baselines, and statistical rigor.

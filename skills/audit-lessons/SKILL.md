@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:audit-lessons
 description: Audit lessons learned for transferability and actionability. Use when user says "audit lessons", "review lessons learned", "审核经验总结", or needs to verify lessons quality.
+user-invocable: false
 argument-hint: [lessons-learned-path]
 allowed-tools: Read, Write, Edit, Grep, Glob
 ---
-
 ## Purpose
 
 Critically review lessons learned for transferability and practical applicability.

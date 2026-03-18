@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:audit-paper
 description: Review paper draft for scientific rigor, writing quality, and citation authenticity. Use when user says "audit paper", "review paper", "审核论文", or needs to verify manuscript quality.
+user-invocable: false
 argument-hint: [paper-directory]
 allowed-tools: Bash(curl), Read, Write, Edit, Grep, Glob, WebFetch
 ---
-
 ## Purpose
 
 Critically review the paper manuscript for scientific quality, writing, and authenticity using a rigorous 7-stage review process.

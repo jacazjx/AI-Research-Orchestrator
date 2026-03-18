@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:research-intent-clarification
 description: Clarify research intent through iterative first-principles questioning before starting any research phase. Use when initializing a new project, when the research idea is vague, or before running Survey phase.
+user-invocable: false
 argument-hint: [research-topic-or-idea]
 allowed-tools: Read, Write, Edit, Grep, Glob, Skill, AskUserQuestion
 ---
-
 # Research Intent Clarification
 
 ## Purpose
