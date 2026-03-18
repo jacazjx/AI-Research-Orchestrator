@@ -713,6 +713,35 @@ def save_state(project_root: Path, state: dict[str, Any]) -> None:
     write_yaml(project_root / DEFAULT_DELIVERABLES["research_state"], state)
 
 
+def warn_starting_phase_prerequisites(starting_phase: str) -> list[str]:
+    """Return warnings when starting a project at a non-survey phase.
+
+    Args:
+        starting_phase: Requested starting phase (semantic or legacy name).
+
+    Returns:
+        List of warning strings. Empty list means no warnings (survey start).
+    """
+    phase = normalize_phase_name(starting_phase)
+    if phase not in PHASE_SEQUENCE:
+        return []
+    idx = list(PHASE_SEQUENCE).index(phase)
+    if idx == 0:
+        return []
+
+    skipped = list(PHASE_SEQUENCE)[:idx]
+    warnings = [
+        f"Starting at '{phase}' skips phase '{p}' — "
+        f"deliverables from that phase will NOT exist in this project."
+        for p in skipped
+    ]
+    warnings.append(
+        "If you have existing work from prior phases, add deliverables manually "
+        "or use 'migrate-project' to import an existing project structure."
+    )
+    return warnings
+
+
 def load_project_config(project_root: Path) -> dict[str, Any]:
     """Load project configuration with defaults.
 
@@ -1818,6 +1847,7 @@ __all__ = [
     "ensure_complete_deliverables",
     "load_state",
     "save_state",
+    "warn_starting_phase_prerequisites",
     "load_project_config",
     "append_state_log",
     # ARIS Review State

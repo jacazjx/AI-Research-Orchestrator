@@ -26,6 +26,7 @@ from orchestrator_common import (
     normalize_relative_path,
     render_template_tree,
     slugify,
+    warn_starting_phase_prerequisites,
     write_text_if_needed,
     write_yaml,
 )
@@ -235,6 +236,13 @@ def initialize_research_project(
         "clarification_rounds": clarification_rounds,
         "clarified_idea": clarified_idea or topic,
     }
+
+    prereq_warnings = warn_starting_phase_prerequisites(starting_phase)
+    if prereq_warnings:
+        print("\n⚠️  Phase prerequisite warning:")
+        for w in prereq_warnings:
+            print(f"   {w}")
+        print()
 
     variables = build_template_variables(project_root, state)
     rendered_files = render_template_tree(
