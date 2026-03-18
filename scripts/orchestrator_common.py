@@ -711,14 +711,56 @@ def load_state(project_root: Path) -> dict[str, Any]:
     return state
 
 
-def save_state(project_root: Path, state: dict[str, Any]) -> None:
+def save_state(
+    project_root: Path,
+    state: dict[str, Any],
+    previous_state: dict[str, Any] | None = None,
+) -> None:
     """Save project state to file.
 
     Args:
         project_root: Project root directory.
         state: Project state dictionary.
+        previous_state: Optional previous state for detecting gate status changes.
+                        When provided, gate_decision events are appended to
+                        sentinel_events.ndjson for any approval_status changes.
     """
+    if previous_state is not None:
+        _append_gate_audit_events(project_root, previous_state, state)
     write_yaml(project_root / DEFAULT_DELIVERABLES["research_state"], state)
+
+
+def _append_gate_audit_events(
+    project_root: Path,
+    old_state: dict[str, Any],
+    new_state: dict[str, Any],
+) -> None:
+    """Append gate_decision events to sentinel_events.ndjson when approval_status changes.
+
+    Args:
+        project_root: Project root directory.
+        old_state: Previous state before the change.
+        new_state: New state being saved.
+    """
+    old_approvals = old_state.get("approval_status", {})
+    new_approvals = new_state.get("approval_status", {})
+    changed = {
+        gate: status
+        for gate, status in new_approvals.items()
+        if status != old_approvals.get(gate)
+    }
+    if not changed:
+        return
+    sentinel_path = project_root / DEFAULT_DELIVERABLES["sentinel_events"]
+    sentinel_path.parent.mkdir(parents=True, exist_ok=True)
+    now = datetime.now(timezone.utc).isoformat()
+    with open(sentinel_path, "a", encoding="utf-8") as f:
+        for gate, status in changed.items():
+            event = json.dumps(
+                {"type": "gate_decision", "gate": gate, "status": status, "timestamp": now},
+                ensure_ascii=False,
+            )
+            f.write(event + "\n")
 
 
 def warn_starting_phase_prerequisites(starting_phase: str) -> list[str]:
