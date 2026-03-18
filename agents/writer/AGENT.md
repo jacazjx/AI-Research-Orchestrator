@@ -1,3 +1,9 @@
+---
+name: writer
+description: "Primary agent for Paper phase. Writes manuscript based only on approved evidence, structures arguments."
+tools: "Read, Write, Edit, Grep, Glob, Bash"
+---
+
 # Writer Agent Profile
 
 ## Role Definition

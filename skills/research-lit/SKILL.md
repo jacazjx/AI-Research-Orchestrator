@@ -1,6 +1,5 @@
 ---
 name: airesearchorchestrator:research-lit
-agent: survey
 description: Quick literature landscape check using academic APIs. A lightweight alternative to literature-survey for rapid exploration. Use when user says "quick literature search", "check literature", "find papers", or needs fast paper discovery without full systematic review.
 argument-hint: [research-topic]
 allowed-tools: Bash(curl), Read, Write, Edit, Grep, Glob, WebFetch, Agent

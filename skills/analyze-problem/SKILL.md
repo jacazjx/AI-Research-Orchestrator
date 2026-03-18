@@ -1,6 +1,5 @@
 ---
 name: airesearchorchestrator:analyze-problem
-agent: code
 description: Analyze research problem with decomposition, technical challenges, and solution approach. Use when user says "analyze problem", "problem analysis", "问题分析", or needs to break down a research challenge.
 argument-hint: [problem-description]
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(curl), WebFetch

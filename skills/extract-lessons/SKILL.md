@@ -1,6 +1,5 @@
 ---
 name: airesearchorchestrator:extract-lessons
-agent: reflector
 description: Extract lessons learned from the research project for future improvement. Use when user says "extract lessons", "lessons learned", "经验总结", or needs to capture project insights.
 argument-hint: [project-root]
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(python)

@@ -1,6 +1,5 @@
 ---
 name: airesearchorchestrator:audit-validation
-agent: adviser
 description: Audit problem validation for evidence quality, significance assessment accuracy, and verdict justification. Use when user says "audit validation", "review problem validation", "审核问题验证", or needs to verify a validation report.
 argument-hint: [project-root]
 allowed-tools: Read, Grep, Glob

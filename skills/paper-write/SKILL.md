@@ -1,6 +1,5 @@
 ---
 name: airesearchorchestrator:paper-write
-agent: writer
 description: Generate LaTeX sections for paper following IMRAD structure with proper academic writing style. Writes section-by-section with detailed guidance for each section. Use when user says "write paper", "写论文", "generate LaTeX", "draft manuscript".
 argument-hint: [paper-plan-path]
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, mcp__codex__codex

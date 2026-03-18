@@ -1,6 +1,5 @@
 ---
 name: airesearchorchestrator:analyze-results
-agent: code
 description: Analyze ML experiment results, compute statistics, generate comparison tables and insights. Use when user says "analyze results", "compare", or needs to interpret experimental data.
 argument-hint: [results-path-or-description]
 allowed-tools: Bash(*), Read, Grep, Glob, Write, Edit, Agent

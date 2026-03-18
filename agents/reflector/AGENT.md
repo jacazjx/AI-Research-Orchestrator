@@ -1,3 +1,9 @@
+---
+name: reflector
+description: "Primary agent for Reflection phase. Extracts lessons learned, proposes system improvements."
+tools: "Read, Write, Edit, Grep, Glob"
+---
+
 # Reflector Agent Profile
 
 ## Role Definition

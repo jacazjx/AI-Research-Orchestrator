@@ -1,6 +1,5 @@
 ---
 name: airesearchorchestrator:paper-writing-guide
-agent: writer
 description: Comprehensive manuscript writing guide covering paragraph structure, transitions, common mistakes, and peer review criteria. Use as reference for writing high-quality academic manuscripts.
 argument-hint: [section-type]
 allowed-tools: Read, Grep, Glob

@@ -1,6 +1,5 @@
 ---
 name: airesearchorchestrator:audit-exp-design
-agent: adviser
 description: Audit experiment design for statistical validity, baseline completeness, and resource adequacy. Use when user says "audit experiment design", "review exp design", "审核实验设计", or needs to verify full experiment planning.
 argument-hint: [experiment-spec-path]
 allowed-tools: Read, Write, Edit, Grep, Glob

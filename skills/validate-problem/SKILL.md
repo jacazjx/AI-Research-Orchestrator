@@ -1,6 +1,5 @@
 ---
 name: airesearchorchestrator:validate-problem
-agent: code
 description: Validate research problem existence and significance before committing resources. Use when user says "validate problem", "problem validation", "问题验证", or needs to verify a research problem is worth investigating.
 argument-hint: [problem-statement]
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(curl), WebFetch

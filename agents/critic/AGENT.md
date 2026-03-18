@@ -1,3 +1,9 @@
+---
+name: critic
+description: "Reviewer agent for Survey phase. Audits novelty, feasibility, theory risk, and citation authenticity."
+tools: "Read, Write, Edit, Grep, Glob, Bash"
+---
+
 # Critic Agent Profile
 
 ## Role Definition

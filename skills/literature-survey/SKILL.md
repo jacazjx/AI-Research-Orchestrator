@@ -1,6 +1,5 @@
 ---
 name: airesearchorchestrator:literature-survey
-agent: survey
 description: Systematic literature survey following 7-phase workflow (Planning, Search, Screening, Extraction, Synthesis, Citation Verification, Document Generation). Creates comprehensive research landscape maps with AI-generated visualizations. Use when user says "literature survey", "文献调研", "systematic review", "find related work", or needs comprehensive research landscape mapping.
 argument-hint: [research-topic-or-question]
 allowed-tools: Bash(curl), Read, Write, Edit, Grep, Glob, WebFetch, Agent

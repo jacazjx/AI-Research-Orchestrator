@@ -1,3 +1,9 @@
+---
+name: survey
+description: "Primary agent for Survey phase. Conducts literature review using academic APIs, defines atomic academic definitions, identifies research gaps."
+tools: "Read, Write, Edit, Grep, Glob, Bash"
+---
+
 # Survey Agent Profile
 
 ## Role Definition

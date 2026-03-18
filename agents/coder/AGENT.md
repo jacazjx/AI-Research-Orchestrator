@@ -1,3 +1,9 @@
+---
+name: coder
+description: "Primary agent for Pilot and Experiments phases. Designs experiments, implements code, runs experiments, analyzes results."
+tools: "Read, Write, Edit, Grep, Glob, Bash"
+---
+
 # Code Agent Profile
 
 ## Role Definition

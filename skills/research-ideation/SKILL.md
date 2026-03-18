@@ -1,6 +1,5 @@
 ---
 name: airesearchorchestrator:research-ideation
-agent: survey
 description: Research ideation through 5-phase innovation flow using Cross-Domain Analogies, Assumption Reversal, Scale Shifting, and Interdisciplinary Fusion. Use when user says "research ideation", "research brainstorming", "研究构思", "generate research ideas", "explore research directions", or needs structured ideation before literature survey.
 argument-hint: [research-context-or-topic]
 allowed-tools: Bash(curl), Read, Write, Edit, Grep, Glob, WebFetch, Agent

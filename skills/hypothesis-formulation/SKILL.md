@@ -1,6 +1,5 @@
 ---
 name: airesearchorchestrator:hypothesis-formulation
-agent: survey
 description: Formulate research hypotheses through systematic 8-stage process including literature synthesis, competing hypothesis generation, and quality evaluation. Use when user says "formulate hypothesis", "generate hypothesis", "构建假设", or needs to develop testable research hypotheses.
 argument-hint: [research-topic-or-phenomenon]
 allowed-tools: Bash(curl), Read, Write, Edit, Grep, Glob, WebFetch

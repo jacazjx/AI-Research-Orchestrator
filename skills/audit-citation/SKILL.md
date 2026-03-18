@@ -1,6 +1,5 @@
 ---
 name: airesearchorchestrator:audit-citation
-agent: reviewer
 description: Audit citation authenticity with detailed verification of each reference. Use when user says "audit citations", "verify citations", "验证引用", or needs deep citation verification.
 argument-hint: [paper-directory]
 allowed-tools: Bash(curl), Read, Write, Edit, Grep, Glob, WebFetch
