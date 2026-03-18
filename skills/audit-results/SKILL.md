@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:audit-results
 description: Audit experiment results for traceability, statistical validity, and negative result handling. Use when user says "audit results", "review experiment results", "审核实验结果", or needs to verify experiment outcomes.
+user-invocable: false
 argument-hint: [results-path]
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
 ---
-
 ## Purpose
 
 Critically review experiment results for traceability, statistical validity, and complete reporting using a rigorous 7-stage review process.

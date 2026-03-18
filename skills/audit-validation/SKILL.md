@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:audit-validation
 description: Audit problem validation for evidence quality, significance assessment accuracy, and verdict justification. Use when user says "audit validation", "review problem validation", "审核问题验证", or needs to verify a validation report.
+user-invocable: false
 argument-hint: [project-root]
 allowed-tools: Read, Grep, Glob
 ---
-
 ## Purpose
 
 Critically review a problem validation report to ensure the evidence is sound, the significance assessment is justified, and the verdict follows logically from the analysis.

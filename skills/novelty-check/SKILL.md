@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:novelty-check
 description: Verify novelty of a research idea against existing literature. Use when user says "check novelty", "新颖性检查", "is this novel", or needs to verify an idea is not already published.
+user-invocable: false
 argument-hint: [idea-description]
 allowed-tools: Bash(curl), Read, Write, Edit, Grep, Glob, WebFetch, mcp__codex__codex
 ---
-
 ## Purpose
 
 Verify that a research idea is novel and identify closest existing work.

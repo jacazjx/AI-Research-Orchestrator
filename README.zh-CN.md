@@ -14,7 +14,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Claude_Code-Plugin-blue?logo=anthropic" alt="Claude Code Plugin">
-  <img src="https://img.shields.io/badge/Version-1.0.0-green" alt="Version">
+  <img src="https://img.shields.io/badge/Version-1.3.0-green" alt="Version">
   <img src="https://img.shields.io/badge/License-MIT-yellow" alt="License">
   <img src="https://img.shields.io/badge/Python-3.9+-blue" alt="Python">
   <img src="https://img.shields.io/badge/Phase-5-orange" alt="5 阶段">
@@ -350,19 +350,21 @@ cc --plugin-dir /path/to/AI-Research-Orchestrator
 ## 快速开始
 
 ```bash
-# 初始化新研究项目
-python3 scripts/init_research_project.py \
-  --project-root /abs/path/to/my-project \
-  --topic "你的研究想法" \
-  --client-type auto
+# 步骤 0（推荐）：在提交项目前先澄清你的研究想法
+/airesearchorchestrator:insight
 
-# 运行特定阶段
-/airesearchorchestrator:run-survey      # 启动文献调研阶段
-/airesearchorchestrator:run-pilot       # 启动 Pilot 阶段
-/airesearchorchestrator:run-experiments # 启动完整实验阶段
-/airesearchorchestrator:write-paper     # 启动论文写作阶段
-/airesearchorchestrator:reflect         # 启动反思总结阶段
+# 步骤 1：初始化新研究项目
+/airesearchorchestrator:init-research
+
+# 步骤 2-6：按顺序运行每个阶段
+/airesearchorchestrator:run-survey      # 阶段 1 — 文献调研
+/airesearchorchestrator:run-pilot       # 阶段 2 — Pilot 验证
+/airesearchorchestrator:run-experiments # 阶段 3 — 完整实验
+/airesearchorchestrator:write-paper     # 阶段 4 — 论文撰写
+/airesearchorchestrator:reflect         # 阶段 5 — 经验教训总结
 ```
+
+> **要恢复已存在的项目？** 在每个新的 Claude Code 会话开始时，先运行 `/airesearchorchestrator:reload` 来恢复项目上下文，然后再继续。
 
 ## 时间预期
 
@@ -549,12 +551,16 @@ my-project/
 
 | 命令 | 描述 | 触发词 |
 |------|------|--------|
+| `/airesearchorchestrator:insight` | 澄清研究意图 | "insight", "澄清意图" |
 | `/airesearchorchestrator:init-research` | 初始化新项目 | "init research", "初始化研究" |
+| `/airesearchorchestrator:status` | 显示项目状态 | "status", "查看状态", "项目状态" |
 | `/airesearchorchestrator:run-survey` | 运行文献调研阶段 | "run survey", "文献调研" |
 | `/airesearchorchestrator:run-pilot` | 运行 Pilot 阶段 | "run pilot", "Pilot验证" |
 | `/airesearchorchestrator:run-experiments` | 运行完整实验 | "run experiments", "完整实验" |
 | `/airesearchorchestrator:write-paper` | 撰写论文 | "write paper", "写论文" |
 | `/airesearchorchestrator:reflect` | 运行反思总结 | "reflect", "反思总结" |
+| `/airesearchorchestrator:reload` | 恢复会话上下文 | "reload", "重新加载", "恢复项目" |
+| `/airesearchorchestrator:configure` | 配置项目设置 | "configure", "配置" |
 
 ## 硬规则
 

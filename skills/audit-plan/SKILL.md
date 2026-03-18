@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:audit-plan
 description: Audit research execution plan for feasibility, resource adequacy, and risk coverage. Use when user says "audit plan", "review research plan", "审核研究计划", or needs to verify planning quality.
+user-invocable: false
 argument-hint: [research-plan-path]
 allowed-tools: Read, Write, Edit, Grep, Glob
 ---
-
 ## Purpose
 
 Critically review the research execution plan for feasibility and completeness.

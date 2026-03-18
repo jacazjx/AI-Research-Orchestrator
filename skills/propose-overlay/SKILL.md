@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:propose-overlay
 description: Propose system improvements through prompt modifications and workflow changes. Use when user says "propose overlay", "system improvement", "系统改进", or needs to suggest orchestrator enhancements.
+user-invocable: false
 argument-hint: [lessons-learned-path]
 allowed-tools: Read, Write, Edit, Grep, Glob
 ---
-
 ## Purpose
 
 Propose concrete improvements to the orchestrator system based on lessons learned, with safety assessment.

@@ -1,4 +1,5 @@
 ---
+name: airesearchorchestrator:insight
 description: "Interactive intent clarification — helps users sharpen their research idea before initialization"
 argument-hint: "[--idea <string>] [--project-root <path>] [--interactive] [--max-rounds <number>] [--json]"
 allowed-tools: "Read, Write, Bash(${CLAUDE_PLUGIN_ROOT}/scripts/*:*)"

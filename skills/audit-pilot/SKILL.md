@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:audit-pilot
 description: Audit pilot results for hypothesis validation, reproducibility, and decision support. Use when user says "audit pilot", "review pilot results", "审核 Pilot 结果", or needs to verify pilot experiment outcomes.
+user-invocable: false
 argument-hint: [pilot-validation-report-path]
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
 ---
-
 ## Purpose
 
 Critically review pilot experiment results for hypothesis validation and reproducibility using a rigorous 7-stage review process.

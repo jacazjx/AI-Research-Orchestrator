@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:extract-lessons
 description: Extract lessons learned from the research project for future improvement. Use when user says "extract lessons", "lessons learned", "经验总结", or needs to capture project insights.
+user-invocable: false
 argument-hint: [project-root]
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(python)
 ---
-
 ## Purpose
 
 Systematically extract lessons learned from the completed research project to improve future projects. Lessons are saved both to the project directory and optionally to the user-level library for cross-project reuse.

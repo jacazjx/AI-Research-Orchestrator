@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:gitmem
 description: Lightweight version control for agent-generated document changes. Tracks iterative refinement without creating v1, v2, v3 copies. Use when committing agent edits, creating checkpoints, or checking for edit loops.
+user-invocable: false
 argument-hint: <command> [options]
 allowed-tools: Bash(git), Read, Write
 ---
-
 ## Purpose
 
 GitMem provides lightweight version control for agent-generated documents during the research workflow. It maintains a separate git repository in `.gitmem/` to track changes without polluting the main project history.

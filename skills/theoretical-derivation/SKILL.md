@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:theoretical-derivation
 description: Conduct theoretical derivation and formal analysis for research hypotheses. Includes mathematical formulation, proof sketches, complexity analysis, and theoretical guarantees. Use when user says "theoretical derivation", "理论推导", "formal analysis", "mathematical proof", or after idea formulation before literature survey.
+user-invocable: false
 argument-hint: [hypothesis-or-idea]
 allowed-tools: Bash(python, sympy), Read, Write, Edit, Grep, Glob
 ---
-
 # Theoretical Derivation
 
 ## Overview

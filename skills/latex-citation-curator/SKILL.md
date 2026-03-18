@@ -1,8 +1,8 @@
 ---
 name: airesearchorchestrator:latex-citation-curator
 description: Find, verify, rank, and generate DOI-verified or trusted-source BibTeX citations for LaTeX manuscripts and research-writing workflows. Use when Codex needs to scan `.tex` files or draft prose for citation gaps such as `[cite]`, `[citation needed]`, `\todo{cite}`, or Chinese prompts like `我想找一篇论文来支撑论点`; search for real supporting papers; prefer the last 5 years, CCF A/B venues, JCR Q1/Q2 journals, high impact factor, and strong citation performance; replace preprints with formally published versions; prefer Semantic Scholar authenticated access when the user has a key, but fall back to the free shared flow when they do not; use Google Scholar only as a manual hint fallback; and emit BibTeX with explicit provenance fields.
+user-invocable: false
 ---
-
 # LaTeX Citation Curator
 
 ## Overview

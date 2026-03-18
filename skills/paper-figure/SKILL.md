@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:paper-figure
 description: Generate data-driven plots and tables for paper. Creates matplotlib/seaborn plots from JSON/CSV data. Use when user says "generate figures", "画图", "create plots".
+user-invocable: false
 argument-hint: [paper-plan-path]
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent
 ---
-
 ## Purpose
 
 Generate figures and tables for paper from data.

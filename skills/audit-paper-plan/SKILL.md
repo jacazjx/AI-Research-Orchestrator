@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:audit-paper-plan
 description: Audit paper outline for claim-evidence alignment, structure completeness, and citation scaffolding. Use when user says "audit paper plan", "review paper outline", "审核论文大纲", or needs to verify paper planning.
+user-invocable: false
 argument-hint: [paper-plan-path]
 allowed-tools: Read, Write, Edit, Grep, Glob
 ---
-
 ## Purpose
 
 Critically review paper outline for structural soundness and claim-evidence alignment.

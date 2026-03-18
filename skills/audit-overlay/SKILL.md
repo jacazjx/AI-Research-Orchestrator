@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:audit-overlay
 description: Audit proposed system improvements for safety, backward compatibility, and rollback capability. Use when user says "audit overlay", "review overlay", "审核系统改进", or needs to verify overlay safety.
+user-invocable: false
 argument-hint: [overlay-draft-path]
 allowed-tools: Read, Write, Edit, Grep, Glob
 ---
-
 ## Purpose
 
 Critically review proposed system improvements for safety and proper procedure.

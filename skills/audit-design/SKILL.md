@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:audit-design
 description: Audit pilot design for validity, resource efficiency, and success criteria clarity. Use when user says "audit design", "review pilot design", "审核 Pilot 设计", or needs to verify pilot experiment design.
+user-invocable: false
 argument-hint: [pilot-design-path]
 allowed-tools: Read, Write, Edit, Grep, Glob
 ---
-
 ## Purpose
 
 Critically review pilot experiment design for hypothesis validity and resource efficiency.

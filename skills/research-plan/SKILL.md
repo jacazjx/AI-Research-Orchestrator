@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:research-plan
 description: Create comprehensive research execution plan with methodology overview, experiment design outline, resource requirements, and timeline. Use when user says "research plan", "create plan", "研究计划", or needs to structure research execution.
+user-invocable: false
 argument-hint: [idea-definition-path]
 allowed-tools: Read, Write, Edit, Grep, Glob
 ---
-
 ## Purpose
 
 Transform an idea definition into a detailed research execution plan with methodology, experiments, resources, and timeline.

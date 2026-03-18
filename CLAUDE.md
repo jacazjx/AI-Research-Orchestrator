@@ -228,5 +228,6 @@ User preferences stored in `~/.autoresearch/`:
 ## Python Requirements
 
 - Python >= 3.9
-- No external runtime dependencies (scripts use stdlib only)
+- Runtime dependencies:
+  - PyYAML (for YAML configuration files)
 - Dev dependencies: pytest, black, isort, flake8, mypy

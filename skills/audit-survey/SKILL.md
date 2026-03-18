@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:audit-survey
 description: Audit literature survey for completeness, citation authenticity, and novelty claims. Use when user says "audit survey", "review literature", "审核文献调研", or needs to verify survey quality.
+user-invocable: false
 argument-hint: [survey-report-path]
 allowed-tools: Bash(curl), Read, Write, Edit, Grep, Glob, WebFetch
 ---
-
 ## Purpose
 
 Critically review the literature survey for completeness, citation authenticity, and novelty claims using a rigorous 7-stage review process.

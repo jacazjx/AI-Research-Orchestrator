@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:critical-evaluation
 description: Apply systematic critical evaluation to research outputs, including methodology critique, bias detection, statistical analysis evaluation, evidence quality assessment, and logical fallacy identification. Use when user says "critically evaluate", "critical review", "批判性评估", "审核质量", or when reviewing Survey Phase outputs.
+user-invocable: false
 argument-hint: [target-path] [--focus methodology|bias|statistics|evidence|fallacies|all]
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, WebFetch
 ---
-
 # Critical Evaluation
 
 ## Overview

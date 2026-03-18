@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:audit-exp-design
 description: Audit experiment design for statistical validity, baseline completeness, and resource adequacy. Use when user says "audit experiment design", "review exp design", "审核实验设计", or needs to verify full experiment planning.
+user-invocable: false
 argument-hint: [experiment-spec-path]
 allowed-tools: Read, Write, Edit, Grep, Glob
 ---
-
 ## Purpose
 
 Critically review full experiment design for statistical rigor and completeness.

@@ -1,10 +1,10 @@
 ---
 name: airesearchorchestrator:validate-problem
 description: Validate research problem existence and significance before committing resources. Use when user says "validate problem", "problem validation", "问题验证", or needs to verify a research problem is worth investigating.
+user-invocable: false
 argument-hint: [problem-statement]
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(curl), WebFetch
 ---
-
 ## Purpose
 
 Validate that a research problem truly exists, is significant enough to warrant investigation, and has not already been adequately solved. This step precedes problem analysis to prevent wasted effort on non-existent or insignificant problems.
