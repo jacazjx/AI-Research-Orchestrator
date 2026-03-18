@@ -10,12 +10,51 @@ Features:
 - Yes/No confirmation
 - Project ID validation
 - Email validation
+- Progress indicator
+- Help text support
+- Back navigation
+- Example templates
 """
 
 from __future__ import annotations
 
 import re
 from typing import Any, Callable
+
+# Global state for navigation
+_current_step = 0
+_total_steps = 0
+_allow_back = False
+_back_requested = False
+
+
+def set_step_context(current: int, total: int, allow_back: bool = True) -> None:
+    """Set current step context for progress indicator.
+
+    Args:
+        current: Current step number (1-indexed).
+        total: Total number of steps.
+        allow_back: Whether back navigation is allowed.
+    """
+    global _current_step, _total_steps, _allow_back
+    _current_step = current
+    _total_steps = total
+    _allow_back = allow_back
+
+
+def is_back_requested() -> bool:
+    """Check if user requested to go back.
+
+    Returns:
+        True if back was requested.
+    """
+    return _back_requested
+
+
+def reset_back_request() -> None:
+    """Reset back request flag."""
+    global _back_requested
+    _back_requested = False
 
 
 def prompt_text(
@@ -24,8 +63,10 @@ def prompt_text(
     required: bool = False,
     validator: Callable[[str], bool] | None = None,
     error_message: str = "Invalid input. Please try again.",
+    help_text: str | None = None,
+    example: str | None = None,
 ) -> str:
-    """Prompt user for text input.
+    """Prompt user for text input with help and example support.
 
     Args:
         message: Prompt message to display.
@@ -33,21 +74,40 @@ def prompt_text(
         required: If True, user must provide a non-empty value.
         validator: Optional function to validate input. Should return True for valid input.
         error_message: Message to display when validation fails.
+        help_text: Optional help text shown when user types '?'.
+        example: Optional example value to display.
 
     Returns:
         User input string, or default value if user pressed Enter.
+
+    Raises:
+        BackRequestedException: If user types 'b' or 'back' to go to previous step.
     """
+    global _back_requested
+
     while True:
         # Build prompt with default indicator
+        prompt_parts = [message]
+        if example:
+            prompt_parts.append(f"(e.g., {example})")
         if default:
-            prompt_str = f"{message} [{default}]: "
-        else:
-            prompt_str = f"{message}: "
+            prompt_parts.append(f"[{default}]")
+        prompt_str = " ".join(prompt_parts) + ": "
 
         try:
             user_input = input(prompt_str).strip()
         except EOFError:
             # Non-interactive mode, return default
+            return default
+
+        # Handle help request
+        if user_input == "?" and help_text:
+            print(f"\n  💡 {help_text}\n")
+            continue
+
+        # Handle back request
+        if _allow_back and user_input.lower() in ("b", "back"):
+            _back_requested = True
             return default
 
         # Use default if empty
@@ -63,6 +123,11 @@ def prompt_text(
             continue
 
         return user_input
+
+
+class BackRequestedException(Exception):
+    """Raised when user requests to go back to previous step."""
+    pass
 
 
 def prompt_choice(
@@ -337,14 +402,18 @@ def print_header(title: str, width: int = 60) -> None:
 
 
 def print_section(title: str, width: int = 60) -> None:
-    """Print a formatted section header.
+    """Print a formatted section header with progress indicator.
 
     Args:
         title: Section title.
         width: Total width of the section line.
     """
     print()
-    print(f"\n--- {title} ---")
+    if _total_steps > 0:
+        progress = f"[{_current_step}/{_total_steps}] "
+        print(f"\n--- {progress}{title} ---")
+    else:
+        print(f"\n--- {title} ---")
     print()
 
 

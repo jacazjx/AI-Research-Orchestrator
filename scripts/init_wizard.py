@@ -67,26 +67,63 @@ RESEARCH_TYPES: dict[str, dict[str, Any]] = {
         "label": "ML Experiment",
         "description": "Machine learning experiments with training and evaluation",
         "requires_gpu": True,
+        "example": "Fine-tuning a language model for code generation",
     },
     "theory": {
         "label": "Theory Research",
         "description": "Theoretical analysis and mathematical proofs",
         "requires_gpu": False,
+        "example": "Convergence analysis of optimization algorithms",
     },
     "survey": {
         "label": "Survey/Review",
         "description": "Literature review and survey papers",
         "requires_gpu": False,
+        "example": "A comprehensive survey on transformer architectures",
     },
     "applied": {
         "label": "Applied Research",
         "description": "Applied research with real-world applications",
         "requires_gpu": True,
+        "example": "Medical image classification for disease detection",
     },
 }
 
+# Example research ideas for new users
+EXAMPLE_IDEAS = [
+    "How does the number of attention heads affect model performance on long-context tasks?",
+    "Can we improve transformer efficiency by replacing attention with a simpler mechanism?",
+    "What are the trade-offs between model size and inference speed for code generation?",
+    "How do different data augmentation strategies impact few-shot learning?",
+]
+
+# Total wizard steps for progress indicator
+TOTAL_WIZARD_STEPS = 7
+
 # Valid phases for starting point
 VALID_STARTING_PHASES = ["survey", "pilot", "experiments", "paper", "reflection"]
+
+
+def print_welcome_banner() -> None:
+    """Print a visually appealing welcome banner."""
+    print()
+    print("╔══════════════════════════════════════════════════════════════╗")
+    print("║                                                              ║")
+    print("║        🔬  AI Research Orchestrator  🔬                     ║")
+    print("║                                                              ║")
+    print("║     From idea to paper in 5 structured phases               ║")
+    print("║                                                              ║")
+    print("╚══════════════════════════════════════════════════════════════╝")
+    print()
+
+
+def print_quick_help() -> None:
+    """Print quick help for navigation."""
+    print("  Navigation tips:")
+    print("  • Press Enter to accept default values")
+    print("  • Type '?' for help on any field")
+    print("  • Type 'b' to go back to previous step")
+    print()
 
 
 @dataclass
@@ -205,10 +242,14 @@ class InitWizard:
         if not self.interactive:
             return
 
-        prompts.print_header("AI Research Orchestrator - Initialization Wizard")
+        print_welcome_banner()
 
         print("Welcome! This wizard will help you set up a new research project.")
-        print("\nThe setup process includes:")
+        print()
+
+        print_quick_help()
+
+        print("The setup process includes:")
         print("  1. Define your research idea")
         print("  2. Assess and clarify your intent")
         print("  3. Select research type")
@@ -217,8 +258,7 @@ class InitWizard:
         print("  6. Confirm user profile")
         print("  7. Review and finalize")
 
-        print("\nYour settings will be saved to:")
-        print(f"  Project Root: {self.project_root}")
+        print(f"\n📁 Project location: {self.project_root}")
 
         prompts.prompt_yes_no("\nReady to begin?", default=True)
 
@@ -230,23 +270,45 @@ class InitWizard:
                 self.responses.research_idea = "Research project"
             return
 
-        prompts.print_section("Step 1: Research Idea")
+        prompts.set_step_context(1, TOTAL_WIZARD_STEPS)
+        prompts.print_section("Research Idea")
 
-        print("Please describe your research idea or problem statement.")
+        print("Describe your research idea or problem statement.")
         print("This will be used to initialize your project and generate templates.")
+        print()
 
-        idea = prompts.prompt_multiline(
-            "\nEnter your research idea",
+        # Show example ideas
+        print("💡 Example ideas:")
+        for i, ex in enumerate(EXAMPLE_IDEAS[:2], 1):
+            print(f"   {i}. {ex[:60]}...")
+        print()
+
+        # Simplified input - single line first
+        print("Enter your research idea (one line is fine, or type 'more' for detailed input):")
+
+        idea = prompts.prompt_text(
+            "",
             required=True,
             default=self.responses.research_idea,
+            help_text="A clear description of what you want to research. Include the problem, approach, and expected outcome.",
         )
+
+        # Check if user wants more detailed input
+        if idea.lower() == "more":
+            print("\nEnter your detailed research idea (press Enter twice to finish):")
+            idea = prompts.prompt_multiline(
+                "",
+                end_marker="",
+                required=True,
+                default=self.responses.research_idea,
+            )
 
         self.responses.research_idea = idea
 
         # Generate project ID if not already set
         if not self.responses.project_id:
             suggested_id = prompts.generate_project_id_from_idea(idea)
-            print(f"\nSuggested project ID: {suggested_id}")
+            print(f"\n📋 Suggested project ID: {suggested_id}")
 
             use_suggested = prompts.prompt_yes_no(
                 "Use this project ID?",
@@ -279,10 +341,11 @@ class InitWizard:
             self.responses.clarified_idea = self.responses.research_idea
             return
 
-        prompts.print_section("Step 2: Intent Clarity Assessment")
+        prompts.set_step_context(2, TOTAL_WIZARD_STEPS)
+        prompts.print_section("Intent Clarity")
 
         # Assess the research idea
-        print("Analyzing your research idea for clarity...")
+        print("🔍 Analyzing your research idea for clarity...")
         assessment = assess_intent_clarity(self.responses.research_idea)
         self.responses.clarity_score = assessment.score
 
@@ -413,9 +476,20 @@ class InitWizard:
         if not self.interactive:
             return
 
-        prompts.print_section("Step 4: Research Type")
+        prompts.set_step_context(3, TOTAL_WIZARD_STEPS)
+        prompts.print_section("Research Type")
 
         print("Select the type of research you'll be conducting:")
+        print()
+
+        # Build choices dict with examples
+        for key, info in RESEARCH_TYPES.items():
+            gpu_mark = "🎮" if info["requires_gpu"] else "📝"
+            default_mark = " (default)" if key == self.responses.research_type else ""
+            print(f"  [{key[0].upper()}] {gpu_mark} {info['label']}{default_mark}")
+            print(f"      {info['description']}")
+            print(f"      Example: {info['example']}")
+            print()
 
         # Build choices dict
         choices = {
@@ -423,7 +497,7 @@ class InitWizard:
         }
 
         selected = prompts.prompt_choice(
-            "\nSelect research type",
+            "Select research type",
             choices=choices,
             default=self.responses.research_type,
         )
@@ -432,9 +506,9 @@ class InitWizard:
 
         # Show additional info
         info = RESEARCH_TYPES[selected]
-        print(f"\nSelected: {info['label']}")
+        print(f"\n✅ Selected: {info['label']}")
         if info["requires_gpu"]:
-            print("Note: This research type typically requires GPU resources.")
+            print("📌 Note: This research type typically requires GPU resources.")
 
         # Ask about starting phase
         if prompts.prompt_yes_no(
@@ -454,7 +528,8 @@ class InitWizard:
 
     def step_existing_resources(self) -> None:
         """Step 5: Detect and handle existing resources."""
-        prompts.print_section("Step 5: Existing Resources")
+        prompts.set_step_context(4, TOTAL_WIZARD_STEPS)
+        prompts.print_section("Existing Resources")
 
         # Analyze directory
         try:
@@ -472,7 +547,7 @@ class InitWizard:
             return
 
         if analysis.is_empty:
-            print("The project directory is empty. Ready for initialization.")
+            print("✅ The project directory is empty. Ready for initialization.")
             self.responses.existing_resources_mode = "preserve"
             return
 
@@ -488,9 +563,9 @@ class InitWizard:
             print("\nHow would you like to handle these files?")
 
             choices = {
-                "preserve": "Preserve - Keep files in place (recommended)",
-                "migrate": "Migrate - Move non-standard files to legacy backup",
-                "cancel": "Cancel - Abort initialization",
+                "preserve": "✅ Preserve - Keep files in place (recommended)",
+                "migrate": "📦 Migrate - Move non-standard files to legacy backup",
+                "cancel": "❌ Cancel - Abort initialization",
             }
 
             selected = prompts.prompt_choice(
@@ -505,19 +580,20 @@ class InitWizard:
                 print("\nNon-standard files will be moved to .autoresearch/legacy/")
                 prompts.prompt_yes_no("Proceed with migration?", default=True)
         else:
-            print("\nAll files match recognized patterns. No action needed.")
+            print("\n✅ All files match recognized patterns. No action needed.")
             self.responses.existing_resources_mode = "preserve"
 
     def step_compute_resources(self) -> None:
         """Step 6: Configure compute resources (GPU)."""
-        prompts.print_section("Step 6: Compute Resources")
+        prompts.set_step_context(5, TOTAL_WIZARD_STEPS)
+        prompts.print_section("Compute Resources")
 
         # Check if GPU is needed
         research_info = RESEARCH_TYPES.get(self.responses.research_type, {})
         needs_gpu = research_info.get("requires_gpu", False)
 
         if not needs_gpu:
-            print("This research type does not typically require GPU resources.")
+            print("📝 This research type does not typically require GPU resources.")
             self.responses.compute_config = {
                 "requires_gpu": False,
                 "gpu_preference": "none",
@@ -625,7 +701,8 @@ class InitWizard:
 
     def step_user_profile(self) -> None:
         """Step 7: Confirm or update user profile."""
-        prompts.print_section("Step 7: User Profile")
+        prompts.set_step_context(6, TOTAL_WIZARD_STEPS)
+        prompts.print_section("User Profile")
 
         # Load existing user config
         config = user_config.load_user_config()
@@ -643,7 +720,7 @@ class InitWizard:
 
         # Show current profile
         if any(author.values()):
-            print("Current user profile:")
+            print("👤 Current user profile:")
             prompts.print_summary(
                 "Profile",
                 {
@@ -654,7 +731,7 @@ class InitWizard:
                 },
             )
 
-            if prompts.prompt_yes_no("\nIs this information correct?", default=True):
+            if prompts.prompt_yes_no("\n✅ Is this information correct?", default=True):
                 return
         else:
             print("No user profile found. Please provide your information.")
@@ -708,50 +785,60 @@ class InitWizard:
         if not self.interactive:
             return
 
-        prompts.print_section("Step 8: Confirmation")
+        prompts.set_step_context(7, TOTAL_WIZARD_STEPS)
+        prompts.print_section("Review & Confirm")
 
         print("Please review your settings before proceeding:\n")
 
-        # Display summary
-        print("=" * 50)
-        print("PROJECT SUMMARY")
-        print("=" * 50)
+        # Display summary in a nice format
+        print("┌" + "─" * 56 + "┐")
+        print("│                    PROJECT SUMMARY                      │")
+        print("├" + "─" * 56 + "┤")
 
-        print(f"\nProject ID: {self.responses.project_id}")
-        print(f"Project Root: {self.project_root}")
-        print(f"Starting Phase: {self.responses.starting_phase}")
+        print(f"│  📋 Project ID:     {self.responses.project_id:<37}│")
+        print(f"│  📁 Location:       {str(self.project_root)[-37:]:<37}│")
+        print(f"│  🎯 Starting Phase: {self.responses.starting_phase:<37}│")
 
-        print(f"\nResearch Type: {RESEARCH_TYPES[self.responses.research_type]['label']}")
+        print("├" + "─" * 56 + "┤")
+
+        research_type_label = RESEARCH_TYPES[self.responses.research_type]['label']
+        print(f"│  📚 Research Type:  {research_type_label:<37}│")
 
         # Display clarity score if available
         if self.responses.clarity_score > 0:
-            print(f"\nIntent Clarity Score: {self.responses.clarity_score:.2f}")
-            print(f"  Clarification Rounds: {self.responses.clarification_rounds}")
+            clarity_status = "✅ Clear" if self.responses.clarity_score >= 0.7 else "⚠️ Needs work"
+            print(f"│  🎯 Intent Clarity: {self.responses.clarity_score:.2f} ({clarity_status}){' ' * 20}│")
 
-        # Display clarified idea if different from original
+        print("├" + "─" * 56 + "┤")
+
+        # Display research idea (truncated)
         display_idea = self.responses.clarified_idea or self.responses.research_idea
-        print(f"\nResearch Idea:\n  {display_idea[:200]}...")
-        if len(display_idea) > 200:
-            print("  [truncated]")
+        idea_display = display_idea[:50].replace('\n', ' ')
+        if len(display_idea) > 50:
+            idea_display += "..."
+        print(f"│  💡 Research Idea:  {idea_display:<37}│")
 
-        print(f"\nExisting Resources: {self.responses.existing_resources_mode}")
-        if self.responses.legacy_analysis.get("total_files"):
-            print(f"  Files found: {self.responses.legacy_analysis['total_files']}")
+        print("├" + "─" * 56 + "┤")
 
-        print("\nCompute Config:")
-        print(f"  GPU Preference: {self.responses.compute_config.get('gpu_preference', 'auto')}")
+        gpu_pref = self.responses.compute_config.get('gpu_preference', 'auto')
+        print(f"│  🎮 GPU:            {gpu_pref:<37}│")
 
-        print("\nUser Profile:")
-        print(f"  Name: {self.responses.user_profile.get('name', '(not set)')}")
-        print(f"  Email: {self.responses.user_profile.get('email', '(not set)')}")
-        print(f"  Institution: {self.responses.user_profile.get('institution', '(not set)')}")
+        user_name = self.responses.user_profile.get('name', '(not set)')
+        print(f"│  👤 Author:         {user_name[:37]:<37}│")
 
-        print("\n" + "=" * 50)
+        print("└" + "─" * 56 + "┘")
 
-        if not prompts.prompt_yes_no("\nProceed with initialization?", default=True):
+        print("\n📌 What will be created:")
+        print("   • .autoresearch/  - System configuration and state")
+        print("   • agents/         - Agent work directories")
+        print("   • code/           - Code and experiments")
+        print("   • docs/reports/   - Research deliverables")
+        print("   • paper/          - Manuscript files")
+
+        if not prompts.prompt_yes_no("\n✅ Proceed with initialization?", default=True):
             raise ValidationError("Initialization cancelled by user")
 
-        print("\nInitialization settings confirmed. Proceeding...")
+        print("\n🚀 Creating project structure...")
 
 
 def run_wizard(
