@@ -53,8 +53,9 @@
     ┌────────────────────────────────────────────────────────────────────────────┐
     │  PHASE 2: PILOT                                                            │
     │  ┌───────────────┐                              ┌───────────────┐          │
-    │  │     CODE      │ ── pilot experiment ───────▶│   ADVISER     │          │
-    │  │    (Doer)     │ ── preliminary results ────▶│  (Auditor)    │          │
+    │  │     CODE      │ ── problem validation ─────▶│   ADVISER     │          │
+    │  │    (Doer)     │ ── pilot experiment ───────▶│  (Auditor)    │          │
+    │  │               │ ── preliminary results ────▶│               │          │
     │  │               │ ◀── design feedback ────────│               │          │
     │  └───────┬───────┘                              └───────┬───────┘          │
     │          │                                              │                  │
@@ -353,19 +354,21 @@ cc --plugin-dir /path/to/AI-Research-Orchestrator
 ## Quick Start
 
 ```bash
-# Initialize a new research project
-python3 scripts/init_research_project.py \
-  --project-root /abs/path/to/my-project \
-  --topic "Your research idea" \
-  --client-type auto
+# Step 0 (recommended): Clarify your research idea before committing to a project
+/airesearchorchestrator:insight
 
-# Run a specific phase
-/airesearchorchestrator:run-survey    # Start Survey phase
-/airesearchorchestrator:run-pilot     # Start Pilot phase
-/airesearchorchestrator:run-experiments # Start Experiments phase
-/airesearchorchestrator:write-paper   # Start Paper phase
-/airesearchorchestrator:reflect       # Start Reflection phase
+# Step 1: Initialize a new research project
+/airesearchorchestrator:init-research
+
+# Steps 2–6: Run each phase in sequence
+/airesearchorchestrator:run-survey      # Phase 1 — literature review
+/airesearchorchestrator:run-pilot       # Phase 2 — pilot experiment
+/airesearchorchestrator:run-experiments # Phase 3 — full experiments
+/airesearchorchestrator:write-paper     # Phase 4 — manuscript
+/airesearchorchestrator:reflect         # Phase 5 — lessons learned
 ```
+
+> **Resuming an existing project?** Start every new Claude Code session with `/airesearchorchestrator:reload` to restore project context before continuing.
 
 ## Directory Structure
 
@@ -398,12 +401,15 @@ my-project/
 
 | Command | Description | Triggers |
 |---------|-------------|----------|
+| `/airesearchorchestrator:insight` | Clarify research intent | "insight", "clarify intent" |
 | `/airesearchorchestrator:init-research` | Initialize new project | "init research", "start research project" |
 | `/airesearchorchestrator:run-survey` | Run Survey phase | "run survey", "literature review" |
 | `/airesearchorchestrator:run-pilot` | Run Pilot phase | "run pilot", "pilot experiment" |
 | `/airesearchorchestrator:run-experiments` | Run full experiments | "run experiments", "full experiments" |
 | `/airesearchorchestrator:write-paper` | Write paper | "write paper", "draft paper" |
 | `/airesearchorchestrator:reflect` | Run reflection | "reflect", "lessons learned" |
+| `/airesearchorchestrator:reload` | Restore session context | "reload", "continue research" |
+| `/airesearchorchestrator:configure` | Configure project settings | "configure", "config" |
 
 ## Hard Rules
 
