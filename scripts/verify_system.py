@@ -25,6 +25,12 @@ from orchestrator_common import (  # noqa: E402
     load_state,
 )
 
+try:
+    from preflight import run_preflight_checks
+    _PREFLIGHT_AVAILABLE = True
+except ImportError:
+    _PREFLIGHT_AVAILABLE = False
+
 
 def check_directory_structure(project_root: Path) -> dict[str, Any]:
     """Check that all required directories exist."""
@@ -293,7 +299,7 @@ def check_gate_status(project_root: Path) -> dict[str, Any]:
 
 def run_all_checks(project_root: Path) -> dict[str, Any]:
     """Run all integrity checks."""
-    return {
+    result = {
         "project_root": str(project_root),
         "directory_structure": check_directory_structure(project_root),
         "required_files": check_required_files(project_root),
@@ -302,6 +308,19 @@ def run_all_checks(project_root: Path) -> dict[str, Any]:
         "phase_deliverables": check_phase_deliverables(project_root),
         "gate_status": check_gate_status(project_root),
     }
+    if _PREFLIGHT_AVAILABLE:
+        try:
+            preflight = run_preflight_checks()
+            result["preflight"] = {
+                "passed": True,  # always True — advisory only
+                "warnings": preflight["warnings"],
+                "latex": preflight["latex"]["available"],
+                "semantic_scholar": preflight["semantic_scholar"]["reachable"],
+                "gpu": preflight["gpu"]["available"],
+            }
+        except Exception:  # noqa: BLE001
+            result["preflight"] = {"passed": True, "warnings": ["preflight check failed"]}
+    return result
 
 
 def format_report(report: dict[str, Any]) -> str:
