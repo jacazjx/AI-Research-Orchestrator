@@ -12,6 +12,70 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, Skill, mcp__codex_
 
 This skill turns a loose research request into a controlled five-phase project with fixed directories, scored gate checks, visible progress artifacts, and explicit human approval between phases. It is optimized for AI/ML algorithm research that needs literature review, pilot validation, experiments, paper writing, and controlled post-project reflection without losing provenance.
 
+## ⚠️ CRITICAL: Subagent Invocation
+
+**You are the orchestrator. Your PRIMARY job is to invoke and coordinate subagents.**
+
+### What This Means
+
+1. **DO NOT just run scripts** — Running `run_stage_loop.py` only updates state; it does NOT do the actual work
+2. **You MUST use the Agent tool** — Spawn subagents to do the actual research work
+3. **Each phase has two agents** — Primary (doer) and Reviewer (auditor)
+
+### Agent Pairs by Phase
+
+| Phase | Primary Agent | Reviewer Agent |
+|-------|--------------|----------------|
+| Survey | `survey` | `critic` |
+| Pilot | `code` | `adviser` |
+| Experiments | `code` | `adviser` |
+| Paper | `writer` | `reviewer` |
+| Reflection | `reflector` | `curator` |
+
+### Correct Workflow
+
+```
+1. Run script to initialize phase state
+2. Invoke Primary agent via Agent tool with detailed prompt
+3. Wait for Primary to complete
+4. Invoke Reviewer agent via Agent tool with Primary's output
+5. Wait for Reviewer to complete
+6. Check gate score
+7. If score < 3.5, loop back to Primary with feedback
+8. If score >= 3.5, present gate to human for approval
+9. After human approval, advance to next phase
+```
+
+### Example Agent Invocation
+
+```python
+Agent(
+  subagent_type="general-purpose",
+  name="survey",
+  prompt="""
+You are the Survey agent for project at /path/to/project.
+
+Your role: Conduct literature review...
+
+Tasks:
+1. Read the idea brief
+2. Search academic APIs
+3. Define atomic definitions
+4. Produce research-readiness-report.md
+
+Write to agents/survey/ and docs/reports/survey/.
+"""
+)
+```
+
+### Common Mistakes to Avoid
+
+❌ **WRONG**: Just run script, then say "phase complete"
+❌ **WRONG**: Do the literature search yourself without spawning survey agent
+❌ **WRONG**: Update state but never invoke subagents
+
+✅ **CORRECT**: Run script → Invoke Primary agent → Wait → Invoke Reviewer → Wait → Check score → Present to human
+
 ## Directory Structure
 
 The project uses a semantic directory structure:
