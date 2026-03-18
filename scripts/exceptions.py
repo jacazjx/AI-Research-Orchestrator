@@ -147,3 +147,9 @@ class DependencyError(OrchestratorError):
         super().__init__(message, context=context)
         self.dependency = dependency
         self.path = path
+
+
+class StateSchemaError(ValueError):
+    """Raised when research-state.yaml is missing required fields or has invalid values."""
+
+    pass

@@ -683,6 +683,14 @@ def load_state(project_root: Path) -> dict[str, Any]:
         Project state dictionary.
     """
     state = read_yaml(project_root / DEFAULT_DELIVERABLES["research_state"])
+    schema_errors = validate_state_schema(state)
+    if schema_errors:
+        from exceptions import StateSchemaError  # type: ignore[import-untyped]
+
+        raise StateSchemaError(
+            f"research-state.yaml has schema errors in '{project_root}':\n"
+            + "\n".join(f"  - {e}" for e in schema_errors)
+        )
     config = load_project_config(project_root)
     state["loop_limits"] = dict(config["loop_limits"])
     state["language_policy"] = dict(config["languages"])
@@ -740,6 +748,39 @@ def warn_starting_phase_prerequisites(starting_phase: str) -> list[str]:
         "or use 'migrate-project' to import an existing project structure."
     )
     return warnings
+
+
+def validate_state_schema(state: dict[str, Any]) -> list[str]:
+    """Validate that a loaded state dict contains all required top-level keys.
+
+    Args:
+        state: Loaded state dictionary.
+
+    Returns:
+        List of error messages. Empty list means the schema is valid.
+    """
+    errors: list[str] = []
+    required_keys = [
+        "current_phase",
+        "deliverables",
+        "approval_status",
+        "phase_reviews",
+        "loop_counts",
+    ]
+    for key in required_keys:
+        if key not in state:
+            errors.append(f"State is missing required key: '{key}'")
+
+    if "current_phase" in state:
+        phase = state["current_phase"]
+        valid_phases = set(PHASE_SEQUENCE) | set(LEGACY_TO_SEMANTIC_PHASE) | {"archive", "06-archive"}
+        if phase not in valid_phases:
+            errors.append(
+                f"State 'current_phase' has unknown value: '{phase}'. "
+                f"Expected one of: {sorted(valid_phases)}"
+            )
+
+    return errors
 
 
 def load_project_config(project_root: Path) -> dict[str, Any]:
@@ -1848,6 +1889,7 @@ __all__ = [
     "load_state",
     "save_state",
     "warn_starting_phase_prerequisites",
+    "validate_state_schema",
     "load_project_config",
     "append_state_log",
     # ARIS Review State
