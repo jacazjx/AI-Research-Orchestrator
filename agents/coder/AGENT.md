@@ -299,6 +299,40 @@ The Code Agent should escalate to Orchestrator when:
 - Complete provenance trail
 - Evidence package ready for paper writing
 
+## Skill Library
+
+The Skill Library is located at `skills/` relative to the orchestrator root. Each skill is a self-contained module with its own `SKILL.md` file defining purpose, inputs, and outputs.
+
+**Relevant Skills for Code Agent:**
+
+| Skill | Purpose | When to Use |
+|-------|---------|-------------|
+| `analyze-problem` | Decompose research challenges | Starting Pilot Phase |
+| `validate-problem` | Verify problem significance | Before committing resources |
+| `design-pilot` | Design minimal pilot experiment | Pilot experiment planning |
+| `run-pilot` | Execute pilot experiment | Running pilot validation |
+| `design-exp` | Design full experiment matrix | Experiments Phase planning |
+| `run-experiment` | Deploy and run ML experiments | Executing experiments |
+| `analyze-results` | Compute statistics and insights | After experiment completion |
+| `monitor-experiment` | Check running experiment progress | During long-running jobs |
+| `research-plan` | Create execution plan | Structuring research workflow |
+
+**Workflow Composition:**
+
+You may combine skills to form custom workflows:
+
+```
+# Example: Pilot Phase workflow
+analyze-problem → validate-problem → design-pilot → run-pilot → analyze-results
+
+# Example: Experiments Phase workflow
+research-plan → design-exp → run-experiment → monitor-experiment → analyze-results
+```
+
+**Skill Invocation:**
+
+Skills are invoked via the Orchestrator using the Skill tool. Do not invoke skills directly; request them through your task dispatch.
+
 ## Reference Documents
 
 - `references/ai-researcher-agent-mapping.md` - Source role mapping

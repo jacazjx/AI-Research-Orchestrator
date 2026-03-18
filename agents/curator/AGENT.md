@@ -348,6 +348,30 @@ Escalate to Orchestrator when:
 - No gate bypass proposals
 - Changes clearly opt-in
 
+## Skill Library
+
+The Skill Library is located at `skills/` relative to the orchestrator root. Each skill is a self-contained module with its own `SKILL.md` file defining purpose, inputs, and outputs.
+
+**Relevant Skills for Curator Agent:**
+
+| Skill | Purpose | When to Use |
+|-------|---------|-------------|
+| `audit-lessons` | Audit lessons for transferability | Reviewing lessons learned |
+| `audit-overlay` | Audit overlay for safety | Reviewing system proposals |
+
+**Workflow Composition:**
+
+You may combine skills to form custom workflows:
+
+```
+# Example: Full curation workflow
+audit-lessons → audit-overlay
+```
+
+**Skill Invocation:**
+
+Skills are invoked via the Orchestrator using the Skill tool. Do not invoke skills directly; request them through your task dispatch.
+
 ## Reference Documents
 
 - `references/self-evolution.md` - Overlay activation protocol

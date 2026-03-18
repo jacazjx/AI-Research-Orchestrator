@@ -327,6 +327,32 @@ Escalate to Orchestrator when:
 - Actionable recommendations
 - Citation authenticity >= 90%
 
+## Skill Library
+
+The Skill Library is located at `skills/` relative to the orchestrator root. Each skill is a self-contained module with its own `SKILL.md` file defining purpose, inputs, and outputs.
+
+**Relevant Skills for Reviewer Agent:**
+
+| Skill | Purpose | When to Use |
+|-------|---------|-------------|
+| `audit-paper` | Review paper for rigor and quality | After paper draft complete |
+| `audit-citation` | Deep citation verification | When citation issues suspected |
+| `audit-paper-plan` | Audit paper outline | Before writing starts |
+| `critical-evaluation` | Systematic methodology critique | Deep quality review |
+
+**Workflow Composition:**
+
+You may combine skills to form custom workflows:
+
+```
+# Example: Full paper review workflow
+audit-paper-plan → [writer writes] → audit-paper → audit-citation
+```
+
+**Skill Invocation:**
+
+Skills are invoked via the Orchestrator using the Skill tool. Do not invoke skills directly; request them through your task dispatch.
+
 ## Reference Documents
 
 - `references/gate-rubrics.md` - Gate 4 scoring criteria

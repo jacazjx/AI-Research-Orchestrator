@@ -321,6 +321,37 @@ Escalate to Orchestrator when:
 - Evidence readiness assessed
 - Clear recommendation for paper phase
 
+## Skill Library
+
+The Skill Library is located at `skills/` relative to the orchestrator root. Each skill is a self-contained module with its own `SKILL.md` file defining purpose, inputs, and outputs.
+
+**Relevant Skills for Adviser Agent:**
+
+| Skill | Purpose | When to Use |
+|-------|---------|-------------|
+| `audit-analysis` | Audit problem analysis | After problem analysis delivered |
+| `audit-design` | Audit pilot design validity | After pilot design |
+| `audit-pilot` | Audit pilot results | After pilot execution |
+| `audit-exp-design` | Audit experiment design | After experiment planning |
+| `audit-results` | Audit experiment results | After experiments complete |
+| `statistical-reporting` | Statistical analysis guidance | Reviewing statistics claims |
+
+**Workflow Composition:**
+
+You may combine skills to form custom workflows:
+
+```
+# Example: Pilot Phase audit workflow
+audit-analysis → audit-design → audit-pilot
+
+# Example: Experiments Phase audit workflow
+audit-exp-design → audit-results
+```
+
+**Skill Invocation:**
+
+Skills are invoked via the Orchestrator using the Skill tool. Do not invoke skills directly; request them through your task dispatch.
+
 ## Reference Documents
 
 - `references/gate-rubrics.md` - Gate 2 and Gate 3 scoring criteria

@@ -366,6 +366,30 @@ The Reflector Agent should escalate to Orchestrator when:
 - Recommendations are actionable
 - Overlay drafts marked as drafts
 
+## Skill Library
+
+The Skill Library is located at `skills/` relative to the orchestrator root. Each skill is a self-contained module with its own `SKILL.md` file defining purpose, inputs, and outputs.
+
+**Relevant Skills for Reflector Agent:**
+
+| Skill | Purpose | When to Use |
+|-------|---------|-------------|
+| `extract-lessons` | Extract lessons learned | Analyzing project outcomes |
+| `propose-overlay` | Propose system improvements | Suggesting orchestrator enhancements |
+
+**Workflow Composition:**
+
+You may combine skills to form custom workflows:
+
+```
+# Example: Full reflection workflow
+extract-lessons → propose-overlay
+```
+
+**Skill Invocation:**
+
+Skills are invoked via the Orchestrator using the Skill tool. Do not invoke skills directly; request them through your task dispatch.
+
 ## Reference Documents
 
 - `references/self-evolution.md` - Overlay activation protocol

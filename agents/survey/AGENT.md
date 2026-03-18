@@ -242,6 +242,36 @@ The Survey Agent should escalate to Orchestrator when:
 - Clear novelty argument with supporting evidence
 - Testable hypothesis with defined success criteria
 
+## Skill Library
+
+The Skill Library is located at `skills/` relative to the orchestrator root. Each skill is a self-contained module with its own `SKILL.md` file defining purpose, inputs, and outputs.
+
+**Relevant Skills for Survey Agent:**
+
+| Skill | Purpose | When to Use |
+|-------|---------|-------------|
+| `research-lit` | Quick literature landscape check | Rapid paper discovery |
+| `literature-survey` | Systematic 7-phase literature survey | Comprehensive research landscape |
+| `theoretical-derivation` | Mathematical formulation and proof sketches | After idea formulation |
+| `define-idea` | Formulate research hypothesis | Structuring research concept |
+| `hypothesis-formulation` | 8-stage hypothesis generation | Developing testable hypotheses |
+| `research-ideation` | 5-phase innovation flow | Structured brainstorming |
+| `research-intent-clarification` | First-principles questioning | When idea is vague |
+| `novelty-check` | Verify novelty against literature | Before claiming novelty |
+
+**Workflow Composition:**
+
+You may combine skills to form custom workflows:
+
+```
+# Example: Full ideation to survey workflow
+research-intent-clarification → define-idea → theoretical-derivation → literature-survey → novelty-check
+```
+
+**Skill Invocation:**
+
+Skills are invoked via the Orchestrator using the Skill tool. Do not invoke skills directly; request them through your task dispatch.
+
 ## Reference Documents
 
 - `references/ai-researcher-agent-mapping.md` - Source role mapping

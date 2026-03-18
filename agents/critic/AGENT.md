@@ -340,6 +340,33 @@ Escalate to Orchestrator when:
 - Actionable recommendations for any issues
 - All citations verified or flagged
 
+## Skill Library
+
+The Skill Library is located at `skills/` relative to the orchestrator root. Each skill is a self-contained module with its own `SKILL.md` file defining purpose, inputs, and outputs.
+
+**Relevant Skills for Critic Agent:**
+
+| Skill | Purpose | When to Use |
+|-------|---------|-------------|
+| `audit-survey` | Audit literature survey completeness | After Survey Agent delivers |
+| `audit-derivation` | Audit theoretical derivation rigor | After theoretical derivation |
+| `audit-validation` | Audit problem validation | After problem validation report |
+| `audit-citation` | Deep citation verification | When citation issues suspected |
+| `critical-evaluation` | Systematic methodology critique | Reviewing Survey Phase outputs |
+
+**Workflow Composition:**
+
+You may combine skills to form custom workflows:
+
+```
+# Example: Full survey audit workflow
+audit-derivation → audit-survey → audit-citation
+```
+
+**Skill Invocation:**
+
+Skills are invoked via the Orchestrator using the Skill tool. Do not invoke skills directly; request them through your task dispatch.
+
 ## Reference Documents
 
 - `references/gate-rubrics.md` - Gate 1 scoring criteria

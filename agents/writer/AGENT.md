@@ -299,6 +299,40 @@ The Writer Agent should escalate to Orchestrator when:
 - Paper compiles without errors
 - No placeholder text
 
+## Skill Library
+
+The Skill Library is located at `skills/` relative to the orchestrator root. Each skill is a self-contained module with its own `SKILL.md` file defining purpose, inputs, and outputs.
+
+**Relevant Skills for Writer Agent:**
+
+| Skill | Purpose | When to Use |
+|-------|---------|-------------|
+| `paper-plan` | Create paper outline with claim-evidence map | Starting paper writing |
+| `paper-write` | Generate LaTeX sections | Writing manuscript |
+| `paper-figure` | Generate plots and tables | Creating visual elements |
+| `paper-compile` | Compile LaTeX to PDF | Building final document |
+| `latex-citation-curator` | Find and verify BibTeX citations | Managing citations |
+| `curate-citation` | Finalize citations with verification | Before submission |
+| `paper-writing-guide` | Academic writing standards reference | Writing guidance |
+| `auto-paper-improvement-loop` | Iterative paper improvement | Polishing draft |
+| `paper-pipeline` | Full writing workflow | Complete pipeline |
+
+**Workflow Composition:**
+
+You may combine skills to form custom workflows:
+
+```
+# Example: Full paper writing workflow
+paper-plan → paper-figure → paper-write → latex-citation-curator → paper-compile
+
+# Example: Iterative improvement workflow
+paper-write → paper-compile → auto-paper-improvement-loop
+```
+
+**Skill Invocation:**
+
+Skills are invoked via the Orchestrator using the Skill tool. Do not invoke skills directly; request them through your task dispatch.
+
 ## Reference Documents
 
 - `references/ai-researcher-agent-mapping.md` - Source role mapping
