@@ -48,6 +48,7 @@ pre-commit run --all-files
 | `/run-experiments` | Experiments | "run experiments", "完整实验" |
 | `/write-paper` | Paper | "write paper", "写论文" |
 | `/reflect` | Reflection | "reflect", "反思总结" |
+| `/status` | Any | "status", "查看状态", "项目状态" |
 
 Commands are defined in `commands/<name>/COMMAND.md`. Trigger flow: User Input → COMMAND.md → SKILL.md → Script execution.
 
@@ -59,6 +60,9 @@ python3 scripts/init_research_project.py --project-root /abs/path --topic "Idea"
 
 # Initialize with interactive wizard
 python3 scripts/init_research_project.py --project-root /abs/path --interactive
+
+# Show live project status (gate scores, phase progress, blockers)
+python3 scripts/run_status.py --project-root /abs/path
 
 # Reload project state (restore context)
 python3 scripts/reload_project.py --project-root /abs/path
@@ -141,7 +145,7 @@ project/
 ```
 AI-Research-Orchestrator/
 ├── SKILL.md                 # Main skill definition
-├── commands/                # User-facing commands (9)
+├── commands/                # User-facing commands (10)
 ├── skills/                  # Sub-skills (52+)
 ├── scripts/                 # Python scripts (38)
 ├── agents/                  # Agent configurations
