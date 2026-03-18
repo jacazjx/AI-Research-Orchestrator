@@ -365,14 +365,32 @@ class InitializeResearchProjectTest(unittest.TestCase):
     def test_build_parser_accepts_all_valid_phases(self) -> None:
         """Test that parser accepts both new and legacy phase names."""
         parser = INIT.build_parser()
-        # Test new semantic names
-        for phase in INIT.VALID_PHASES:
+        # Test all valid phases (semantic + legacy)
+        for phase in INIT.ALL_VALID_PHASES:
             args = parser.parse_args(["--project-root", "/tmp", "--starting-phase", phase])
             self.assertEqual(phase, args.starting_phase)
-        # Test legacy names
-        for phase in INIT.VALID_PHASES_LEGACY:
-            args = parser.parse_args(["--project-root", "/tmp", "--starting-phase", phase])
-            self.assertEqual(phase, args.starting_phase)
+
+    def test_warn_starting_phase_returns_empty_for_survey(self) -> None:
+        warnings = COMMON.warn_starting_phase_prerequisites("survey")
+        self.assertEqual([], warnings, f"survey 起始不应有警告: {warnings}")
+
+    def test_warn_starting_phase_returns_warnings_for_paper(self) -> None:
+        warnings = COMMON.warn_starting_phase_prerequisites("paper")
+        self.assertGreater(len(warnings), 3, f"从 paper 开始应有多条警告，got: {warnings}")
+        combined = " ".join(warnings).lower()
+        for expected in ("survey", "pilot", "experiments"):
+            self.assertIn(expected, combined, f"警告中应提及 {expected}: {warnings}")
+
+    def test_warn_starting_phase_normalizes_legacy_names(self) -> None:
+        w1 = COMMON.warn_starting_phase_prerequisites("04-paper")
+        w2 = COMMON.warn_starting_phase_prerequisites("paper")
+        self.assertEqual(w1, w2, "legacy 和 semantic 相位名应给出相同警告")
+
+    def test_warn_starting_phase_returns_empty_for_pilot_first_arg(self) -> None:
+        # pilot 跳过了 survey，应该有警告
+        warnings = COMMON.warn_starting_phase_prerequisites("pilot")
+        self.assertEqual(1, len([w for w in warnings if "survey" in w.lower()]),
+                         "pilot 起始应警告 survey 被跳过")
 
 
 if __name__ == "__main__":

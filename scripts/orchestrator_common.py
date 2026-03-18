@@ -683,6 +683,14 @@ def load_state(project_root: Path) -> dict[str, Any]:
         Project state dictionary.
     """
     state = read_yaml(project_root / DEFAULT_DELIVERABLES["research_state"])
+    schema_errors = validate_state_schema(state)
+    if schema_errors:
+        from exceptions import StateSchemaError  # type: ignore[import-untyped]
+
+        raise StateSchemaError(
+            f"research-state.yaml has schema errors in '{project_root}':\n"
+            + "\n".join(f"  - {e}" for e in schema_errors)
+        )
     config = load_project_config(project_root)
     state["loop_limits"] = dict(config["loop_limits"])
     state["language_policy"] = dict(config["languages"])
@@ -703,14 +711,118 @@ def load_state(project_root: Path) -> dict[str, Any]:
     return state
 
 
-def save_state(project_root: Path, state: dict[str, Any]) -> None:
+def save_state(
+    project_root: Path,
+    state: dict[str, Any],
+    previous_state: dict[str, Any] | None = None,
+) -> None:
     """Save project state to file.
 
     Args:
         project_root: Project root directory.
         state: Project state dictionary.
+        previous_state: Optional previous state for detecting gate status changes.
+                        When provided, gate_decision events are appended to
+                        sentinel_events.ndjson for any approval_status changes.
     """
+    if previous_state is not None:
+        _append_gate_audit_events(project_root, previous_state, state)
     write_yaml(project_root / DEFAULT_DELIVERABLES["research_state"], state)
+
+
+def _append_gate_audit_events(
+    project_root: Path,
+    old_state: dict[str, Any],
+    new_state: dict[str, Any],
+) -> None:
+    """Append gate_decision events to sentinel_events.ndjson when approval_status changes.
+
+    Args:
+        project_root: Project root directory.
+        old_state: Previous state before the change.
+        new_state: New state being saved.
+    """
+    old_approvals = old_state.get("approval_status", {})
+    new_approvals = new_state.get("approval_status", {})
+    changed = {
+        gate: status
+        for gate, status in new_approvals.items()
+        if status != old_approvals.get(gate)
+    }
+    if not changed:
+        return
+    sentinel_path = project_root / DEFAULT_DELIVERABLES["sentinel_events"]
+    sentinel_path.parent.mkdir(parents=True, exist_ok=True)
+    now = datetime.now(timezone.utc).isoformat()
+    with open(sentinel_path, "a", encoding="utf-8") as f:
+        for gate, status in changed.items():
+            event = json.dumps(
+                {"type": "gate_decision", "gate": gate, "status": status, "timestamp": now},
+                ensure_ascii=False,
+            )
+            f.write(event + "\n")
+
+
+def warn_starting_phase_prerequisites(starting_phase: str) -> list[str]:
+    """Return warnings when starting a project at a non-survey phase.
+
+    Args:
+        starting_phase: Requested starting phase (semantic or legacy name).
+
+    Returns:
+        List of warning strings. Empty list means no warnings (survey start).
+    """
+    phase = normalize_phase_name(starting_phase)
+    if phase not in PHASE_SEQUENCE:
+        return []
+    idx = list(PHASE_SEQUENCE).index(phase)
+    if idx == 0:
+        return []
+
+    skipped = list(PHASE_SEQUENCE)[:idx]
+    warnings = [
+        f"Starting at '{phase}' skips phase '{p}' — "
+        f"deliverables from that phase will NOT exist in this project."
+        for p in skipped
+    ]
+    warnings.append(
+        "If you have existing work from prior phases, add deliverables manually "
+        "or use 'migrate-project' to import an existing project structure."
+    )
+    return warnings
+
+
+def validate_state_schema(state: dict[str, Any]) -> list[str]:
+    """Validate that a loaded state dict contains all required top-level keys.
+
+    Args:
+        state: Loaded state dictionary.
+
+    Returns:
+        List of error messages. Empty list means the schema is valid.
+    """
+    errors: list[str] = []
+    required_keys = [
+        "current_phase",
+        "deliverables",
+        "approval_status",
+        "phase_reviews",
+        "loop_counts",
+    ]
+    for key in required_keys:
+        if key not in state:
+            errors.append(f"State is missing required key: '{key}'")
+
+    if "current_phase" in state:
+        phase = state["current_phase"]
+        valid_phases = set(PHASE_SEQUENCE) | set(LEGACY_TO_SEMANTIC_PHASE) | {"archive", "06-archive"}
+        if phase not in valid_phases:
+            errors.append(
+                f"State 'current_phase' has unknown value: '{phase}'. "
+                f"Expected one of: {sorted(valid_phases)}"
+            )
+
+    return errors
 
 
 def load_project_config(project_root: Path) -> dict[str, Any]:
@@ -1818,6 +1930,8 @@ __all__ = [
     "ensure_complete_deliverables",
     "load_state",
     "save_state",
+    "warn_starting_phase_prerequisites",
+    "validate_state_schema",
     "load_project_config",
     "append_state_log",
     # ARIS Review State
