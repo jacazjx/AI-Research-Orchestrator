@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 from orchestrator_common import (
+    PHASE_LOOP_KEY,
     PHASE_REQUIRED_DELIVERABLES,
     PHASE_TO_GATE,
     PHASE_TO_REVIEW,
@@ -46,8 +47,9 @@ def evaluate_quality_gate(project_root: Path, phase: str | None = None) -> dict[
     )
     review_status = state["phase_reviews"][review_key]
     gate_status = state["approval_status"][gate_key]
-    loop_count = int(state["loop_counts"].get(_phase_loop_key(phase_name), 0))
-    loop_limit = int(state["loop_limits"].get(_phase_loop_key(phase_name), 0))
+    _loop_key = PHASE_LOOP_KEY.get(normalize_phase_name(phase_name), f"{normalize_phase_name(phase_name)}_loop")
+    loop_count = int(state["loop_counts"].get(_loop_key, 0))
+    loop_limit = int(state["loop_limits"].get(_loop_key, 0))
     pivot_candidates = list(state.get("pivot_candidates", []))
     signal_errors = validate_structured_signals(project_root, state, phase_name)
 
@@ -101,19 +103,6 @@ def evaluate_quality_gate(project_root: Path, phase: str | None = None) -> dict[
         "pivot_candidates": pivot_candidates,
         "blockers": blockers,
     }
-
-
-def _phase_loop_key(phase_name: str) -> str:
-    # Normalize to semantic name, then map to loop key
-    normalized = normalize_phase_name(phase_name)
-    loop_keys = {
-        "survey": "survey_critic",
-        "pilot": "pilot_code_adviser",
-        "experiments": "experiment_code_adviser",
-        "paper": "writer_reviewer",
-        "reflection": "reflector_curator",
-    }
-    return loop_keys.get(normalized, f"{normalized}_loop")
 
 
 def build_parser() -> argparse.ArgumentParser:

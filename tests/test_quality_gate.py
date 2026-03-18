@@ -153,17 +153,19 @@ class QualityGateTest(unittest.TestCase):
             self.assertIn("loop_limit_reached", result["blockers"])
 
     def test_phase_loop_key_mapping(self) -> None:
-        """Test _phase_loop_key returns correct mapping."""
-        self.assertEqual("survey_critic", QUALITY._phase_loop_key("survey"))
-        self.assertEqual("pilot_code_adviser", QUALITY._phase_loop_key("pilot"))
-        self.assertEqual("experiment_code_adviser", QUALITY._phase_loop_key("experiments"))
-        self.assertEqual("writer_reviewer", QUALITY._phase_loop_key("paper"))
-        self.assertEqual("reflector_curator", QUALITY._phase_loop_key("reflection"))
+        """Test PHASE_LOOP_KEY constant returns correct mapping for semantic phase names."""
+        from constants.phases import PHASE_LOOP_KEY
+        self.assertEqual("survey_critic", PHASE_LOOP_KEY["survey"])
+        self.assertEqual("pilot_code_adviser", PHASE_LOOP_KEY["pilot"])
+        self.assertEqual("experiment_code_adviser", PHASE_LOOP_KEY["experiments"])
+        self.assertEqual("writer_reviewer", PHASE_LOOP_KEY["paper"])
+        self.assertEqual("reflector_curator", PHASE_LOOP_KEY["reflection"])
 
     def test_phase_loop_key_legacy_names(self) -> None:
-        """Test _phase_loop_key works with legacy names."""
-        self.assertEqual("survey_critic", QUALITY._phase_loop_key("01-survey"))
-        self.assertEqual("pilot_code_adviser", QUALITY._phase_loop_key("02-pilot-analysis"))
+        """Test PHASE_LOOP_KEY constant covers legacy phase names."""
+        from constants.phases import PHASE_LOOP_KEY
+        self.assertEqual("survey_critic", PHASE_LOOP_KEY["01-survey"])
+        self.assertEqual("pilot_code_adviser", PHASE_LOOP_KEY["02-pilot-analysis"])
 
     def test_build_parser(self) -> None:
         """Test build_parser creates correct parser."""
@@ -257,3 +259,30 @@ class QualityGateTest(unittest.TestCase):
                 with patch("builtins.print"):
                     result = QUALITY.main()
                     self.assertEqual(0, result)
+
+    def test_phase_loop_key_covers_all_semantic_phases(self) -> None:
+        """verify PHASE_LOOP_KEY in constants covers all semantic phases."""
+        from constants.phases import PHASE_LOOP_KEY, PHASE_SEQUENCE
+        for phase in PHASE_SEQUENCE:
+            assert phase in PHASE_LOOP_KEY, f"PHASE_LOOP_KEY missing semantic phase '{phase}'"
+
+    def test_evaluate_gate_reads_loop_count_from_correct_key(self) -> None:
+        """survey phase loop_count should be read from survey_critic key."""
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            project_root = Path(tmp)
+            # initialize minimal project
+            INIT.initialize_research_project(
+                project_root=project_root,
+                topic="test",
+                client_type="vscode",
+            )
+            # manually set loop count
+            state = COMMON.load_state(project_root)
+            state["loop_counts"]["survey_critic"] = 2
+            COMMON.save_state(project_root, state)
+            # evaluate
+            result = QUALITY.evaluate_quality_gate(project_root, phase="survey")
+            assert result["loop_count"] == 2, (
+                f"loop_count should be 2 from survey_critic key, got {result['loop_count']}"
+            )
