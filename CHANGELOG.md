@@ -7,13 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Documentation: Added `skills/README.md` as comprehensive skill navigation index (52 skills organized by category)
+- Documentation: Added `references/README.md` as reference document reading guide
+- Documentation: Added Time Expectations, FAQ, and Troubleshooting sections to README
+
 ### Fixed
 
 - Project configuration: added `scripts/__init__.py`, fixed pyproject.toml resource paths
 - Commands: restructured to subdirectories, added required frontmatter fields
 - Skills: standardized format, resolved trigger phrase conflicts, renamed `paper-writing` to `paper-pipeline`
 - Scripts: fixed KeyError risk in `_completion_percent()`, unified phase names, extracted common functions
-- Documentation: synced skill counts (17 → 41), removed duplicate entries in directory-structure-design.md, updated structure descriptions
+- Documentation: synced skill counts (17 → 52), removed duplicate entries in directory-structure-design.md, updated structure descriptions
 
 ### Changed
 
@@ -26,7 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **ARIS Integration**: Full integration of Auto-Research-In-Sleep capabilities
-- 41 skills for autonomous research workflows (16 primary + 12 audit + 12 supporting + 1 orchestrator)
+- 52 skills for autonomous research workflows (6 main workflows + 16 phase skills + 14 audit skills + 16 supporting utilities)
   - Three main workflows: idea-discovery, auto-review-loop, paper-pipeline
   - Cross-model review via Codex MCP (optional)
 
