@@ -1,14 +1,37 @@
 ---
 name: airesearchorchestrator:research-lit
 agent: survey
-description: Literature survey using academic APIs (arXiv, Semantic Scholar, DBLP, OpenAlex). Use when user says "literature survey", "文献调研", "find related work", or needs to map the research landscape.
+description: Quick literature landscape check using academic APIs. A lightweight alternative to literature-survey for rapid exploration. Use when user says "quick literature search", "check literature", "find papers", or needs fast paper discovery without full systematic review.
 argument-hint: [research-topic]
 allowed-tools: Bash(curl), Read, Write, Edit, Grep, Glob, WebFetch, Agent
 ---
 
 ## Purpose
 
-Map the research landscape for a given topic using academic database APIs.
+Map the research landscape for a given topic using academic database APIs. This is a **lightweight, rapid** literature exploration skill.
+
+## When to Use This Skill
+
+**Use `research-lit` when:**
+- You need a quick overview of the literature landscape
+- Exploring a new research area informally
+- Looking for recent papers on a topic
+- Need to find 5-10 relevant papers quickly
+
+**Use `literature-survey` instead when:**
+- You need a systematic, comprehensive literature survey
+- Preparing for a formal research project
+- Gate 1 approval is required
+- You need full verification reports and visualizations
+
+| Aspect | `research-lit` (This Skill) | `literature-survey` |
+|--------|----------------------------|---------------------|
+| **Scope** | Quick exploration | Systematic review |
+| **Output** | Working notes | Full survey report |
+| **Verification** | Basic | Comprehensive (Grade A-F) |
+| **Visualizations** | None | Mandatory |
+| **Time** | Minutes | Hours to days |
+| **Gate Ready** | No | Yes (Gate 1) |
 
 ## Workflow
 
