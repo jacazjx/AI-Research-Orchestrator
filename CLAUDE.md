@@ -36,6 +36,9 @@ pre-commit run --all-files
 | Command | Phase | Trigger Phrases |
 |---------|-------|-----------------|
 | `/init-research` | Init | "init research", "初始化研究" |
+| `/reload` | Any | "reload", "重新加载", "恢复状态" |
+| `/configure` | Any | "configure", "配置", "设置参数" |
+| `/insight` | Init | "insight", "澄清意图", "明确想法" |
 | `/run-survey` | Survey | "run survey", "文献调研" |
 | `/run-pilot` | Pilot | "run pilot", "Pilot验证" |
 | `/run-experiments` | Experiments | "run experiments", "完整实验" |
@@ -52,6 +55,27 @@ python3 scripts/init_research_project.py --project-root /abs/path --topic "Idea"
 
 # Initialize with interactive wizard
 python3 scripts/init_research_project.py --project-root /abs/path --interactive
+
+# Reload project state (restore context)
+python3 scripts/reload_project.py --project-root /abs/path
+
+# Reload with verbose output
+python3 scripts/reload_project.py --project-root /abs/path --verbose
+
+# Configure project settings
+python3 scripts/configure_project.py --project-root /abs/path
+
+# Interactive configuration
+python3 scripts/configure_project.py --project-root /abs/path --action interactive
+
+# Set specific configuration
+python3 scripts/configure_project.py --project-root /abs/path --action set --key max-loops --value 5
+
+# Clarify research intent
+python3 scripts/run_insight.py --idea "Your research idea"
+
+# Non-interactive intent assessment
+python3 scripts/run_insight.py --idea "Your idea" --interactive false --json
 
 # Materialize templates
 python3 scripts/materialize_templates.py --project-root /abs/path

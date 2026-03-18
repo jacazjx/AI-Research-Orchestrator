@@ -7,6 +7,9 @@ This directory contains user-facing commands for the five-phase research workflo
 ```
 commands/
 ├── init-research/COMMAND.md    # Initialize a new research project
+├── reload/COMMAND.md           # Reload project state and configuration
+├── configure/COMMAND.md        # Configure system parameters
+├── insight/COMMAND.md          # Interactive intent clarification
 ├── run-survey/COMMAND.md       # Literature survey and readiness assessment
 ├── run-pilot/COMMAND.md        # Pilot validation and feasibility check
 ├── run-experiments/COMMAND.md  # Full experiments and evidence collection
@@ -20,6 +23,9 @@ commands/
 | Command | Phase | Agents | Trigger Phrases |
 |---------|-------|--------|-----------------|
 | `/init-research` | Init | - | "init research", "初始化研究" |
+| `/reload` | Any | - | "reload", "重新加载", "恢复状态" |
+| `/configure` | Any | - | "configure", "配置", "设置参数" |
+| `/insight` | Init | - | "insight", "澄清意图", "明确想法" |
 | `/run-survey` | Survey | Survey, Critic | "run survey", "文献调研" |
 | `/run-pilot` | Pilot | Code, Adviser | "run pilot", "Pilot验证" |
 | `/run-experiments` | Experiments | Code, Adviser | "run experiments", "完整实验" |
@@ -32,6 +38,14 @@ commands/
 /init-research → /run-survey → /run-pilot → /run-experiments → /write-paper → /reflect
      Setup          Phase 1       Phase 2          Phase 3              Phase 4        Phase 5
 ```
+
+## Utility Commands
+
+These commands can be used at any point in the workflow:
+
+- **`/reload`** - Restore context when starting a new session
+- **`/configure`** - Modify project or user settings
+- **`/insight`** - Clarify research intent before or during a project
 
 ## COMMAND.md Frontmatter Schema
 
