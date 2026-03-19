@@ -206,7 +206,16 @@ def check_required_artifacts(project_root: Path, artifacts: list[str]) -> dict[s
         if artifact_path.exists():
             existing.append(artifact)
         else:
-            missing.append(artifact)
+            # Fallback: for paths starting with "docs/", also check "docs/reports/<rest>"
+            found_in_fallback = False
+            if artifact.startswith("docs/") and not artifact.startswith("docs/reports/"):
+                rest = artifact[len("docs/"):]
+                fallback_path = project_root / "docs" / "reports" / rest
+                if fallback_path.exists():
+                    existing.append(artifact)
+                    found_in_fallback = True
+            if not found_in_fallback:
+                missing.append(artifact)
 
     return {
         "all_exist": len(missing) == 0,

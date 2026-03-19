@@ -795,7 +795,8 @@ class InitWizard:
         print("│                    PROJECT SUMMARY                      │")
         print("├" + "─" * 56 + "┤")
 
-        print(f"│  📋 Project ID:     {self.responses.project_id:<37}│")
+        project_id_display = self.responses.project_id or "(not set)"
+        print(f"│  📋 Project ID:     {project_id_display:<37}│")
         print(f"│  📁 Location:       {str(self.project_root)[-37:]:<37}│")
         print(f"│  🎯 Starting Phase: {self.responses.starting_phase:<37}│")
 
