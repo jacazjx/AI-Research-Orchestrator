@@ -1,7 +1,7 @@
 """Version and version history constants."""
 
 # System version
-SYSTEM_VERSION = "1.12.0"
+SYSTEM_VERSION = "1.13.0"
 SYSTEM_VERSION_NAME = "Research Orchestrator"
 
 VERSION_HISTORY = [
@@ -48,5 +48,12 @@ VERSION_HISTORY = [
         "2026-03-14",
         "Full ARIS integration: 17 skills, three workflows, "
         "IDEA_STATE persistence, GPU protection, AUTO_PROCEED switch",
+    ),
+    (
+        "1.13.0",
+        "2026-03-19",
+        "Semantic directory layout (docs/reports/ flattened), agent workspace "
+        "structure, battle_protocol state machine, render_agent_prompt auto-inject, "
+        "Agent Teams communication protocol, config quality/gpu fields",
     ),
 ]
