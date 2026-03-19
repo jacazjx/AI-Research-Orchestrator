@@ -83,6 +83,7 @@ For each novelty claim, verify:
 | `Glob` | Find relevant files |
 | `WebFetch` | Access paper abstracts and metadata |
 | `SendMessage` | Direct communication with critic in Agent Teams mode |
+| `TaskUpdate` | Claim and complete tasks in Agent Teams mode |
 
 ### Restricted Actions
 

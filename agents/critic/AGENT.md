@@ -94,6 +94,7 @@ Automatically block Gate 1 if:
 | `Glob` | Find relevant files |
 | `WebFetch` | Access paper metadata and verify sources |
 | `SendMessage` | Direct communication with survey in Agent Teams mode |
+| `TaskUpdate` | Claim and complete tasks in Agent Teams mode |
 
 ### Restricted Actions
 
