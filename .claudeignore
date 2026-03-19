@@ -1,0 +1,3 @@
+# Internal skill implementations — not for direct user access.
+# These are invoked by the Skill tool; users should not read them directly.
+skills/
