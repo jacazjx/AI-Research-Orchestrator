@@ -150,7 +150,6 @@ def validate_completion(data: dict[str, Any]) -> list[str]:
                 )
                 continue
             prefix = f"deliverables[{i}]"
-            _require_string(item, "path", [])  # collect into sub-errors
             # Validate nested fields manually to include index in error messages
             for sub_field in ("path", "summary"):
                 sub_val = item.get(sub_field)
