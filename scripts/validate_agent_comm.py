@@ -196,7 +196,12 @@ def validate_challenge(data: dict[str, Any]) -> list[str]:
                 )
                 continue
             prefix = f"disputed_points[{i}]"
-            for sub_field in ("point_id", "original_claim", "challenge_reason", "proposed_alternative"):
+            for sub_field in (
+                "point_id",
+                "original_claim",
+                "challenge_reason",
+                "proposed_alternative",
+            ):
                 sub_val = item.get(sub_field)
                 if sub_val is None:
                     errors.append(f"Missing required field: '{prefix}.{sub_field}'")
@@ -380,9 +385,7 @@ def validate_message(msg_type: str, file_path: Path) -> dict[str, Any]:
         return {"valid": False, "errors": errors}
 
     if not isinstance(data, dict):
-        errors.append(
-            f"Message must be a YAML/JSON object (mapping), got {type(data).__name__}"
-        )
+        errors.append(f"Message must be a YAML/JSON object (mapping), got {type(data).__name__}")
         return {"valid": False, "errors": errors}
 
     validator = VALIDATORS[msg_type]
@@ -393,9 +396,7 @@ def validate_message(msg_type: str, file_path: Path) -> dict[str, Any]:
 
 def build_parser() -> argparse.ArgumentParser:
     """Build the CLI argument parser."""
-    parser = argparse.ArgumentParser(
-        description="Validate agent communication message formats."
-    )
+    parser = argparse.ArgumentParser(description="Validate agent communication message formats.")
     parser.add_argument(
         "--type",
         required=True,

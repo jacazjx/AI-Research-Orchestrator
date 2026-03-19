@@ -24,18 +24,19 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
 # Import local modules
-from constants import (
+from constants import (  # noqa: E402
     DEFAULT_DELIVERABLES,
     PHASE_COMPLETION,
     PHASE_SEQUENCE,
     PHASE_TO_GATE,
 )
-from orchestrator_common import (
+from state_migrator import CURRENT_STATE_VERSION, migrate_state, needs_migration  # noqa: E402
+
+from orchestrator_common import (  # noqa: E402
     DEFAULT_LANGUAGE_POLICY,
     load_json,
     read_yaml,
 )
-from state_migrator import CURRENT_STATE_VERSION, migrate_state, needs_migration
 
 # Configure module logger
 logger = logging.getLogger(__name__)

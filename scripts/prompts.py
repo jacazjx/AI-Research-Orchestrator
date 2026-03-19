@@ -127,6 +127,7 @@ def prompt_text(
 
 class BackRequestedException(Exception):
     """Raised when user requests to go back to previous step."""
+
     pass
 
 

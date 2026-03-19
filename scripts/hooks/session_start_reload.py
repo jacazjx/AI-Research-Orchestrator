@@ -33,15 +33,14 @@ from pathlib import Path
 SCRIPT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
+from generate_statusline import generate_statusline  # noqa: E402
+
 # Import from existing scripts
-from reload_project import (
+from reload_project import (  # noqa: E402
     detect_project_root,
-    load_project_state,
-    load_project_config,
-    load_user_config,
     load_gpu_registry,
+    load_project_state,
 )
-from generate_statusline import generate_statusline
 
 
 def read_hook_input() -> dict:
@@ -85,8 +84,6 @@ def main() -> int:
     try:
         # Load project state and configuration
         state = load_project_state(project_root)
-        config = load_project_config(project_root)
-        user_config = load_user_config()
         gpu_registry = load_gpu_registry()
 
         # Generate compact statusline for display

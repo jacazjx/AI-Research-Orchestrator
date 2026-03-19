@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Battle Protocol: State machine for Primary/Reviewer agent debate."""
+
 from __future__ import annotations
 
 import argparse
@@ -21,6 +22,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 # File I/O helpers
 # ---------------------------------------------------------------------------
+
 
 def _debate_path(project_root: Path, primary_agent: str) -> Path:
     """Return path to debate.json for the given primary agent."""
@@ -63,6 +65,7 @@ def _now_iso() -> str:
 # ---------------------------------------------------------------------------
 # State machine actions
 # ---------------------------------------------------------------------------
+
 
 def init_battle(
     project_root: Path,
@@ -184,9 +187,7 @@ def submit_response(
     state["updated_at"] = _now_iso()
 
     # Resolve accepted points
-    accepted_ids = {
-        r["point_id"] for r in point_responses if r.get("action") == "accept"
-    }
+    accepted_ids = {r["point_id"] for r in point_responses if r.get("action") == "accept"}
     if accepted_ids:
         remaining: list[dict[str, Any]] = []
         for issue in state["unresolved_issues"]:
@@ -271,9 +272,7 @@ def arbitrate(
     state["updated_at"] = _now_iso()
 
     _write_debate(path, state)
-    logger.debug(
-        "Arbitration issued for %s: decision=%s", primary_agent, decision
-    )
+    logger.debug("Arbitration issued for %s: decision=%s", primary_agent, decision)
     return state
 
 
@@ -286,6 +285,7 @@ def get_battle_status(project_root: Path, primary_agent: str) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
+
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
@@ -350,7 +350,7 @@ def build_parser() -> argparse.ArgumentParser:
 def _print_human_readable(action: str, result: Any) -> None:
     """Print a human-readable summary of the result."""
     if action == "init":
-        print(f"Battle initialized.")
+        print("Battle initialized.")
         print(f"  Phase:    {result['phase']}")
         print(f"  Primary:  {result['primary_agent']}")
         print(f"  Reviewer: {result['reviewer_agent']}")
@@ -358,13 +358,13 @@ def _print_human_readable(action: str, result: Any) -> None:
         print(f"  Created:  {result['created_at']}")
 
     elif action == "challenge":
-        print(f"Challenge submitted.")
+        print("Challenge submitted.")
         print(f"  Status:             {result['status']}")
         print(f"  Unresolved issues:  {len(result['unresolved_issues'])}")
         print(f"  Total turns:        {len(result['turns'])}")
 
     elif action == "respond":
-        print(f"Response submitted.")
+        print("Response submitted.")
         print(f"  Unresolved issues:  {len(result['unresolved_issues'])}")
         print(f"  Resolved issues:    {len(result['resolved_issues'])}")
         print(f"  Total turns:        {len(result['turns'])}")
@@ -378,12 +378,12 @@ def _print_human_readable(action: str, result: Any) -> None:
 
     elif action == "arbitrate":
         verdict = result.get("verdict") or {}
-        print(f"Arbitration issued.")
+        print("Arbitration issued.")
         print(f"  Decision:  {verdict.get('decision')}")
         print(f"  Status:    {result['status']}")
         actions_list = verdict.get("required_actions", [])
         if actions_list:
-            print(f"  Required actions:")
+            print("  Required actions:")
             for act in actions_list:
                 print(f"    - {act}")
 
@@ -483,9 +483,7 @@ def main() -> int:
                 try:
                     required_actions = json.loads(args.actions)
                 except json.JSONDecodeError as exc:
-                    print(
-                        f"ERROR: --actions is not valid JSON: {exc}", file=sys.stderr
-                    )
+                    print(f"ERROR: --actions is not valid JSON: {exc}", file=sys.stderr)
                     return 1
             result = arbitrate(
                 project_root=project_root,

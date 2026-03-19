@@ -415,8 +415,14 @@ def main() -> int:
 
     if project_root is None:
         import sys as _sys
-        print("Error: no AI Research project found in the current directory or its parents.", file=_sys.stderr)
-        print("Hint: run /init-research first, or pass --project-root explicitly.", file=_sys.stderr)
+
+        print(
+            "Error: no AI Research project found in the current directory or its parents.",
+            file=_sys.stderr,
+        )
+        print(
+            "Hint: run /init-research first, or pass --project-root explicitly.", file=_sys.stderr
+        )
         return 1
 
     # Ensure project structure

@@ -764,11 +764,14 @@ unresolved_issues: []
 # File loading edge cases
 # ---------------------------------------------------------------------------
 
+
 class TestFileHandling(unittest.TestCase):
     def test_file_not_found(self) -> None:
         result = VAL.validate_message("dispatch", Path("/nonexistent/path/msg.yaml"))
         self.assertFalse(result["valid"])
-        self.assertTrue(any("not found" in e.lower() or "File not found" in e for e in result["errors"]))
+        self.assertTrue(
+            any("not found" in e.lower() or "File not found" in e for e in result["errors"])
+        )
 
     def test_invalid_yaml_syntax(self) -> None:
         content = "task_id: [unclosed bracket\n"
@@ -792,12 +795,15 @@ class TestFileHandling(unittest.TestCase):
             path = _write_yaml(Path(tmp), "list.yaml", content)
             result = VAL.validate_message("dispatch", path)
             self.assertFalse(result["valid"])
-            self.assertTrue(any("object" in e.lower() or "mapping" in e.lower() for e in result["errors"]))
+            self.assertTrue(
+                any("object" in e.lower() or "mapping" in e.lower() for e in result["errors"])
+            )
 
 
 # ---------------------------------------------------------------------------
 # --json flag output
 # ---------------------------------------------------------------------------
+
 
 class TestJsonFlagOutput(unittest.TestCase):
     def test_json_flag_valid(self) -> None:
@@ -860,6 +866,7 @@ deliverables:
 # ---------------------------------------------------------------------------
 # Exit codes
 # ---------------------------------------------------------------------------
+
 
 class TestExitCodes(unittest.TestCase):
     def test_exit_zero_on_valid(self) -> None:

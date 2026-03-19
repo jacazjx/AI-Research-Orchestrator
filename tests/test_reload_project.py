@@ -4,19 +4,19 @@
 from __future__ import annotations
 
 import json
+
+# Add scripts directory to path
+import sys
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 import yaml
 
-# Add scripts directory to path
-import sys
-
 SCRIPT_DIR = Path(__file__).resolve().parent.parent / "scripts"
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from reload_project import (
+from reload_project import (  # noqa: E402
     detect_project_root,
     generate_json_output,
     generate_status_report,

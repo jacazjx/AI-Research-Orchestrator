@@ -10,7 +10,7 @@ from unittest.mock import MagicMock, patch
 SCRIPT_DIR = Path(__file__).resolve().parent.parent / "scripts"
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from preflight import (
+from preflight import (  # noqa: E402
     check_gpu_available,
     check_latex_available,
     check_semantic_scholar_reachable,

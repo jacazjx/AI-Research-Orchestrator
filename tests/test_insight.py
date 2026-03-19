@@ -3,18 +3,17 @@
 
 from __future__ import annotations
 
+# Add scripts directory to path
+import sys
 from pathlib import Path
 
 import pytest
 import yaml
 
-# Add scripts directory to path
-import sys
-
 SCRIPT_DIR = Path(__file__).resolve().parent.parent / "scripts"
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from run_insight import (
+from run_insight import (  # noqa: E402
     detect_project_root,
     format_assessment_output,
     format_clarity_bar,

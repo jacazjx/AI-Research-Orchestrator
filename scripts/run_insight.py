@@ -29,15 +29,16 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
 # Import local modules
-from constants import DEFAULT_DELIVERABLES
-from intent_clarification import (
+from constants import DEFAULT_DELIVERABLES  # noqa: E402
+from intent_clarification import (  # noqa: E402
     BRAINSTORM_THRESHOLD,
     MAX_CLARIFICATION_ROUNDS,
     MIN_CONFIRMATION_SCORE,
     assess_intent_clarity,
     generate_clarification_questions,
 )
-from orchestrator_common import read_yaml
+
+from orchestrator_common import read_yaml  # noqa: E402
 
 # Configure module logger
 logger = logging.getLogger(__name__)

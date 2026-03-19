@@ -9,8 +9,8 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-
 from constants.phases import LEGACY_TO_SEMANTIC_PHASE, PHASE_SEQUENCE
+
 from orchestrator_common import (
     DEFAULT_DELIVERABLES,
     DEFAULT_LANGUAGE_POLICY,
@@ -74,7 +74,16 @@ MAIN_WORK_SUBDIRECTORIES = (
 # Agent workspace subdirectories (created under each agent directory)
 AGENT_WORK_SUBDIRECTORIES = tuple(
     f"agents/{agent}/{subdir}"
-    for agent in ("survey", "critic", "coder", "adviser", "writer", "reviewer", "reflector", "curator")
+    for agent in (
+        "survey",
+        "critic",
+        "coder",
+        "adviser",
+        "writer",
+        "reviewer",
+        "reflector",
+        "curator",
+    )
     for subdir in ("workspace", "battle", "output")
 )
 

@@ -7,7 +7,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
-from orchestrator_common import (
+from orchestrator_common import (  # noqa: E402
     DEFAULT_ARIS_CONFIG,
     IDEA_STATE_FILENAME,
     build_idea_state,

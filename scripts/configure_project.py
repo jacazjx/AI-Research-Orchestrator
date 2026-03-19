@@ -30,8 +30,9 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
 # Import local modules
-from constants import DEFAULT_DELIVERABLES, PHASE_SEQUENCE
-from orchestrator_common import (
+from constants import DEFAULT_DELIVERABLES, PHASE_SEQUENCE  # noqa: E402
+
+from orchestrator_common import (  # noqa: E402
     DEFAULT_LANGUAGE_POLICY,
     DEFAULT_LOOP_LIMITS,
     read_yaml,
@@ -727,7 +728,10 @@ def main() -> int:
         project_root = find_project_root()
 
     if project_root is None:
-        print("Error: no AI Research project found in the current directory or its parents.", file=sys.stderr)
+        print(
+            "Error: no AI Research project found in the current directory or its parents.",
+            file=sys.stderr,
+        )
         print("Hint: run /init-research first, or pass --project-root explicitly.", file=sys.stderr)
         return 1
 

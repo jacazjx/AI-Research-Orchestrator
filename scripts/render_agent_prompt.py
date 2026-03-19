@@ -6,13 +6,14 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-
 from constants.phases import (
     DEFAULT_DELIVERABLES,
     NEXT_PHASE,
     PHASE_LOOP_KEY,
     PHASE_REQUIRED_DELIVERABLES,
 )
+from user_library import load_all_overlays
+
 from orchestrator_common import (
     PHASE_TO_GATE,
     build_list_section,
@@ -21,7 +22,6 @@ from orchestrator_common import (
     load_state,
     render_template_string,
 )
-from user_library import load_all_overlays
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 SKILL_DIR = SCRIPT_DIR.parent

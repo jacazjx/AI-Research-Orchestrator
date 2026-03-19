@@ -15,7 +15,8 @@ Usage (automatic via hooks.json):
     Triggered by PostToolUse event with matcher "Write" on research-state.yaml
 
 Manual test:
-    echo '{"tool_name": "Write", "tool_input": {"path": "/path/to/.autoresearch/state/research-state.yaml"}}' | python3 scripts/hooks/post_state_update.py
+    echo '{"tool_name":"Write","tool_input":{"path":"/.autoresearch/state/research-state.yaml"}}' \
+    | python3 scripts/hooks/post_state_update.py
 
 Input (from Claude Code via stdin):
     JSON with tool_name, tool_input (contains path), hook_event_name, etc.
@@ -36,9 +37,10 @@ from pathlib import Path
 SCRIPT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
+from generate_dashboard import generate_dashboard  # noqa: E402
+
 # Import from existing scripts
-from reload_project import detect_project_root
-from generate_dashboard import generate_dashboard
+from reload_project import detect_project_root  # noqa: E402
 
 
 def read_hook_input() -> dict:
@@ -103,7 +105,7 @@ def main() -> int:
             return 0
 
         # Generate dashboard
-        result = generate_dashboard(project_root)
+        generate_dashboard(project_root)
 
         # Build success output
         output = {
