@@ -259,12 +259,29 @@ User preferences stored in `~/.autoresearch/`:
 
 ## Version Updates
 
-**IMPORTANT**: When updating the version number, ALL THREE files must be updated together:
+Use the `bump_version.py` script to update version numbers across all files:
 
-| File | Field | Example |
-|------|-------|---------|
-| `scripts/constants/version.py` | `SYSTEM_VERSION` + `VERSION_HISTORY` | `"1.15.0"` |
-| `pyproject.toml` | `version` in `[project]` | `version = "1.15.0"` |
-| `.claude-plugin/plugin.json` | `"version"` | `"version": "1.15.0"` |
+```bash
+# Patch version (default): 1.15.0 → 1.15.1
+python3 scripts/bump_version.py --message "Fix bug"
 
-**Do NOT forget the last one** (`.claude-plugin/plugin.json`) — it's the Claude Code plugin manifest.
+# Minor version: 1.15.0 → 1.16.0
+python3 scripts/bump_version.py --minor --message "Add new feature"
+
+# Major version: 1.15.0 → 2.0.0
+python3 scripts/bump_version.py --major --message "Breaking changes"
+
+# Set specific version
+python3 scripts/bump_version.py --set 2.0.0 --message "Major release"
+
+# Dry run (preview changes)
+python3 scripts/bump_version.py --minor --message "Add feature" --dry-run
+```
+
+This script automatically updates ALL THREE files:
+
+| File | Field |
+|------|-------|
+| `scripts/constants/version.py` | `SYSTEM_VERSION` + `VERSION_HISTORY` |
+| `pyproject.toml` | `version` in `[project]` |
+| `.claude-plugin/plugin.json` | `"version"` |
