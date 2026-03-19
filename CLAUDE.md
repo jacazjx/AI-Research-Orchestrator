@@ -225,6 +225,36 @@ User preferences stored in `~/.autoresearch/`:
 | `references/citation-authenticity.md` | Paper phase citation rules |
 | `references/experiment-integrity.md` | Experiment logging standards |
 
+## Agent Teams Architecture
+
+This plugin uses the Claude Code Agent Teams feature for inter-agent communication.
+
+### Required Environment Variable
+
+Set before using phase commands:
+```
+CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
+```
+
+### Agent Teams Tools Available
+
+When Agent Teams is enabled, the following tools become available:
+- `TeamCreate` - Create a named team of agents for a phase
+- `TeamDelete` - Disband team when phase completes
+- `TaskCreate` - Create trackable tasks with dependencies
+- `TaskUpdate` - Update task status/owner
+- `TaskGet`/`TaskList` - Monitor task progress
+- `SendMessage` - Direct agent-to-agent communication
+
+### Team Lifecycle per Phase
+
+1. Orchestrator: `TeamCreate(team_name="research-<phase>", description="...")`
+2. Orchestrator: Creates tasks with `TaskCreate` and dependency chains
+3. Orchestrator: Spawns Primary Agent with `Agent(subagent_type=..., name=..., team_name=...)`
+4. Orchestrator: Spawns Reviewer Agent with `Agent(subagent_type=..., name=..., team_name=...)`
+5. Agents communicate directly via `SendMessage`
+6. Orchestrator: `TeamDelete()` when phase complete
+
 ## Python Requirements
 
 - Python >= 3.9
