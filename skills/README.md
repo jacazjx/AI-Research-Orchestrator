@@ -1,6 +1,6 @@
 # Skills Directory
 
-This directory contains 52 specialized skills for the AI Research Orchestrator. Each skill is a self-contained capability that can be invoked via slash commands or by other skills.
+This directory contains 60 specialized skills for the AI Research Orchestrator. Each skill is a self-contained capability that can be invoked via slash commands or by other skills.
 
 ## Quick Navigation
 
@@ -11,6 +11,7 @@ This directory contains 52 specialized skills for the AI Research Orchestrator. 
 - [Paper Phase Skills](#paper-phase-skills) - Manuscript writing and compilation
 - [Reflection Phase Skills](#reflection-phase-skills) - Lessons extraction and improvement
 - [Audit Skills](#audit-skills) - Quality gate reviews
+- [Agent Skills](#agent-skills) - Primary and reviewer agents for each phase
 - [Tool Skills](#tool-skills) - Utility capabilities
 
 ---
@@ -138,6 +139,32 @@ Quality gate skills that review and validate outputs from each phase. All audit 
 | [audit-validation](./audit-validation/) | Audit problem validation for evidence quality and verdict justification | "audit validation", "review problem validation" |
 
 **Usage Recommendation:** Audit skills are automatically invoked by the orchestrator during gate checks. They can also be manually invoked to verify phase deliverables before proceeding.
+
+---
+
+## Agent Skills
+
+Agent skills define the primary and reviewer agents for each phase. These are invoked via `Agent(subagent_type="airesearchorchestrator:<agent>", ...)`.
+
+### Primary Agents
+
+| Agent | Phase(s) | Description |
+|-------|----------|-------------|
+| [survey](./survey/) | Survey | Literature review, idea formulation, theoretical derivation |
+| [coder](./coder/) | Pilot, Experiments | Experiment design, implementation, execution, analysis |
+| [writer](./writer/) | Paper | Manuscript writing, figure generation, citation curation |
+| [reflector](./reflector/) | Reflection | Lessons extraction, system improvement proposals |
+
+### Reviewer Agents
+
+| Agent | Phase(s) | Description |
+|-------|----------|-------------|
+| [critic](./critic/) | Survey | Audit novelty, feasibility, theory risk, citation authenticity |
+| [adviser](./adviser/) | Pilot, Experiments | Review experimental design, validate results, judge evidence |
+| [reviewer](./reviewer/) | Paper | Review manuscript per top-tier standards, audit citations |
+| [curator](./curator/) | Reflection | Judge which improvements are reusable, safe, and actionable |
+
+**Usage:** These agents are typically spawned by the orchestrator as part of Agent Teams. Do not invoke directly unless testing.
 
 ---
 

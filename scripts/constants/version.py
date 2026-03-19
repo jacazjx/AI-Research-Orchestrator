@@ -1,7 +1,7 @@
 """Version and version history constants."""
 
 # System version
-SYSTEM_VERSION = "1.14.0"
+SYSTEM_VERSION = "1.15.0"
 SYSTEM_VERSION_NAME = "Research Orchestrator"
 
 VERSION_HISTORY = [
@@ -62,5 +62,11 @@ VERSION_HISTORY = [
         "Removed /reload command (auto-reload via SessionStart hook), "
         "removed argument-hint from commands, added interactive command workflows "
         "with AskUserQuestion, updated CLAUDE.md with plugin development standards",
+    ),
+    (
+        "1.15.0",
+        "2026-03-19",
+        "Added Agent Skills (survey, critic, coder, adviser, writer, reviewer, "
+        "reflector, curator) to fix subagent_type naming, updated skills/README.md",
     ),
 ]

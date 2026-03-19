@@ -256,3 +256,15 @@ User preferences stored in `~/.autoresearch/`:
 - Runtime dependencies:
   - PyYAML (for YAML configuration files)
 - Dev dependencies: pytest, black, isort, flake8, mypy
+
+## Version Updates
+
+**IMPORTANT**: When updating the version number, ALL THREE files must be updated together:
+
+| File | Field | Example |
+|------|-------|---------|
+| `scripts/constants/version.py` | `SYSTEM_VERSION` + `VERSION_HISTORY` | `"1.15.0"` |
+| `pyproject.toml` | `version` in `[project]` | `version = "1.15.0"` |
+| `.claude-plugin/plugin.json` | `"version"` | `"version": "1.15.0"` |
+
+**Do NOT forget the last one** (`.claude-plugin/plugin.json`) — it's the Claude Code plugin manifest.

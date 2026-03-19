@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ai-research-orchestrator"
-version = "1.14.0"
+version = "1.15.0"
 description = "Initialize and run a gated five-phase AI research project from idea intake through pilot validation, full experiments, paper development, and reflection/evolution"
 readme = "README.md"
 license = {text = "MIT"}
