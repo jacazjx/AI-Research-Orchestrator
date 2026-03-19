@@ -681,8 +681,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--project-root",
-        required=True,
-        help="Path to the AI Research project root directory.",
+        default=None,
+        help="Path to the project root. Defaults to the nearest parent containing .autoresearch/.",
     )
     parser.add_argument(
         "--action",
@@ -717,11 +717,18 @@ def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
 
-    project_root = Path(args.project_root).resolve()
+    from utils.path_utils import find_project_root
 
-    # Verify project exists
-    if not (project_root / ".autoresearch").exists():
-        print(f"Error: No AI Research project found at {project_root}", file=sys.stderr)
+    if args.project_root is not None:
+        project_root: Path | None = Path(args.project_root).resolve()
+        if not (project_root / ".autoresearch").exists():
+            project_root = find_project_root(project_root)
+    else:
+        project_root = find_project_root()
+
+    if project_root is None:
+        print("Error: no AI Research project found in the current directory or its parents.", file=sys.stderr)
+        print("Hint: run /init-research first, or pass --project-root explicitly.", file=sys.stderr)
         return 1
 
     try:

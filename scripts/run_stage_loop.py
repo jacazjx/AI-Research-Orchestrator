@@ -382,7 +382,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Advance a phase-local stage loop and refresh gate status."
     )
-    parser.add_argument("--project-root", required=True)
+    parser.add_argument(
+        "--project-root",
+        default=None,
+        help="Path to the project root. Defaults to the nearest parent containing .autoresearch/.",
+    )
     parser.add_argument("--phase", choices=sorted(PHASE_TO_REVIEW))
     parser.add_argument("--actor", default="orchestrator")
     parser.add_argument("--review-status")
@@ -399,7 +403,21 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
-    project_root = Path(args.project_root).resolve()
+
+    from utils.path_utils import find_project_root
+
+    if args.project_root is not None:
+        project_root: Path | None = Path(args.project_root).resolve()
+        if not (project_root / ".autoresearch").exists():
+            project_root = find_project_root(project_root)
+    else:
+        project_root = find_project_root()
+
+    if project_root is None:
+        import sys as _sys
+        print("Error: no AI Research project found in the current directory or its parents.", file=_sys.stderr)
+        print("Hint: run /init-research first, or pass --project-root explicitly.", file=_sys.stderr)
+        return 1
 
     # Ensure project structure
     ensure_project_structure(project_root, create_if_missing=False)

@@ -544,8 +544,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--project-root",
-        required=True,
-        help="Path to the AI Research project root directory.",
+        default=None,
+        help="Path to the project root. Defaults to the nearest parent containing .autoresearch/.",
     )
     parser.add_argument(
         "--verbose",
@@ -566,7 +566,10 @@ def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
 
-    project_root = Path(args.project_root).resolve()
+    if args.project_root is not None:
+        project_root = Path(args.project_root).resolve()
+    else:
+        project_root = Path.cwd()
 
     # Try to auto-detect project root if not found
     if not (project_root / ".autoresearch").exists():

@@ -170,7 +170,12 @@ def format_status_report(result: dict[str, Any]) -> str:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Show research project status snapshot")
-    parser.add_argument("--project-root", required=True, type=Path)
+    parser.add_argument(
+        "--project-root",
+        type=Path,
+        default=None,
+        help="Path to the project root. Defaults to the nearest parent containing .autoresearch/.",
+    )
     parser.add_argument("--verbose", action="store_true", default=False)
     parser.add_argument("--json", dest="json_output", action="store_true", default=False)
     return parser
@@ -178,8 +183,24 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main() -> int:
     args = build_parser().parse_args()
+
+    from utils.path_utils import find_project_root
+
+    project_root: Path | None = args.project_root
+    if project_root is not None:
+        project_root = project_root.resolve()
+        if not (project_root / ".autoresearch").exists():
+            project_root = find_project_root(project_root)
+    else:
+        project_root = find_project_root()
+
+    if project_root is None:
+        print("Error: no AI Research project found in the current directory or its parents.", file=sys.stderr)
+        print("Hint: run /init-research first, or pass --project-root explicitly.", file=sys.stderr)
+        return 1
+
     try:
-        result = run_status(args.project_root, verbose=args.verbose, json_output=args.json_output)
+        result = run_status(project_root, verbose=args.verbose, json_output=args.json_output)
         if args.json_output:
             print(json.dumps(result, indent=2))
         else:
