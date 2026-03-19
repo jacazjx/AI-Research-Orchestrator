@@ -52,7 +52,7 @@ Define:
 
 ## Output
 
-Save to `docs/reports/pilot/problem-analysis.md`:
+Save to `docs/pilot/problem-analysis.md`:
 
 ```markdown
 # Problem Analysis

@@ -93,6 +93,7 @@ Automatically block Gate 1 if:
 | `Grep` | Search for patterns |
 | `Glob` | Find relevant files |
 | `WebFetch` | Access paper metadata and verify sources |
+| `SendMessage` | Direct communication with survey in Agent Teams mode |
 
 ### Restricted Actions
 
@@ -106,9 +107,9 @@ Automatically block Gate 1 if:
 
 | Deliverable | Path | Content |
 |-------------|------|---------|
-| Derivation Audit Report | `docs/reports/survey/derivation-audit-report.md` | Mathematical rigor review, proof verification |
-| Survey Audit Report | `docs/reports/survey/survey-audit-report.md` | Comprehensive review with scores |
-| Citation Verification Log | `docs/reports/survey/citation-verification-log.md` | Per-citation verification status |
+| Derivation Audit Report | `docs/survey/derivation-audit-report.md` | Mathematical rigor review, proof verification |
+| Survey Audit Report | `docs/survey/survey-audit-report.md` | Comprehensive review with scores |
+| Citation Verification Log | `docs/survey/citation-verification-log.md` | Per-citation verification status |
 
 ### Audit Report Structure
 
@@ -275,8 +276,8 @@ task_id: "audit-survey-001"
 skill: "audit-survey"
 context:
   survey_deliverables:
-    - "docs/reports/survey/research-readiness-report.md"
-    - "docs/reports/survey/atomic-definitions.md"
+    - "docs/survey/research-readiness-report.md"
+    - "docs/survey/atomic-definitions.md"
   research_topic: "..."
 ```
 
@@ -379,3 +380,11 @@ Skills are invoked via the Orchestrator using the Skill tool. Do not invoke skil
 - `references/literature-verification.md` - Citation verification standards
 - `references/ai-researcher-agent-mapping.md` - Source role mapping
 - `references/role-protocols.md` - Role behavior protocols
+
+## Direct Communication (Agent Teams)
+
+When operating as a teammate (Agent Teams mode), communicate directly with survey using SendMessage:
+
+- **After completing audit:** `SendMessage(to="survey", message={"type":"audit_report","decision":"approve|revise","issues":[...]}, summary="Audit complete")`
+- **To respond to challenge:** `SendMessage(to="survey", message={"type":"battle_response","responses":[...]}, summary="Response to challenge")`
+- **Maximum 3 debate rounds:** If unresolved after 3 rounds, `SendMessage(to="orchestrator", message={"type":"escalate","reason":"No consensus after 3 rounds",...})`

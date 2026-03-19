@@ -214,7 +214,7 @@ Prepare materials for `/research-lit`:
 
 ## Output
 
-Save to `docs/reports/survey/ideation-report.md`:
+Save to `docs/survey/ideation-report.md`:
 
 ```markdown
 # Research Ideation Report

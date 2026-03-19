@@ -113,11 +113,11 @@ python3 scripts/migrate_project.py --project-root /path/to/project --topic "Topi
 
 | Phase | Agents | Key Deliverable |
 |-------|--------|-----------------|
-| `survey` | Survey ↔ Critic | `docs/reports/survey/research-readiness-report.md` |
-| `pilot` | Code ↔ Adviser | `docs/reports/pilot/pilot-validation-report.md` |
-| `experiments` | Code ↔ Adviser | `docs/reports/experiments/evidence-package-index.md` |
+| `survey` | Survey ↔ Critic | `docs/survey/research-readiness-report.md` |
+| `pilot` | Code ↔ Adviser | `docs/pilot/pilot-validation-report.md` |
+| `experiments` | Code ↔ Adviser | `docs/experiments/evidence-package-index.md` |
 | `paper` | Writer ↔ Reviewer | `paper/final-acceptance-report.md` |
-| `reflection` | Reflector ↔ Curator | `docs/reports/reflection/runtime-improvement-report.md` |
+| `reflection` | Reflector ↔ Curator | `docs/reflection/runtime-improvement-report.md` |
 
 ### Dual-Loop Runtime
 
@@ -137,7 +137,7 @@ project/
 ├── agents/                  # Per-role work directories
 ├── paper/                   # Manuscript and related files
 ├── code/                    # Code and experiments
-└── docs/reports/            # Phase deliverables
+└── docs/                    # Phase deliverables
 ```
 
 ### Skill Repository Structure

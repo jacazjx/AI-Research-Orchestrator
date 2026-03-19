@@ -37,7 +37,7 @@ Commit a file change to GitMem history.
 - Returns commit hash on success
 
 **Tracked directories:**
-- `docs/reports/` - Phase deliverables
+- `docs/` - Phase deliverables
 - `paper/` - Paper drafts and figures
 - `code/` - Experiment code
 - `agents/` - Agent working notes
@@ -45,7 +45,7 @@ Commit a file change to GitMem history.
 **Example:**
 ```bash
 python3 scripts/gitmem.py commit --project-root /path/to/project \
-    --file docs/reports/survey/research-readiness-report.md \
+    --file docs/survey/research-readiness-report.md \
     --message "Survey agent: updated readiness report"
 ```
 
@@ -76,7 +76,7 @@ Check if a file is in an edit loop (5+ consecutive changes without checkpoint).
 **Example:**
 ```bash
 python3 scripts/gitmem.py check-loop --project-root /path/to/project \
-    --file docs/reports/survey/research-readiness-report.md
+    --file docs/survey/research-readiness-report.md
 ```
 
 ### gitmem history <file>
@@ -90,7 +90,7 @@ View version history for a file.
 **Example:**
 ```bash
 python3 scripts/gitmem.py history --project-root /path/to/project \
-    --file docs/reports/survey/research-readiness-report.md
+    --file docs/survey/research-readiness-report.md
 ```
 
 ### gitmem diff --project-root <path> --file <file> [--from <rev>] [--to <rev>]
@@ -104,7 +104,7 @@ Compare versions of a file.
 **Example:**
 ```bash
 python3 scripts/gitmem.py diff --project-root /path/to/project \
-    --file docs/reports/survey/research-readiness-report.md
+    --file docs/survey/research-readiness-report.md
 ```
 
 ### gitmem rollback --project-root <path> --file <file> [--to <rev>]
@@ -119,7 +119,7 @@ Rollback a file to a previous version.
 **Example:**
 ```bash
 python3 scripts/gitmem.py rollback --project-root /path/to/project \
-    --file docs/reports/survey/research-readiness-report.md \
+    --file docs/survey/research-readiness-report.md \
     --to HEAD~3
 ```
 

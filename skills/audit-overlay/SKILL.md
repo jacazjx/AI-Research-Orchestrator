@@ -13,7 +13,7 @@ Critically review proposed system improvements for safety and proper procedure.
 
 ### Step 1: Review Overlay Draft
 
-Read `docs/reports/reflection/overlay-draft.md` for proposed changes.
+Read `docs/reflection/overlay-draft.md` for proposed changes.
 
 ### Step 2: Assess Safety
 

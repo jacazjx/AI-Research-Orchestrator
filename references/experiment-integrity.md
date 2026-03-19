@@ -35,7 +35,7 @@ code/experiments/
 ├── experiment-spec.md           # Experiment specification
 ├── run-registry.md              # Master run registry
 ├── results-summary.md           # Aggregated results
-docs/reports/experiments/
+docs/experiments/
 ├── evidence-package-index.md    # Evidence links
 code/experiments/
 ├── checkpoints/

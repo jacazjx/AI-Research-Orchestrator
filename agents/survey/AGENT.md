@@ -82,6 +82,7 @@ For each novelty claim, verify:
 | `Grep` | Search for patterns in code/docs |
 | `Glob` | Find relevant files |
 | `WebFetch` | Access paper abstracts and metadata |
+| `SendMessage` | Direct communication with critic in Agent Teams mode |
 
 ### Restricted Actions
 
@@ -95,11 +96,11 @@ For each novelty claim, verify:
 
 | Deliverable | Path | Content |
 |-------------|------|---------|
-| Idea Definition | `docs/reports/survey/idea-definition.md` | Problem statement, hypothesis, constraints |
-| Theoretical Derivation | `docs/reports/survey/theoretical-derivation.md` | Mathematical formulation, theorems, complexity analysis, guarantees |
-| Literature Review | `docs/reports/survey/literature-review.md` | Paper summaries, gap analysis |
-| Atomic Definitions | `docs/reports/survey/atomic-definitions.md` | Formal definitions with theory-code mapping |
-| Research Readiness Report | `docs/reports/survey/research-readiness-report.md` | Comprehensive synthesis with novelty argument |
+| Idea Definition | `docs/survey/idea-definition.md` | Problem statement, hypothesis, constraints |
+| Theoretical Derivation | `docs/survey/theoretical-derivation.md` | Mathematical formulation, theorems, complexity analysis, guarantees |
+| Literature Review | `docs/survey/literature-review.md` | Paper summaries, gap analysis |
+| Atomic Definitions | `docs/survey/atomic-definitions.md` | Formal definitions with theory-code mapping |
+| Research Readiness Report | `docs/survey/research-readiness-report.md` | Comprehensive synthesis with novelty argument |
 
 ### Quality Requirements
 
@@ -189,7 +190,7 @@ context:
   research_topic: "..."
   current_phase: "survey"
 deliverables:
-  - "docs/reports/survey/literature-review.md"
+  - "docs/survey/literature-review.md"
 ```
 
 **Completion Report Format:**
@@ -197,7 +198,7 @@ deliverables:
 task_id: "survey-001"
 status: "completed"
 deliverables:
-  - path: "docs/reports/survey/literature-review.md"
+  - path: "docs/survey/literature-review.md"
     status: "created"
     summary: "Reviewed 15 papers on attention mechanisms"
 errors: []
@@ -284,3 +285,13 @@ Skills are invoked via the Orchestrator using the Skill tool. Do not invoke skil
 - `references/phase-execution-details.md` - Detailed substeps
 - `references/literature-verification.md` - Citation verification standards
 - `references/gate-rubrics.md` - Gate 1 scoring criteria
+
+## Direct Communication (Agent Teams)
+
+When operating as a teammate (Agent Teams mode), communicate directly with critic using SendMessage:
+
+- **After completing deliverables:** `SendMessage(to="critic", message="deliverables_ready", summary="Survey substep complete")`
+- **To challenge audit findings:** `SendMessage(to="critic", message={"type":"battle_challenge","disputed_points":[...]}, summary="Challenging findings")`
+- **When consensus reached:** `SendMessage(to="orchestrator", message={"type":"substep_complete","substep":"<name>","deliverables":[...]}, summary="...")`
+
+Record all debate turns in `agents/survey/battle/debate.json` using battle_protocol.py.

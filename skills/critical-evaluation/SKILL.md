@@ -21,7 +21,7 @@ Ensure research outputs meet scientific standards by identifying weaknesses, bia
 
 Identify the target of evaluation:
 
-- **Survey outputs**: `docs/reports/survey/` materials
+- **Survey outputs**: `docs/survey/` materials
 - **Literature review**: Citation lists, summaries, gap analysis
 - **Research claims**: Hypotheses, novelty claims, problem definitions
 - **Experimental designs**: Methodology, protocols, analysis plans

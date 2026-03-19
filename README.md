@@ -544,7 +544,7 @@ my-project/
 │   └── curator/             # Curator agent workspace
 ├── paper/                   # Paper-related files
 ├── code/                    # Code and experiments
-└── docs/reports/            # Phase deliverables
+└── docs/                    # Phase deliverables
     ├── survey/
     ├── pilot/
     ├── experiments/

@@ -200,7 +200,7 @@ While [Prior Work C] addresses [their focus], we focus on [our focus].
 
 ## Verification Report Format
 
-Create verification report at `docs/reports/survey/citation-verification-report.md`:
+Create verification report at `docs/survey/citation-verification-report.md`:
 
 ```markdown
 # Citation Verification Report

@@ -9,12 +9,12 @@ allowed-tools: "Read, Write, Edit, Grep, Glob, Bash(${CLAUDE_PLUGIN_ROOT}/script
 
 Executes the Code <-> Adviser loop for full experiments:
 
-- `docs/reports/experiments/experiment-spec.md`
-- `docs/reports/experiments/run-registry.md`
-- `docs/reports/experiments/results-summary.md`
+- `docs/experiments/experiment-spec.md`
+- `docs/experiments/run-registry.md`
+- `docs/experiments/results-summary.md`
 - `code/checkpoints/checkpoint-index.md`
-- `docs/reports/experiments/evidence-package-index.md`
-- `docs/reports/experiments/phase-scorecard.md`
+- `docs/experiments/evidence-package-index.md`
+- `docs/experiments/phase-scorecard.md`
 
 ## Execution
 

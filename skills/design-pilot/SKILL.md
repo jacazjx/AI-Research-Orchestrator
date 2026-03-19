@@ -13,7 +13,7 @@ Design a minimal, fast pilot experiment that validates the core hypothesis with 
 
 ### Step 1: Review Problem Analysis
 
-Read `docs/reports/pilot/problem-analysis.md` for:
+Read `docs/pilot/problem-analysis.md` for:
 - Core challenge
 - Solution approach
 - Success metrics
@@ -51,7 +51,7 @@ Estimate:
 
 ## Output
 
-Save to `docs/reports/pilot/pilot-design.md`:
+Save to `docs/pilot/pilot-design.md`:
 
 ```markdown
 # Pilot Design

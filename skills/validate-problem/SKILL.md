@@ -108,7 +108,7 @@ The problem is not worth pursuing as stated.
 
 ## Output
 
-Save to `docs/reports/pilot/problem-validation-report.md`:
+Save to `docs/pilot/problem-validation-report.md`:
 
 ```markdown
 # Problem Validation Report

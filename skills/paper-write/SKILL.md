@@ -14,7 +14,7 @@ Generate LaTeX sections for paper from plan following IMRAD (Introduction, Metho
 ### Phase 1: Preparation
 
 1. **Read paper plan** from `paper/paper-plan.md`
-2. **Review evidence package** from `docs/reports/experiments/evidence-package-index.md`
+2. **Review evidence package** from `docs/experiments/evidence-package-index.md`
 3. **Check citation library** from `paper/references.bib`
 4. **Review figures and tables** from `paper/figures/` and `paper/tables/`
 
@@ -246,7 +246,7 @@ See `references/figure_table_guidelines.md` for detailed standards.
 ### Phase 4: Reference Management
 
 1. **Build references.bib** from:
-   - `docs/reports/survey/references.bib`
+   - `docs/survey/references.bib`
    - `paper/citation-audit-report.md` (verified citations)
 
 2. **Citation Quality Check**:

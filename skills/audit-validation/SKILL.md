@@ -13,7 +13,7 @@ Critically review a problem validation report to ensure the evidence is sound, t
 
 ### Step 1: Read Validation Report
 
-Read the problem validation report at `docs/reports/pilot/problem-validation-report.md`.
+Read the problem validation report at `docs/pilot/problem-validation-report.md`.
 
 ### Step 2: Evidence Quality Check
 

@@ -212,7 +212,7 @@ For detailed checklists, see: `references/reporting_standards.md`
 
 ### Step 1: Review Results Summary
 
-Read `docs/reports/experiments/results-summary.md` and evidence package.
+Read `docs/experiments/results-summary.md` and evidence package.
 
 ### Step 2: Verify Traceability
 

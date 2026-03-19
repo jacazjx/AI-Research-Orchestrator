@@ -9,10 +9,10 @@ allowed-tools: "Read, Write, Edit, Grep, Glob, Bash(${CLAUDE_PLUGIN_ROOT}/script
 
 Executes the Reflector <-> Curator loop for project closure:
 
-- `docs/reports/reflection/lessons-learned.md`
-- `docs/reports/reflection/overlay-draft.md`
-- `docs/reports/reflection/runtime-improvement-report.md`
-- `docs/reports/reflection/phase-scorecard.md`
+- `docs/reflection/lessons-learned.md`
+- `docs/reflection/overlay-draft.md`
+- `docs/reflection/runtime-improvement-report.md`
+- `docs/reflection/phase-scorecard.md`
 - `.autoresearch/archive/archive-index.md`
 
 ## Execution

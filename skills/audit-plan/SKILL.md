@@ -13,7 +13,7 @@ Critically review the research execution plan for feasibility and completeness.
 
 ### Step 1: Review Plan Document
 
-Read `docs/reports/survey/research-readiness-report.md` focusing on planning sections.
+Read `docs/survey/research-readiness-report.md` focusing on planning sections.
 
 ### Step 2: Assess Feasibility
 

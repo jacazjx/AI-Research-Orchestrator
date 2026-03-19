@@ -191,7 +191,7 @@ For detailed checklists, see: `references/reporting_standards.md`
 
 ### Step 1: Review Validation Report
 
-Read `docs/reports/pilot/pilot-validation-report.md` for results and conclusions.
+Read `docs/pilot/pilot-validation-report.md` for results and conclusions.
 
 ### Step 2: Verify Results
 

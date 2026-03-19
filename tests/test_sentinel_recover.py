@@ -171,10 +171,10 @@ class SentinelTest(unittest.TestCase):
 
             # Create required deliverables to avoid missing_deliverable issue
             for relative_path in (
-                "docs/reports/survey/survey-round-summary.md",
-                "docs/reports/survey/critic-round-review.md",
-                "docs/reports/survey/research-readiness-report.md",
-                "docs/reports/survey/phase-scorecard.md",
+                "docs/survey/survey-round-summary.md",
+                "docs/survey/critic-round-review.md",
+                "docs/survey/research-readiness-report.md",
+                "docs/survey/phase-scorecard.md",
             ):
                 file_path = project_root / relative_path
                 file_path.parent.mkdir(parents=True, exist_ok=True)
@@ -199,7 +199,7 @@ class SentinelTest(unittest.TestCase):
 
             # Delete the actual required files for survey phase
             # PHASE_REQUIRED_DELIVERABLES['survey'] = ('readiness_report', 'survey_scorecard')
-            readiness_path = project_root / "docs/reports/survey/research-readiness-report.md"
+            readiness_path = project_root / "docs/survey/research-readiness-report.md"
             if readiness_path.exists():
                 readiness_path.unlink()
 
@@ -219,10 +219,10 @@ class SentinelTest(unittest.TestCase):
 
             # Create required deliverables
             for relative_path in (
-                "docs/reports/survey/survey-round-summary.md",
-                "docs/reports/survey/critic-round-review.md",
-                "docs/reports/survey/research-readiness-report.md",
-                "docs/reports/survey/phase-scorecard.md",
+                "docs/survey/survey-round-summary.md",
+                "docs/survey/critic-round-review.md",
+                "docs/survey/research-readiness-report.md",
+                "docs/survey/phase-scorecard.md",
             ):
                 file_path = project_root / relative_path
                 file_path.parent.mkdir(parents=True, exist_ok=True)

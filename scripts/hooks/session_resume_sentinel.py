@@ -33,7 +33,7 @@ Output format:
         "success": true,
         "project_root": "/path/to/project",
         "issues": [
-            {"type": "missing_deliverable", "target": "docs/reports/survey/..."},
+            {"type": "missing_deliverable", "target": "docs/survey/..."},
             {"type": "stale_job", "target": "job-001"}
         ],
         "status": "healthy" | "attention"

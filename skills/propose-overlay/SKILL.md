@@ -13,7 +13,7 @@ Propose concrete improvements to the orchestrator system based on lessons learne
 
 ### Step 1: Review Lessons Learned
 
-Read `docs/reports/reflection/lessons-learned.md` for:
+Read `docs/reflection/lessons-learned.md` for:
 - Systemic issues
 - Process improvements
 - Tool limitations
@@ -52,7 +52,7 @@ Rank by:
 
 ## Output
 
-Save to `docs/reports/reflection/overlay-draft.md`:
+Save to `docs/reflection/overlay-draft.md`:
 
 ```markdown
 # Overlay Draft

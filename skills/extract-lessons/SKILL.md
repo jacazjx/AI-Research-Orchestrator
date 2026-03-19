@@ -75,7 +75,7 @@ Categories:
 
 ## Output
 
-Save to `docs/reports/reflection/lessons-learned.md`:
+Save to `docs/reflection/lessons-learned.md`:
 
 ```markdown
 # Lessons Learned

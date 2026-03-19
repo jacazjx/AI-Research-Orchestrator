@@ -13,7 +13,7 @@ Critically review the problem analysis for thoroughness and solution approach vi
 
 ### Step 1: Review Analysis Document
 
-Read `docs/reports/pilot/problem-analysis.md` for decomposition and approach.
+Read `docs/pilot/problem-analysis.md` for decomposition and approach.
 
 ### Step 2: Assess Decomposition
 

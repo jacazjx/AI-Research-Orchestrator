@@ -832,7 +832,7 @@ class InitWizard:
         print("   • .autoresearch/  - System configuration and state")
         print("   • agents/         - Agent work directories")
         print("   • code/           - Code and experiments")
-        print("   • docs/reports/   - Research deliverables")
+        print("   • docs/           - Research deliverables")
         print("   • paper/          - Manuscript files")
 
         if not prompts.prompt_yes_no("\n✅ Proceed with initialization?", default=True):

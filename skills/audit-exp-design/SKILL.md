@@ -13,7 +13,7 @@ Critically review full experiment design for statistical rigor and completeness.
 
 ### Step 1: Review Experiment Spec
 
-Read `docs/reports/experiments/experiment-spec.md` for matrix, hyperparameters, and evaluation.
+Read `docs/experiments/experiment-spec.md` for matrix, hyperparameters, and evaluation.
 
 ### Step 2: Assess Statistical Validity
 

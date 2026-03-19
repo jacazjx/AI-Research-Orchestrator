@@ -110,7 +110,7 @@ class GitMemCommitTest(unittest.TestCase):
         COMMON.gitmem_init(self.project_root)
 
         # Create a test file in a tracked directory
-        test_file = self.project_root / "docs/reports/test.md"
+        test_file = self.project_root / "docs/test.md"
         test_file.parent.mkdir(parents=True, exist_ok=True)
         test_file.write_text("# Test content\n", encoding="utf-8")
 
@@ -121,7 +121,7 @@ class GitMemCommitTest(unittest.TestCase):
         """Test that gitmem_commit returns a commit hash."""
         commit_hash = COMMON.gitmem_commit(
             self.project_root,
-            "docs/reports/test.md",
+            "docs/test.md",
             "Initial commit",
         )
 
@@ -132,17 +132,17 @@ class GitMemCommitTest(unittest.TestCase):
         """Test that multiple commits create different revisions."""
         hash1 = COMMON.gitmem_commit(
             self.project_root,
-            "docs/reports/test.md",
+            "docs/test.md",
             "First commit",
         )
 
         # Modify file
-        test_file = self.project_root / "docs/reports/test.md"
+        test_file = self.project_root / "docs/test.md"
         test_file.write_text("# Modified content\n", encoding="utf-8")
 
         hash2 = COMMON.gitmem_commit(
             self.project_root,
-            "docs/reports/test.md",
+            "docs/test.md",
             "Second commit",
         )
 
@@ -153,7 +153,7 @@ class GitMemCommitTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             COMMON.gitmem_commit(
                 self.project_root,
-                "docs/reports/nonexistent.md",
+                "docs/nonexistent.md",
                 "Should fail",
             )
 
@@ -170,13 +170,13 @@ class GitMemCheckpointTest(unittest.TestCase):
         COMMON.gitmem_init(self.project_root)
 
         # Create and commit a test file
-        test_file = self.project_root / "docs/reports/checkpoint-test.md"
+        test_file = self.project_root / "docs/checkpoint-test.md"
         test_file.parent.mkdir(parents=True, exist_ok=True)
         test_file.write_text("# Checkpoint test\n", encoding="utf-8")
 
         COMMON.gitmem_commit(
             self.project_root,
-            "docs/reports/checkpoint-test.md",
+            "docs/checkpoint-test.md",
             "Initial commit",
         )
 
@@ -200,9 +200,9 @@ class GitMemCheckpointTest(unittest.TestCase):
         COMMON.gitmem_checkpoint(self.project_root, "checkpoint-1")
 
         # Modify and commit
-        test_file = self.project_root / "docs/reports/checkpoint-test.md"
+        test_file = self.project_root / "docs/checkpoint-test.md"
         test_file.write_text("# Modified\n", encoding="utf-8")
-        COMMON.gitmem_commit(self.project_root, "docs/reports/checkpoint-test.md", "Update")
+        COMMON.gitmem_commit(self.project_root, "docs/checkpoint-test.md", "Update")
 
         COMMON.gitmem_checkpoint(self.project_root, "checkpoint-2")
 
@@ -227,7 +227,7 @@ class GitMemCheckLoopTest(unittest.TestCase):
         COMMON.gitmem_init(self.project_root)
 
         # Create a test file
-        test_file = self.project_root / "docs/reports/loop-test.md"
+        test_file = self.project_root / "docs/loop-test.md"
         test_file.parent.mkdir(parents=True, exist_ok=True)
         test_file.write_text("# Loop test\n", encoding="utf-8")
 
@@ -236,33 +236,33 @@ class GitMemCheckLoopTest(unittest.TestCase):
 
     def test_no_loop_initially(self) -> None:
         """Test that there's no loop initially."""
-        in_loop = COMMON.gitmem_check_loop(self.project_root, "docs/reports/loop-test.md")
+        in_loop = COMMON.gitmem_check_loop(self.project_root, "docs/loop-test.md")
         self.assertFalse(in_loop)
 
     def test_loop_detected_after_threshold(self) -> None:
         """Test that loop is detected after threshold commits."""
         # Create commits up to and past threshold
         for i in range(COMMON.GITMEM_LOOP_THRESHOLD + 1):
-            test_file = self.project_root / "docs/reports/loop-test.md"
+            test_file = self.project_root / "docs/loop-test.md"
             test_file.write_text(f"# Loop test revision {i}\n", encoding="utf-8")
             COMMON.gitmem_commit(
                 self.project_root,
-                "docs/reports/loop-test.md",
+                "docs/loop-test.md",
                 f"Revision {i}",
             )
 
-        in_loop = COMMON.gitmem_check_loop(self.project_root, "docs/reports/loop-test.md")
+        in_loop = COMMON.gitmem_check_loop(self.project_root, "docs/loop-test.md")
         self.assertTrue(in_loop)
 
     def test_no_loop_after_checkpoint(self) -> None:
         """Test that loop is reset after checkpoint."""
         # Create commits past threshold
         for i in range(COMMON.GITMEM_LOOP_THRESHOLD + 1):
-            test_file = self.project_root / "docs/reports/loop-test.md"
+            test_file = self.project_root / "docs/loop-test.md"
             test_file.write_text(f"# Loop test revision {i}\n", encoding="utf-8")
             COMMON.gitmem_commit(
                 self.project_root,
-                "docs/reports/loop-test.md",
+                "docs/loop-test.md",
                 f"Revision {i}",
             )
 
@@ -270,22 +270,22 @@ class GitMemCheckLoopTest(unittest.TestCase):
         COMMON.gitmem_checkpoint(self.project_root, "stable-state")
 
         # No loop should be detected after checkpoint
-        in_loop = COMMON.gitmem_check_loop(self.project_root, "docs/reports/loop-test.md")
+        in_loop = COMMON.gitmem_check_loop(self.project_root, "docs/loop-test.md")
         self.assertFalse(in_loop)
 
     def test_get_loop_info(self) -> None:
         """Test gitmem_get_loop_info returns correct info."""
         # Make 3 commits
         for i in range(3):
-            test_file = self.project_root / "docs/reports/loop-test.md"
+            test_file = self.project_root / "docs/loop-test.md"
             test_file.write_text(f"# Revision {i}\n", encoding="utf-8")
             COMMON.gitmem_commit(
                 self.project_root,
-                "docs/reports/loop-test.md",
+                "docs/loop-test.md",
                 f"Revision {i}",
             )
 
-        info = COMMON.gitmem_get_loop_info(self.project_root, "docs/reports/loop-test.md")
+        info = COMMON.gitmem_get_loop_info(self.project_root, "docs/loop-test.md")
 
         self.assertFalse(info["in_loop"])  # 3 < 5
         self.assertEqual(info["change_count"], 3)
@@ -304,14 +304,14 @@ class GitMemHistoryTest(unittest.TestCase):
         COMMON.gitmem_init(self.project_root)
 
         # Create multiple commits
-        test_file = self.project_root / "docs/reports/history-test.md"
+        test_file = self.project_root / "docs/history-test.md"
         test_file.parent.mkdir(parents=True, exist_ok=True)
 
         for i in range(3):
             test_file.write_text(f"# Version {i}\n", encoding="utf-8")
             COMMON.gitmem_commit(
                 self.project_root,
-                "docs/reports/history-test.md",
+                "docs/history-test.md",
                 f"Version {i}",
             )
 
@@ -320,14 +320,14 @@ class GitMemHistoryTest(unittest.TestCase):
 
     def test_history_returns_list(self) -> None:
         """Test that gitmem_history returns a list of commits."""
-        history = COMMON.gitmem_history(self.project_root, "docs/reports/history-test.md")
+        history = COMMON.gitmem_history(self.project_root, "docs/history-test.md")
 
         self.assertIsInstance(history, list)
         self.assertEqual(len(history), 3)
 
     def test_history_contains_required_fields(self) -> None:
         """Test that history entries have required fields."""
-        history = COMMON.gitmem_history(self.project_root, "docs/reports/history-test.md")
+        history = COMMON.gitmem_history(self.project_root, "docs/history-test.md")
 
         for entry in history:
             self.assertIn("hash", entry)
@@ -336,7 +336,7 @@ class GitMemHistoryTest(unittest.TestCase):
 
     def test_history_respects_limit(self) -> None:
         """Test that history respects limit parameter."""
-        history = COMMON.gitmem_history(self.project_root, "docs/reports/history-test.md", limit=2)
+        history = COMMON.gitmem_history(self.project_root, "docs/history-test.md", limit=2)
 
         self.assertEqual(len(history), 2)
 
@@ -352,20 +352,20 @@ class GitMemDiffTest(unittest.TestCase):
 
         COMMON.gitmem_init(self.project_root)
 
-        test_file = self.project_root / "docs/reports/diff-test.md"
+        test_file = self.project_root / "docs/diff-test.md"
         test_file.parent.mkdir(parents=True, exist_ok=True)
         test_file.write_text("# Original\n", encoding="utf-8")
-        COMMON.gitmem_commit(self.project_root, "docs/reports/diff-test.md", "Original")
+        COMMON.gitmem_commit(self.project_root, "docs/diff-test.md", "Original")
 
         test_file.write_text("# Modified\nNew content\n", encoding="utf-8")
-        COMMON.gitmem_commit(self.project_root, "docs/reports/diff-test.md", "Modified")
+        COMMON.gitmem_commit(self.project_root, "docs/diff-test.md", "Modified")
 
     def tearDown(self) -> None:
         self.temp_dir.cleanup()
 
     def test_diff_returns_string(self) -> None:
         """Test that gitmem_diff returns a string."""
-        diff = COMMON.gitmem_diff(self.project_root, "docs/reports/diff-test.md")
+        diff = COMMON.gitmem_diff(self.project_root, "docs/diff-test.md")
 
         self.assertIsInstance(diff, str)
         self.assertIn("Original", diff)
@@ -383,32 +383,32 @@ class GitMemRollbackTest(unittest.TestCase):
 
         COMMON.gitmem_init(self.project_root)
 
-        test_file = self.project_root / "docs/reports/rollback-test.md"
+        test_file = self.project_root / "docs/rollback-test.md"
         test_file.parent.mkdir(parents=True, exist_ok=True)
         test_file.write_text("# Version 1\n", encoding="utf-8")
-        COMMON.gitmem_commit(self.project_root, "docs/reports/rollback-test.md", "V1")
+        COMMON.gitmem_commit(self.project_root, "docs/rollback-test.md", "V1")
 
         test_file.write_text("# Version 2\n", encoding="utf-8")
-        COMMON.gitmem_commit(self.project_root, "docs/reports/rollback-test.md", "V2")
+        COMMON.gitmem_commit(self.project_root, "docs/rollback-test.md", "V2")
 
     def tearDown(self) -> None:
         self.temp_dir.cleanup()
 
     def test_rollback_restores_content(self) -> None:
         """Test that rollback restores previous content."""
-        result = COMMON.gitmem_rollback(self.project_root, "docs/reports/rollback-test.md")
+        result = COMMON.gitmem_rollback(self.project_root, "docs/rollback-test.md")
 
         self.assertTrue(result)
-        test_file = self.project_root / "docs/reports/rollback-test.md"
+        test_file = self.project_root / "docs/rollback-test.md"
         content = test_file.read_text(encoding="utf-8")
         self.assertIn("Version 1", content)
 
     def test_rollback_creates_new_commit(self) -> None:
         """Test that rollback creates a new commit (doesn't rewrite history)."""
-        COMMON.gitmem_rollback(self.project_root, "docs/reports/rollback-test.md")
+        COMMON.gitmem_rollback(self.project_root, "docs/rollback-test.md")
 
         # Check that there's a rollback commit
-        history = COMMON.gitmem_history(self.project_root, "docs/reports/rollback-test.md")
+        history = COMMON.gitmem_history(self.project_root, "docs/rollback-test.md")
         self.assertTrue(any("Rollback" in entry["message"] for entry in history))
 
 
@@ -467,10 +467,10 @@ class GitMemListTagsTest(unittest.TestCase):
             COMMON.gitmem_init(project_root)
 
             # Create a test file and commit
-            test_file = project_root / "docs/reports/test.md"
+            test_file = project_root / "docs/test.md"
             test_file.parent.mkdir(parents=True, exist_ok=True)
             test_file.write_text("content\n", encoding="utf-8")
-            COMMON.gitmem_commit(project_root, "docs/reports/test.md", "Initial")
+            COMMON.gitmem_commit(project_root, "docs/test.md", "Initial")
 
             # Create checkpoint
             COMMON.gitmem_checkpoint(project_root, "test-checkpoint")
@@ -486,10 +486,10 @@ class GitMemListTagsTest(unittest.TestCase):
 
             COMMON.gitmem_init(project_root)
 
-            test_file = project_root / "docs/reports/test.md"
+            test_file = project_root / "docs/test.md"
             test_file.parent.mkdir(parents=True, exist_ok=True)
             test_file.write_text("content\n", encoding="utf-8")
-            COMMON.gitmem_commit(project_root, "docs/reports/test.md", "Initial")
+            COMMON.gitmem_commit(project_root, "docs/test.md", "Initial")
 
             COMMON.gitmem_checkpoint(project_root, "checkpoint-1")
             COMMON.gitmem_checkpoint(project_root, "checkpoint-2")
@@ -530,14 +530,14 @@ class GitMemCommitEdgeCasesTest(unittest.TestCase):
 
     def test_commit_with_no_changes(self) -> None:
         """Test committing with no changes returns current HEAD."""
-        test_file = self.project_root / "docs/reports/test.md"
+        test_file = self.project_root / "docs/test.md"
         test_file.parent.mkdir(parents=True, exist_ok=True)
         test_file.write_text("content\n", encoding="utf-8")
 
-        hash1 = COMMON.gitmem_commit(self.project_root, "docs/reports/test.md", "First commit")
+        hash1 = COMMON.gitmem_commit(self.project_root, "docs/test.md", "First commit")
 
         # Commit again without changes
-        hash2 = COMMON.gitmem_commit(self.project_root, "docs/reports/test.md", "No changes")
+        hash2 = COMMON.gitmem_commit(self.project_root, "docs/test.md", "No changes")
 
         # Should return the same hash
         self.assertEqual(hash1, hash2)
@@ -548,12 +548,12 @@ class GitMemCommitEdgeCasesTest(unittest.TestCase):
             project_root = Path(temp_dir) / "no-init-project"
             project_root.mkdir()
 
-            test_file = project_root / "docs/reports/test.md"
+            test_file = project_root / "docs/test.md"
             test_file.parent.mkdir(parents=True, exist_ok=True)
             test_file.write_text("content\n", encoding="utf-8")
 
             with self.assertRaises(ValueError) as context:
-                COMMON.gitmem_commit(project_root, "docs/reports/test.md", "Should fail")
+                COMMON.gitmem_commit(project_root, "docs/test.md", "Should fail")
 
             self.assertIn("not initialized", str(context.exception).lower())
 
@@ -567,7 +567,7 @@ class GitMemRollbackEdgeCasesTest(unittest.TestCase):
             project_root = Path(temp_dir) / "no-init-project"
             project_root.mkdir()
 
-            result = COMMON.gitmem_rollback(project_root, "docs/reports/test.md")
+            result = COMMON.gitmem_rollback(project_root, "docs/test.md")
             self.assertFalse(result)
 
     def test_rollback_to_nonexistent_revision_returns_false(self) -> None:
@@ -577,13 +577,13 @@ class GitMemRollbackEdgeCasesTest(unittest.TestCase):
             project_root.mkdir()
             COMMON.gitmem_init(project_root)
 
-            test_file = project_root / "docs/reports/test.md"
+            test_file = project_root / "docs/test.md"
             test_file.parent.mkdir(parents=True, exist_ok=True)
             test_file.write_text("content\n", encoding="utf-8")
-            COMMON.gitmem_commit(project_root, "docs/reports/test.md", "Initial")
+            COMMON.gitmem_commit(project_root, "docs/test.md", "Initial")
 
             result = COMMON.gitmem_rollback(
-                project_root, "docs/reports/test.md", to_rev="nonexistent"
+                project_root, "docs/test.md", to_rev="nonexistent"
             )
             self.assertFalse(result)
 
@@ -597,7 +597,7 @@ class GitMemHistoryEdgeCasesTest(unittest.TestCase):
             project_root = Path(temp_dir) / "no-init-project"
             project_root.mkdir()
 
-            history = COMMON.gitmem_history(project_root, "docs/reports/test.md")
+            history = COMMON.gitmem_history(project_root, "docs/test.md")
             self.assertEqual([], history)
 
     def test_history_for_nonexistent_file_returns_empty_list(self) -> None:
@@ -607,7 +607,7 @@ class GitMemHistoryEdgeCasesTest(unittest.TestCase):
             project_root.mkdir()
             COMMON.gitmem_init(project_root)
 
-            history = COMMON.gitmem_history(project_root, "docs/reports/nonexistent.md")
+            history = COMMON.gitmem_history(project_root, "docs/nonexistent.md")
             self.assertEqual([], history)
 
 
@@ -620,7 +620,7 @@ class GitMemDiffEdgeCasesTest(unittest.TestCase):
             project_root = Path(temp_dir) / "no-init-project"
             project_root.mkdir()
 
-            diff = COMMON.gitmem_diff(project_root, "docs/reports/test.md")
+            diff = COMMON.gitmem_diff(project_root, "docs/test.md")
             self.assertIn("not initialized", diff.lower())
 
 
@@ -885,16 +885,16 @@ class GitMemCLITest(unittest.TestCase):
             COMMON.gitmem_init(project_root)
 
             # Use tracked directory
-            test_file = project_root / "docs/reports/test.md"
+            test_file = project_root / "docs/test.md"
             test_file.parent.mkdir(parents=True, exist_ok=True)
             test_file.write_text("# Version 1", encoding="utf-8")
-            COMMON.gitmem_commit(project_root, "docs/reports/test.md", "v1")
+            COMMON.gitmem_commit(project_root, "docs/test.md", "v1")
             test_file.write_text("# Version 2", encoding="utf-8")
-            COMMON.gitmem_commit(project_root, "docs/reports/test.md", "v2")
+            COMMON.gitmem_commit(project_root, "docs/test.md", "v2")
 
             args = argparse.Namespace(
                 project_root=str(project_root),
-                file="docs/reports/test.md",
+                file="docs/test.md",
                 from_rev="HEAD~1",
                 to_rev="HEAD",
             )
@@ -921,15 +921,15 @@ class GitMemCLITest(unittest.TestCase):
             COMMON.gitmem_init(project_root)
 
             # Use tracked directory
-            test_file = project_root / "docs/reports/test.md"
+            test_file = project_root / "docs/test.md"
             test_file.parent.mkdir(parents=True, exist_ok=True)
             test_file.write_text("# Version 1", encoding="utf-8")
-            COMMON.gitmem_commit(project_root, "docs/reports/test.md", "v1")
+            COMMON.gitmem_commit(project_root, "docs/test.md", "v1")
             test_file.write_text("# Version 2", encoding="utf-8")
-            COMMON.gitmem_commit(project_root, "docs/reports/test.md", "v2")
+            COMMON.gitmem_commit(project_root, "docs/test.md", "v2")
 
             args = argparse.Namespace(
-                project_root=str(project_root), file="docs/reports/test.md", to_rev="HEAD~1"
+                project_root=str(project_root), file="docs/test.md", to_rev="HEAD~1"
             )
             result = GITMEM.cmd_rollback(args)
             self.assertEqual(result, 0)

@@ -235,7 +235,7 @@ The Writer Agent receives tasks from and reports to the Orchestrator only.
 task_id: "paper-001"
 skill: "paper-write"
 context:
-  evidence_package: "docs/reports/experiments/evidence-package-index.md"
+  evidence_package: "docs/experiments/evidence-package-index.md"
   target_venue: "NeurIPS 2024"
   page_limit: 9
 deliverables:

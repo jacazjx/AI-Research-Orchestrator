@@ -51,7 +51,7 @@ class TestCompleteSubstepWorkflow(unittest.TestCase):
     def test_complete_substep_workflow(self) -> None:
         """Test complete workflow: Primary -> Reviewer approves -> Checkpoint -> Next substep."""
         # Create required artifact for literature_survey
-        artifact = self.project_root / "docs/reports/survey/literature-review.md"
+        artifact = self.project_root / "docs/survey/literature-review.md"
         artifact.parent.mkdir(parents=True, exist_ok=True)
         artifact.write_text("# Literature Review\n\nA comprehensive review.\n", encoding="utf-8")
 
@@ -107,7 +107,7 @@ class TestCompleteSubstepWorkflow(unittest.TestCase):
     def test_substep_checkpoint_created_on_approval(self) -> None:
         """Test that GitMem checkpoint is created when substep is approved."""
         # Create required artifact
-        artifact = self.project_root / "docs/reports/survey/literature-review.md"
+        artifact = self.project_root / "docs/survey/literature-review.md"
         artifact.parent.mkdir(parents=True, exist_ok=True)
         artifact.write_text("# Literature Review\n", encoding="utf-8")
 
@@ -142,7 +142,7 @@ class TestSubstepRevisionCycle(unittest.TestCase):
     def test_substep_revision_cycle(self) -> None:
         """Test: Primary agent -> Reviewer rejects -> Revision -> Approval."""
         # Create artifact
-        artifact = self.project_root / "docs/reports/survey/literature-review.md"
+        artifact = self.project_root / "docs/survey/literature-review.md"
         artifact.parent.mkdir(parents=True, exist_ok=True)
         artifact.write_text("# Literature Review\n\nInitial version.\n", encoding="utf-8")
 
@@ -215,7 +215,7 @@ class TestSubstepRevisionCycle(unittest.TestCase):
 
     def test_multiple_revisions_before_approval(self) -> None:
         """Test multiple revision cycles before approval."""
-        artifact = self.project_root / "docs/reports/survey/literature-review.md"
+        artifact = self.project_root / "docs/survey/literature-review.md"
         artifact.parent.mkdir(parents=True, exist_ok=True)
 
         # Initial submission
@@ -297,14 +297,14 @@ class TestPhaseTransitionWithSubsteps(unittest.TestCase):
         """Test complete all substeps -> Phase gate -> Next phase."""
         # Create all survey artifacts
         artifacts = {
-            "docs/reports/survey/literature-review.md": "# Literature Review\n",
-            "docs/reports/survey/idea-definition.md": "# Idea Definition\n",
-            "docs/reports/survey/research-readiness-report.md": (
+            "docs/survey/literature-review.md": "# Literature Review\n",
+            "docs/survey/idea-definition.md": "# Idea Definition\n",
+            "docs/survey/research-readiness-report.md": (
                 "# Research Readiness\n- Recommendation: `approve`\n"
             ),
-            "docs/reports/survey/survey-round-summary.md": "# Summary\n",
-            "docs/reports/survey/critic-round-review.md": "# Review\n",
-            "docs/reports/survey/phase-scorecard.md": "# Scorecard\n- Gate readiness: `approve`\n",
+            "docs/survey/survey-round-summary.md": "# Summary\n",
+            "docs/survey/critic-round-review.md": "# Review\n",
+            "docs/survey/phase-scorecard.md": "# Scorecard\n- Gate readiness: `approve`\n",
         }
 
         for path, content in artifacts.items():
@@ -381,14 +381,14 @@ class TestPhaseTransitionWithSubsteps(unittest.TestCase):
         """Test that current_substep resets when transitioning phases."""
         # Set up for transition
         artifacts = {
-            "docs/reports/survey/literature-review.md": "# Lit Review\n",
-            "docs/reports/survey/idea-definition.md": "# Idea\n",
-            "docs/reports/survey/research-readiness-report.md": (
+            "docs/survey/literature-review.md": "# Lit Review\n",
+            "docs/survey/idea-definition.md": "# Idea\n",
+            "docs/survey/research-readiness-report.md": (
                 "# Readiness\n- Recommendation: `approve`\n"
             ),
-            "docs/reports/survey/survey-round-summary.md": "# Summary\n",
-            "docs/reports/survey/critic-round-review.md": "# Review\n",
-            "docs/reports/survey/phase-scorecard.md": "# Scorecard\n- Gate readiness: `approve`\n",
+            "docs/survey/survey-round-summary.md": "# Summary\n",
+            "docs/survey/critic-round-review.md": "# Review\n",
+            "docs/survey/phase-scorecard.md": "# Scorecard\n- Gate readiness: `approve`\n",
         }
 
         for path, content in artifacts.items():
@@ -438,7 +438,7 @@ class TestGitMemCheckpointsThroughWorkflow(unittest.TestCase):
     def test_gitmem_checkpoints_through_workflow(self) -> None:
         """Verify checkpoints are created correctly throughout workflow."""
         # Create artifact
-        artifact = self.project_root / "docs/reports/survey/literature-review.md"
+        artifact = self.project_root / "docs/survey/literature-review.md"
         artifact.parent.mkdir(parents=True, exist_ok=True)
 
         tags_before = COMMON.gitmem_list_tags(self.project_root)
@@ -458,7 +458,7 @@ class TestGitMemCheckpointsThroughWorkflow(unittest.TestCase):
         self.assertIn("survey-literature_survey-approved", tags_after_first)
 
         # Complete second substep
-        artifact2 = self.project_root / "docs/reports/survey/idea-definition.md"
+        artifact2 = self.project_root / "docs/survey/idea-definition.md"
         artifact2.write_text("# Idea Definition\n", encoding="utf-8")
         STAGE.run_stage_loop(
             self.project_root,
@@ -476,14 +476,14 @@ class TestGitMemCheckpointsThroughWorkflow(unittest.TestCase):
         """Test that gate checkpoints are distinct from substep checkpoints."""
         # Set up for gate approval
         artifacts = {
-            "docs/reports/survey/literature-review.md": "# Lit\n",
-            "docs/reports/survey/idea-definition.md": "# Idea\n",
-            "docs/reports/survey/research-readiness-report.md": (
+            "docs/survey/literature-review.md": "# Lit\n",
+            "docs/survey/idea-definition.md": "# Idea\n",
+            "docs/survey/research-readiness-report.md": (
                 "# Ready\n- Recommendation: `approve`\n"
             ),
-            "docs/reports/survey/survey-round-summary.md": "# Summary\n",
-            "docs/reports/survey/critic-round-review.md": "# Review\n",
-            "docs/reports/survey/phase-scorecard.md": "# Scorecard\n- Gate readiness: `approve`\n",
+            "docs/survey/survey-round-summary.md": "# Summary\n",
+            "docs/survey/critic-round-review.md": "# Review\n",
+            "docs/survey/phase-scorecard.md": "# Scorecard\n- Gate readiness: `approve`\n",
         }
 
         for path, content in artifacts.items():
@@ -540,7 +540,7 @@ class TestGitMemCheckpointsThroughWorkflow(unittest.TestCase):
 
     def test_checkpoint_not_created_on_revision(self) -> None:
         """Test that checkpoint is not created when review is revise."""
-        artifact = self.project_root / "docs/reports/survey/literature-review.md"
+        artifact = self.project_root / "docs/survey/literature-review.md"
         artifact.parent.mkdir(parents=True, exist_ok=True)
         artifact.write_text("# Lit Review\n", encoding="utf-8")
 
@@ -585,7 +585,7 @@ class TestSubstepValidationIntegration(unittest.TestCase):
     def test_can_proceed_after_previous_approved(self) -> None:
         """Test that substep can proceed after previous is approved."""
         # Create artifact
-        artifact = self.project_root / "docs/reports/survey/literature-review.md"
+        artifact = self.project_root / "docs/survey/literature-review.md"
         artifact.parent.mkdir(parents=True, exist_ok=True)
         artifact.write_text("# Lit Review\n", encoding="utf-8")
 
@@ -619,7 +619,7 @@ class TestSubstepStatePersistence(unittest.TestCase):
 
     def test_substep_status_persists_across_reloads(self) -> None:
         """Test that substep status persists across state reloads."""
-        artifact = self.project_root / "docs/reports/survey/literature-review.md"
+        artifact = self.project_root / "docs/survey/literature-review.md"
         artifact.parent.mkdir(parents=True, exist_ok=True)
         artifact.write_text("# Content\n", encoding="utf-8")
 
@@ -647,7 +647,7 @@ class TestSubstepStatePersistence(unittest.TestCase):
 
     def test_attempts_count_persists(self) -> None:
         """Test that attempts count persists across operations."""
-        artifact = self.project_root / "docs/reports/survey/literature-review.md"
+        artifact = self.project_root / "docs/survey/literature-review.md"
         artifact.parent.mkdir(parents=True, exist_ok=True)
         artifact.write_text("# V1\n", encoding="utf-8")
 
@@ -712,18 +712,18 @@ class TestFullResearchProjectWorkflow(unittest.TestCase):
         # ==================== SURVEY PHASE ====================
         # Create survey artifacts
         survey_artifacts = {
-            "docs/reports/survey/literature-review.md": (
+            "docs/survey/literature-review.md": (
                 "# Literature Review\n\nComprehensive review of related work.\n"
             ),
-            "docs/reports/survey/idea-definition.md": (
+            "docs/survey/idea-definition.md": (
                 "# Idea Definition\n\nNovel research contribution.\n"
             ),
-            "docs/reports/survey/research-readiness-report.md": (
+            "docs/survey/research-readiness-report.md": (
                 "# Research Readiness Report\n\n- Recommendation: `approve`\n"
             ),
-            "docs/reports/survey/survey-round-summary.md": "# Survey Round Summary\n",
-            "docs/reports/survey/critic-round-review.md": "# Critic Round Review\n",
-            "docs/reports/survey/phase-scorecard.md": (
+            "docs/survey/survey-round-summary.md": "# Survey Round Summary\n",
+            "docs/survey/critic-round-review.md": "# Critic Round Review\n",
+            "docs/survey/phase-scorecard.md": (
                 "# Phase Scorecard\n\n- Gate readiness: `approve`\n"
             ),
         }
@@ -786,29 +786,29 @@ class TestFullResearchProjectWorkflow(unittest.TestCase):
         #   pilot_validation_report, pilot_scorecard, pilot_adviser_review
         pilot_artifacts = {
             # Substep artifacts
-            "docs/reports/pilot/problem-validation-report.md": (
+            "docs/pilot/problem-validation-report.md": (
                 "# Problem Validation Report\n\n- Validation verdict: `validated`\n"
             ),
-            "docs/reports/pilot/problem-analysis.md": (
+            "docs/pilot/problem-analysis.md": (
                 "# Problem Analysis\n\nDetailed problem breakdown.\n"
             ),
-            "docs/reports/pilot/pilot-design.md": (
+            "docs/pilot/pilot-design.md": (
                 "# Pilot Design\n\nExperimental design for pilot.\n"
             ),
-            "docs/reports/pilot/pilot-validation-report.md": (
+            "docs/pilot/pilot-validation-report.md": (
                 "# Pilot Validation Report\n\n- Continue to full experiments: `yes`\n"
             ),
             # Additional phase deliverables for quality gate
             "code/configs/pilot-experiment-plan.md": (
                 "# Pilot Experiment Plan\n\nPlan for pilot experiments.\n"
             ),
-            "docs/reports/pilot/pilot-adviser-review.md": (
+            "docs/pilot/pilot-adviser-review.md": (
                 "# Pilot Adviser Review\n\n- Status: `approved`\n- Recommendation: `approve`\n"
             ),
             # Other artifacts
-            "docs/reports/pilot/pilot-round-summary.md": "# Pilot Round Summary\n",
-            "docs/reports/pilot/adviser-round-review.md": "# Adviser Round Review\n",
-            "docs/reports/pilot/phase-scorecard.md": (
+            "docs/pilot/pilot-round-summary.md": "# Pilot Round Summary\n",
+            "docs/pilot/adviser-round-review.md": "# Adviser Round Review\n",
+            "docs/pilot/phase-scorecard.md": (
                 "# Phase Scorecard\n\n- Gate readiness: `approve`\n"
             ),
         }
@@ -890,34 +890,34 @@ class TestFullResearchProjectWorkflow(unittest.TestCase):
         #   experiment_scorecard, experiment_adviser_review
         experiments_artifacts = {
             # Substep artifacts
-            "docs/reports/experiments/experiment-spec.md": (
+            "docs/experiments/experiment-spec.md": (
                 "# Experiment Specification\n\nDetailed experiment design.\n"
             ),
-            "docs/reports/experiments/run-registry.md": (
+            "docs/experiments/run-registry.md": (
                 "# Run Registry\n\nExperiment run logs.\n"
             ),
-            "docs/reports/experiments/evidence-package-index.md": (
+            "docs/experiments/evidence-package-index.md": (
                 "# Evidence Package Index\n\n- Results: `positive`\n"
             ),
             # Additional phase deliverables for quality gate
             "code/configs/experiment-spec.md": (
                 "# Experiment Specification\n\nDetailed experiment design.\n"
             ),
-            "docs/reports/experiments/results-summary.md": (
+            "docs/experiments/results-summary.md": (
                 "# Results Summary\n\nSummary of experiment results.\n"
             ),
-            "docs/reports/experiments/experiment-adviser-review.md": (
+            "docs/experiments/experiment-adviser-review.md": (
                 "# Experiment Adviser Review\n\n"
                 "- Status: `approved`\n"
                 "- Recommendation: `approve`\n"
                 "- Handoff decision: `approve`\n"
             ),
             # Other artifacts
-            "docs/reports/experiments/experiments-round-summary.md": (
+            "docs/experiments/experiments-round-summary.md": (
                 "# Experiments Round Summary\n"
             ),
-            "docs/reports/experiments/adviser-round-review.md": "# Adviser Round Review\n",
-            "docs/reports/experiments/phase-scorecard.md": (
+            "docs/experiments/adviser-round-review.md": "# Adviser Round Review\n",
+            "docs/experiments/phase-scorecard.md": (
                 "# Phase Scorecard\n\n- Gate readiness: `approve`\n"
             ),
         }
@@ -999,12 +999,12 @@ class TestFullResearchProjectWorkflow(unittest.TestCase):
                 "- Submission bar: `top-tier journal/conference ready`\n"
                 "- Verdict: `accept`\n"
             ),
-            "docs/reports/paper/final-acceptance-report.md": (
+            "docs/paper/final-acceptance-report.md": (
                 "# Final Acceptance Report\n\n"
                 "- Meets top-tier venue bar: `yes`\n"
                 "- Recommendation: `approve`\n"
             ),
-            "docs/reports/paper/phase-scorecard.md": (
+            "docs/paper/phase-scorecard.md": (
                 "# Phase Scorecard\n\n- Gate readiness: `approve`\n"
             ),
             # Other artifacts
@@ -1075,15 +1075,15 @@ class TestFullResearchProjectWorkflow(unittest.TestCase):
         # Create reflection artifacts
         # Note: runtime_improvement_report needs 'Recommendation: approve' for gate signal
         reflection_artifacts = {
-            "docs/reports/reflection/lessons-learned.md": (
+            "docs/reflection/lessons-learned.md": (
                 "# Lessons Learned\n\nKey takeaways from the project.\n"
             ),
-            "docs/reports/reflection/runtime-improvement-report.md": (
+            "docs/reflection/runtime-improvement-report.md": (
                 "# Runtime Improvement Report\n\n- Recommendation: `approve`\n"
             ),
-            "docs/reports/reflection/reflection-round-summary.md": ("# Reflection Round Summary\n"),
-            "docs/reports/reflection/curator-round-review.md": "# Curator Round Review\n",
-            "docs/reports/reflection/phase-scorecard.md": (
+            "docs/reflection/reflection-round-summary.md": ("# Reflection Round Summary\n"),
+            "docs/reflection/curator-round-review.md": "# Curator Round Review\n",
+            "docs/reflection/phase-scorecard.md": (
                 "# Phase Scorecard\n\n- Gate readiness: `approve`\n"
             ),
         }
@@ -1211,7 +1211,7 @@ class TestMultiPhaseSubstepWorkflow(unittest.TestCase):
     def test_substep_status_isolated_between_phases(self) -> None:
         """Test that substep status is isolated between phases."""
         # Complete survey substeps
-        artifact = self.project_root / "docs/reports/survey/literature-review.md"
+        artifact = self.project_root / "docs/survey/literature-review.md"
         artifact.parent.mkdir(parents=True, exist_ok=True)
         artifact.write_text("# Survey\n", encoding="utf-8")
 

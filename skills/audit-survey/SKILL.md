@@ -147,7 +147,7 @@ For detailed checklists, see: `references/reporting_standards.md`
 
 ### Step 1: Review Survey Report
 
-Read `docs/reports/survey/research-readiness-report.md` and related materials.
+Read `docs/survey/research-readiness-report.md` and related materials.
 
 ### Step 2: Verify Citation Authenticity
 

@@ -16,17 +16,17 @@
 - `progress.md` is the human-readable progress board.
 - `timeline.ndjson` is the append-only event stream.
 
-## `docs/reports/survey/research-readiness-report.md`
+## `docs/survey/research-readiness-report.md`
 
 - Include background, scope, problem definition, theory analysis, recent work, risk register, novelty argument, and minimum viable validation path.
 - End with an explicit Gate 1 recommendation.
 
-## `docs/reports/pilot/pilot-validation-report.md`
+## `docs/pilot/pilot-validation-report.md`
 
 - Explain whether the idea deserves full experiments, revision, or pivot.
 - Link problem analysis, pilot plan, pilot results, and adviser review.
 
-## `docs/reports/experiments/evidence-package-index.md`
+## `docs/experiments/evidence-package-index.md`
 
 - Act as the table of contents for experiment artifacts, run provenance, checkpoints, tables, and figures.
 - Point to the final set of evidence used for Gate 3.
@@ -41,7 +41,7 @@
 - Record citation gaps, verification attempts, DOI-verified or trusted-source outcomes, preprint replacement issues, and remaining citation risks.
 - Serve as the paper-phase evidence source for citation authenticity review.
 
-## `docs/reports/reflection/runtime-improvement-report.md`
+## `docs/reflection/runtime-improvement-report.md`
 
 - Separate observations, recommendations, and overlay drafts.
 - State which changes are safe to consider and which still require additional human judgment.

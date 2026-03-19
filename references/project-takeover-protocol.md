@@ -248,7 +248,7 @@ python3 scripts/init_research_project.py \
 | Source Pattern | Target Location |
 |----------------|-----------------|
 | *.bib, papers/*.pdf | .autoresearch/reference-papers/ |
-| survey*.md, literature*.md | docs/reports/survey/ |
+| survey*.md, literature*.md | docs/survey/ |
 | pilot*.py, pilot*.md | code/pilot/ |
 | experiment*.py, results*.md | code/experiments/ |
 | paper*.tex, draft*.md | paper/ |

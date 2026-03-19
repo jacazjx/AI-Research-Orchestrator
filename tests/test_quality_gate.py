@@ -73,17 +73,17 @@ class QualityGateTest(unittest.TestCase):
 
             # Use new paths from DEFAULT_DELIVERABLES
             for relative_path in (
-                "docs/reports/survey/survey-round-summary.md",
-                "docs/reports/survey/critic-round-review.md",
+                "docs/survey/survey-round-summary.md",
+                "docs/survey/critic-round-review.md",
             ):
                 (project_root / relative_path).write_text(
                     f"substantive content for {relative_path}\n", encoding="utf-8"
                 )
-            (project_root / "docs/reports/survey/research-readiness-report.md").write_text(
+            (project_root / "docs/survey/research-readiness-report.md").write_text(
                 "# Research Readiness Report\n\n- Recommendation: `approve`\n",
                 encoding="utf-8",
             )
-            (project_root / "docs/reports/survey/phase-scorecard.md").write_text(
+            (project_root / "docs/survey/phase-scorecard.md").write_text(
                 "# Phase 1 Scorecard\n\n- Gate readiness: `approve`\n- Recommendation: `approve`\n",
                 encoding="utf-8",
             )
@@ -239,10 +239,10 @@ class QualityGateTest(unittest.TestCase):
 
             # Create deliverables with proper content
             for relative_path in (
-                "docs/reports/survey/survey-round-summary.md",
-                "docs/reports/survey/critic-round-review.md",
-                "docs/reports/survey/research-readiness-report.md",
-                "docs/reports/survey/phase-scorecard.md",
+                "docs/survey/survey-round-summary.md",
+                "docs/survey/critic-round-review.md",
+                "docs/survey/research-readiness-report.md",
+                "docs/survey/phase-scorecard.md",
             ):
                 file_path = project_root / relative_path
                 file_path.parent.mkdir(parents=True, exist_ok=True)

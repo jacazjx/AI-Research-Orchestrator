@@ -128,17 +128,17 @@ The Adviser Agent operates with a "stress-test" mindset:
 
 | Deliverable | Path | Content |
 |-------------|------|---------|
-| Design Audit | `docs/reports/pilot/pilot-design-audit.md` | Validity assessment |
-| Results Audit | `docs/reports/pilot/pilot-results-audit.md` | Evidence verification |
-| Adviser Review | `docs/reports/pilot/pilot-adviser-review.md` | Overall assessment |
+| Design Audit | `docs/pilot/pilot-design-audit.md` | Validity assessment |
+| Results Audit | `docs/pilot/pilot-results-audit.md` | Evidence verification |
+| Adviser Review | `docs/pilot/pilot-adviser-review.md` | Overall assessment |
 
 #### Experiments Phase
 
 | Deliverable | Path | Content |
 |-------------|------|---------|
-| Exp Design Audit | `docs/reports/experiments/exp-design-audit.md` | Statistical validity |
-| Results Audit | `docs/reports/experiments/results-audit.md` | Traceability check |
-| Evidence Review | `docs/reports/experiments/evidence-review.md` | Paper-readiness |
+| Exp Design Audit | `docs/experiments/exp-design-audit.md` | Statistical validity |
+| Results Audit | `docs/experiments/results-audit.md` | Traceability check |
+| Evidence Review | `docs/experiments/evidence-review.md` | Paper-readiness |
 
 ### Audit Report Structure
 
@@ -251,8 +251,8 @@ task_id: "audit-pilot-001"
 skill: "audit-pilot"
 context:
   pilot_deliverables:
-    - "docs/reports/pilot/pilot-validation-report.md"
-    - "docs/reports/pilot/pilot-results.md"
+    - "docs/pilot/pilot-validation-report.md"
+    - "docs/pilot/pilot-results.md"
   research_hypothesis: "..."
 ```
 

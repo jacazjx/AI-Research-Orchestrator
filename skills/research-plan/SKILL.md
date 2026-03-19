@@ -13,7 +13,7 @@ Transform an idea definition into a detailed research execution plan with method
 
 ### Step 1: Review Idea Definition
 
-Read `docs/reports/survey/idea-definition.md` to understand:
+Read `docs/survey/idea-definition.md` to understand:
 - Research hypothesis
 - Proposed approach
 - Expected contributions
@@ -61,7 +61,7 @@ Identify:
 
 ## Output
 
-Save to `docs/reports/survey/research-readiness-report.md`:
+Save to `docs/survey/research-readiness-report.md`:
 
 ```markdown
 # Research Readiness Report

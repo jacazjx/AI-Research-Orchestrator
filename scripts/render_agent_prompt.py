@@ -3,7 +3,16 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+from typing import Any
 
+import yaml
+
+from constants.phases import (
+    DEFAULT_DELIVERABLES,
+    NEXT_PHASE,
+    PHASE_LOOP_KEY,
+    PHASE_REQUIRED_DELIVERABLES,
+)
 from orchestrator_common import (
     PHASE_TO_GATE,
     build_list_section,
@@ -32,60 +41,82 @@ ROLE_TEMPLATE_MAP = {
     "project-takeover": "project-takeover.md.tmpl",
 }
 
+# Maps role name to the phase it primarily operates in (semantic phase names).
+# Roles that span two phases (code, adviser) are mapped to both pilot and experiments;
+# for injection purposes we map them to "pilot" as the base phase since experiments
+# is the logical continuation — callers can rely on phase_override to be more precise.
+ROLE_TO_PHASE = {
+    "orchestrator": None,
+    "survey": "survey",
+    "critic": "survey",
+    "code": "pilot",
+    "adviser": "pilot",
+    "paper-writer": "paper",
+    "reviewer-editor": "paper",
+    "reflector": "reflection",
+    "curator": "reflection",
+    "system-auditor": None,
+    "project-takeover": None,
+}
+
+# Previous phase for each semantic phase (used to locate handoff files).
+# Derived from NEXT_PHASE inverse; defined here explicitly for clarity.
+PREV_PHASE = {v: k for k, v in NEXT_PHASE.items() if k in NEXT_PHASE}
+
 DEFAULT_MUST_READ = {
     "orchestrator": [
-        "00-admin/research-state.yaml",
-        "00-admin/idea-brief.md",
-        "00-admin/dashboard/progress.md",
+        ".autoresearch/state/research-state.yaml",
+        ".autoresearch/idea-brief.md",
+        ".autoresearch/dashboard/progress.md",
     ],
     "survey": [
-        "00-admin/idea-brief.md",
-        "00-admin/reference-papers/README.md",
-        "01-survey/survey-round-summary.md",
+        ".autoresearch/idea-brief.md",
+        ".autoresearch/reference-papers/README.md",
+        "docs/survey/survey-round-summary.md",
     ],
     "critic": [
-        "01-survey/survey-round-summary.md",
-        "01-survey/critic-round-review.md",
-        "01-survey/research-readiness-report.md",
+        "docs/survey/survey-round-summary.md",
+        "docs/survey/critic-round-review.md",
+        "docs/survey/research-readiness-report.md",
     ],
     "code": [
-        "01-survey/research-readiness-report.md",
-        "02-pilot-analysis/problem-analysis.md",
-        "02-pilot-analysis/pilot-validation-report.md",
-        "03-full-experiments/experiment-spec.md",
+        "docs/survey/research-readiness-report.md",
+        "docs/pilot/problem-analysis.md",
+        "docs/pilot/pilot-validation-report.md",
+        "docs/experiments/experiment-spec.md",
     ],
     "adviser": [
-        "02-pilot-analysis/pilot-experiment-plan.md",
-        "02-pilot-analysis/pilot-results.md",
-        "03-full-experiments/experiment-spec.md",
-        "03-full-experiments/results-summary.md",
-        "03-full-experiments/evidence-package-index.md",
+        "docs/pilot/pilot-experiment-plan.md",
+        "docs/pilot/pilot-results.md",
+        "docs/experiments/experiment-spec.md",
+        "docs/experiments/results-summary.md",
+        "docs/experiments/evidence-package-index.md",
     ],
     "paper-writer": [
-        "01-survey/research-readiness-report.md",
-        "02-pilot-analysis/pilot-validation-report.md",
-        "03-full-experiments/evidence-package-index.md",
-        "04-paper/citation-audit-report.md",
-        "04-paper/paper-draft.md",
+        "docs/survey/research-readiness-report.md",
+        "docs/pilot/pilot-validation-report.md",
+        "docs/experiments/evidence-package-index.md",
+        "docs/paper/citation-audit-report.md",
+        "paper/paper-draft.md",
     ],
     "reviewer-editor": [
-        "03-full-experiments/evidence-package-index.md",
-        "04-paper/paper-draft.md",
-        "04-paper/citation-audit-report.md",
-        "04-paper/reviewer-report.md",
-        "04-paper/rebuttal-log.md",
+        "docs/experiments/evidence-package-index.md",
+        "paper/paper-draft.md",
+        "docs/paper/citation-audit-report.md",
+        "docs/paper/reviewer-report.md",
+        "docs/paper/rebuttal-log.md",
     ],
     "reflector": [
-        "00-admin/dashboard/progress.md",
-        "03-full-experiments/evidence-package-index.md",
-        "04-paper/final-acceptance-report.md",
-        "05-reflection-evolution/lessons-learned.md",
+        ".autoresearch/dashboard/progress.md",
+        "docs/experiments/evidence-package-index.md",
+        "paper/final-acceptance-report.md",
+        "docs/reflection/lessons-learned.md",
     ],
     "curator": [
-        "00-admin/research-state.yaml",
-        "05-reflection-evolution/lessons-learned.md",
-        "05-reflection-evolution/overlay-draft.md",
-        "05-reflection-evolution/runtime-improvement-report.md",
+        ".autoresearch/state/research-state.yaml",
+        "docs/reflection/lessons-learned.md",
+        "docs/reflection/overlay-draft.md",
+        "docs/reflection/runtime-improvement-report.md",
     ],
     "system-auditor": [
         "references/gate-rubrics.md",
@@ -94,11 +125,204 @@ DEFAULT_MUST_READ = {
         "references/literature-verification.md",
     ],
     "project-takeover": [
-        "00-admin/research-state.yaml",
-        "00-admin/idea-brief.md",
-        "00-admin/workspace-manifest.md",
+        ".autoresearch/state/research-state.yaml",
+        ".autoresearch/idea-brief.md",
+        ".autoresearch/workspace-manifest.md",
     ],
 }
+
+
+def _build_state_section(project_root: Path, role: str, phase_override: str | None) -> str:
+    """Build a markdown section summarising the current project state.
+
+    Reads .autoresearch/state/research-state.yaml directly (without schema
+    validation) so the injection never aborts the render even if the state is
+    partially migrated.  Returns an empty string if the file does not exist.
+    """
+    state_path = project_root / ".autoresearch" / "state" / "research-state.yaml"
+    if not state_path.exists():
+        return ""
+    try:
+        with state_path.open(encoding="utf-8") as fh:
+            state: dict[str, Any] = yaml.safe_load(fh) or {}
+    except Exception:
+        return ""
+
+    current_phase: str = phase_override or state.get("current_phase", "unknown")
+    current_gate: str = state.get("current_gate", "unknown")
+
+    # Gate / review approval for the active phase
+    approval_status: dict[str, Any] = state.get("approval_status", {})
+    phase_reviews: dict[str, Any] = state.get("phase_reviews", {})
+
+    # Gate key for the current phase
+    gate_key = PHASE_TO_GATE.get(current_phase, "")
+    gate_status = approval_status.get(gate_key, "unknown") if gate_key else "unknown"
+
+    # Loop iteration count for the current phase
+    loop_counts: dict[str, Any] = state.get("loop_counts", {})
+    loop_key = PHASE_LOOP_KEY.get(current_phase, "")
+    loop_iteration = loop_counts.get(loop_key, 0) if loop_key else 0
+
+    lines = [
+        "## Current Project State",
+        "",
+        f"- **Current phase**: {current_phase}",
+        f"- **Current gate**: {current_gate}",
+        f"- **Gate status** ({gate_key or 'n/a'}): {gate_status}",
+        f"- **Loop iteration** ({loop_key or 'n/a'}): {loop_iteration}",
+    ]
+
+    # Include all gate statuses for broader context
+    if approval_status:
+        lines.append("- **All gate statuses**:")
+        for gate, status in approval_status.items():
+            lines.append(f"  - {gate}: {status}")
+
+    # Include all phase review statuses
+    if phase_reviews:
+        lines.append("- **Phase review statuses**:")
+        for review, status in phase_reviews.items():
+            lines.append(f"  - {review}: {status}")
+
+    return "\n".join(lines)
+
+
+def _build_handoff_section(project_root: Path, role: str, phase_override: str | None) -> str:
+    """Build a markdown section containing the previous-phase handoff summary.
+
+    Probes several candidate locations in priority order:
+      1. 00-admin/runtime/handoff-summaries/<prev_phase>-<agent>-handoff.yaml
+         (primary path written by phase_handoff.py; tries all agents for that phase)
+      2. .autoresearch/state/handoff-<prev_phase>.yaml
+      3. .autoresearch/state/handoff-<prev_phase>.md
+      4. docs/<prev_phase>/handoff-summary.md
+
+    Returns an empty string if nothing is found.
+    """
+    # Determine the current role's phase then derive the previous phase
+    role_phase = ROLE_TO_PHASE.get(role)
+    if role_phase is None and phase_override:
+        role_phase = phase_override
+    if role_phase is None:
+        return ""
+
+    active_phase = phase_override or role_phase
+    prev_phase = PREV_PHASE.get(active_phase, "")
+    if not prev_phase:
+        return ""
+
+    # 1. Check the canonical handoff-summaries directory for any agent of prev_phase
+    handoff_dir = project_root / ".autoresearch" / "runtime" / "handoff-summaries"
+    if handoff_dir.exists():
+        # Collect all YAML files matching <prev_phase>-*-handoff.yaml
+        candidates = sorted(handoff_dir.glob(f"{prev_phase}-*-handoff.yaml"))
+        if candidates:
+            # Use the most recently modified file
+            candidates.sort(key=lambda p: p.stat().st_mtime, reverse=True)
+            try:
+                with candidates[0].open(encoding="utf-8") as fh:
+                    data: dict[str, Any] = yaml.safe_load(fh) or {}
+                return _format_yaml_handoff_as_section(data, candidates[0].name)
+            except Exception:
+                pass
+
+    # 2. .autoresearch/state/handoff-<prev_phase>.yaml
+    for ext in (".yaml", ".md"):
+        candidate = project_root / ".autoresearch" / "state" / f"handoff-{prev_phase}{ext}"
+        if candidate.exists():
+            try:
+                text = candidate.read_text(encoding="utf-8").strip()
+                if text:
+                    return f"## Previous Phase Handoff\n\n{text}"
+            except Exception:
+                pass
+
+    # 3. docs/<prev_phase>/handoff-summary.md
+    candidate = project_root / "docs" / prev_phase / "handoff-summary.md"
+    if candidate.exists():
+        try:
+            text = candidate.read_text(encoding="utf-8").strip()
+            if text:
+                return f"## Previous Phase Handoff\n\n{text}"
+        except Exception:
+            pass
+
+    return ""
+
+
+def _format_yaml_handoff_as_section(data: dict[str, Any], filename: str) -> str:
+    """Render a YAML handoff dict as a readable markdown section."""
+    lines = [
+        "## Previous Phase Handoff",
+        "",
+        f"*Source: {filename}*",
+        "",
+    ]
+
+    phase = data.get("phase", "")
+    agent = data.get("agent_role", "")
+    ts = data.get("metadata", {}).get("timestamp", "")
+    if phase or agent:
+        lines.append(f"**Phase**: {phase}  **Agent**: {agent}  **Saved**: {ts}")
+        lines.append("")
+
+    field_labels = [
+        ("key_findings", "Key Findings"),
+        ("decisions_made", "Decisions Made"),
+        ("deliverables_status", "Deliverables Status"),
+        ("open_issues", "Open Issues"),
+        ("blockers", "Blockers"),
+        ("recommendations_for_next_phase", "Recommendations for Next Phase"),
+        ("context_for_resume", "Context for Resume"),
+    ]
+    for key, label in field_labels:
+        value = data.get(key)
+        if not value:
+            continue
+        lines.append(f"**{label}**:")
+        if isinstance(value, list):
+            for item in value:
+                lines.append(f"- {item}")
+        elif isinstance(value, dict):
+            for k, v in value.items():
+                lines.append(f"- {k}: {v}")
+        else:
+            lines.append(str(value))
+        lines.append("")
+
+    return "\n".join(lines)
+
+
+def _build_deliverables_section(role: str, phase_override: str | None) -> str:
+    """Build a markdown checklist of required deliverables for the role's phase.
+
+    Uses PHASE_REQUIRED_DELIVERABLES to get deliverable keys for the phase and
+    resolves their file paths via DEFAULT_DELIVERABLES.
+    Returns an empty string if the role has no mapped phase.
+    """
+    role_phase = ROLE_TO_PHASE.get(role)
+    if role_phase is None and phase_override:
+        role_phase = phase_override
+    if role_phase is None:
+        return ""
+
+    active_phase = phase_override or role_phase
+    deliverable_keys = PHASE_REQUIRED_DELIVERABLES.get(active_phase)
+    if not deliverable_keys:
+        return ""
+
+    lines = [
+        "## Required Deliverables Checklist",
+        "",
+        f"Phase: **{active_phase}**",
+        "",
+    ]
+    for key in deliverable_keys:
+        path = DEFAULT_DELIVERABLES.get(key, "(path unknown)")
+        lines.append(f"- [ ] `{key}`: `{path}`")
+
+    return "\n".join(lines)
 
 
 def render_agent_prompt(
@@ -111,6 +335,9 @@ def render_agent_prompt(
     required_inputs: list[str] | None = None,
     must_read: list[str] | None = None,
     extra_instructions: list[str] | None = None,
+    inject_state: bool = True,
+    inject_handoff: bool = True,
+    inject_deliverables: bool = True,
 ) -> dict[str, object]:
     project_root = project_root.resolve()
     state = load_state(project_root)
@@ -152,6 +379,23 @@ def render_agent_prompt(
     overlay_text = _build_overlay_section(project_root, state, role, prompt_phase)
     if overlay_text:
         prompt = prompt + "\n\n## Approved Overlays\n\n" + overlay_text
+
+    # --- Auto-injection of state, handoff, and deliverables (additive) ---
+    if inject_state:
+        state_section = _build_state_section(project_root, role, phase_override)
+        if state_section:
+            prompt = prompt + "\n\n" + state_section
+
+    if inject_handoff:
+        handoff_section = _build_handoff_section(project_root, role, phase_override)
+        if handoff_section:
+            prompt = prompt + "\n\n" + handoff_section
+
+    if inject_deliverables:
+        deliverables_section = _build_deliverables_section(role, phase_override)
+        if deliverables_section:
+            prompt = prompt + "\n\n" + deliverables_section
+
     return {
         "role": role,
         "project_root": str(project_root),
@@ -230,6 +474,25 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--must-read", action="append", dest="must_read")
     parser.add_argument("--extra-instruction", action="append", dest="extra_instructions")
     parser.add_argument("--json", action="store_true")
+    # Auto-injection flags (all default to True; pass --no-inject-* to disable)
+    parser.add_argument(
+        "--inject-state",
+        default=True,
+        action=argparse.BooleanOptionalAction,
+        help="Auto-inject current project state from research-state.yaml (default: True)",
+    )
+    parser.add_argument(
+        "--inject-handoff",
+        default=True,
+        action=argparse.BooleanOptionalAction,
+        help="Auto-inject previous phase handoff summary (default: True)",
+    )
+    parser.add_argument(
+        "--inject-deliverables",
+        default=True,
+        action=argparse.BooleanOptionalAction,
+        help="Auto-inject required deliverables checklist for the role (default: True)",
+    )
     return parser
 
 
@@ -251,6 +514,9 @@ def main() -> int:
         required_inputs=args.required_inputs,
         must_read=args.must_read,
         extra_instructions=args.extra_instructions,
+        inject_state=args.inject_state,
+        inject_handoff=args.inject_handoff,
+        inject_deliverables=args.inject_deliverables,
     )
     if args.json:
         print(json.dumps(result, ensure_ascii=False, indent=2))

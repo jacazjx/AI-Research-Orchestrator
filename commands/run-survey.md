@@ -9,8 +9,8 @@ allowed-tools: "Read, Write, Edit, Grep, Glob, Bash(${CLAUDE_PLUGIN_ROOT}/script
 
 Executes the Survey <-> Critic loop to produce:
 
-- `docs/reports/survey/research-readiness-report.md`
-- `docs/reports/survey/phase-scorecard.md`
+- `docs/survey/research-readiness-report.md`
+- `docs/survey/phase-scorecard.md`
 
 ## Execution
 

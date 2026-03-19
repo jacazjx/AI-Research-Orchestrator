@@ -57,7 +57,7 @@
 
 目录：
 
-- `docs/reports/survey/`（Agent工作目录在 `agents/survey/` 和 `agents/critic/`）
+- `docs/survey/`（Agent工作目录在 `agents/survey/` 和 `agents/critic/`）
 
 角色：
 
@@ -96,10 +96,10 @@
 
 ### 阶段交付物
 
-- `docs/reports/survey/survey-round-summary.md`
-- `docs/reports/survey/critic-round-review.md`
-- `docs/reports/survey/research-readiness-report.md`
-- `docs/reports/survey/phase-scorecard.md`
+- `docs/survey/survey-round-summary.md`
+- `docs/survey/critic-round-review.md`
+- `docs/survey/research-readiness-report.md`
+- `docs/survey/phase-scorecard.md`
 
 ### 质量门
 
@@ -131,7 +131,7 @@ Gate 1 核心标准：
 
 目录：
 
-- `docs/reports/pilot/`（代码在 `code/pilot/`，Agent工作目录在 `agents/coder/` 和 `agents/adviser/`）
+- `docs/pilot/`（代码在 `code/pilot/`，Agent工作目录在 `agents/coder/` 和 `agents/adviser/`）
 
 角色：
 
@@ -161,12 +161,12 @@ Gate 1 核心标准：
 
 ### 阶段交付物
 
-- `docs/reports/pilot/problem-analysis.md`
+- `docs/pilot/problem-analysis.md`
 - `code/configs/pilot-experiment-plan.md`
-- `docs/reports/pilot/pilot-results.md`
-- `docs/reports/pilot/pilot-adviser-review.md`
-- `docs/reports/pilot/pilot-validation-report.md`
-- `docs/reports/pilot/phase-scorecard.md`
+- `docs/pilot/pilot-results.md`
+- `docs/pilot/pilot-adviser-review.md`
+- `docs/pilot/pilot-validation-report.md`
+- `docs/pilot/phase-scorecard.md`
 
 ### 质量门
 
@@ -198,7 +198,7 @@ Gate 2 核心标准：
 
 目录：
 
-- `docs/reports/experiments/`（代码在 `code/experiments/`，Agent工作目录在 `agents/coder/` 和 `agents/adviser/`）
+- `docs/experiments/`（代码在 `code/experiments/`，Agent工作目录在 `agents/coder/` 和 `agents/adviser/`）
 
 角色：
 
@@ -231,9 +231,9 @@ Gate 2 核心标准：
 - `code/experiments/run-registry.md`
 - `code/experiments/results-summary.md`
 - `code/experiments/checkpoints/checkpoint-index.md`
-- `docs/reports/experiments/experiment-adviser-review.md`
-- `docs/reports/experiments/evidence-package-index.md`
-- `docs/reports/experiments/phase-scorecard.md`
+- `docs/experiments/experiment-adviser-review.md`
+- `docs/experiments/evidence-package-index.md`
+- `docs/experiments/phase-scorecard.md`
 
 ### 质量门
 
@@ -330,7 +330,7 @@ Gate 4 核心标准：
 
 目录：
 
-- `docs/reports/reflection/`（Agent工作目录在 `agents/reflector/` 和 `agents/curator/`）
+- `docs/reflection/`（Agent工作目录在 `agents/reflector/` 和 `agents/curator/`）
 
 角色：
 
@@ -357,10 +357,10 @@ Gate 4 核心标准：
 
 ### 阶段交付物
 
-- `docs/reports/reflection/lessons-learned.md`
-- `docs/reports/reflection/overlay-draft.md`
-- `docs/reports/reflection/runtime-improvement-report.md`
-- `docs/reports/reflection/phase-scorecard.md`
+- `docs/reflection/lessons-learned.md`
+- `docs/reflection/overlay-draft.md`
+- `docs/reflection/runtime-improvement-report.md`
+- `docs/reflection/phase-scorecard.md`
 
 ### 质量门
 

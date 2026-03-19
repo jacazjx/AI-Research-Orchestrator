@@ -13,7 +13,7 @@ Critically review pilot experiment design for hypothesis validity and resource e
 
 ### Step 1: Review Design Document
 
-Read `docs/reports/pilot/pilot-design.md` for scope, implementation, and criteria.
+Read `docs/pilot/pilot-design.md` for scope, implementation, and criteria.
 
 ### Step 2: Assess Scope Appropriateness
 

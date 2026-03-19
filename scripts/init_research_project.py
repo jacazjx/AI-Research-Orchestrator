@@ -64,11 +64,18 @@ MAIN_WORK_SUBDIRECTORIES = (
     "code/experiments",
     "code/configs",
     "code/checkpoints",
-    "docs/reports/survey",
-    "docs/reports/pilot",
-    "docs/reports/experiments",
-    "docs/reports/paper",
-    "docs/reports/reflection",
+    "docs/survey",
+    "docs/pilot",
+    "docs/experiments",
+    "docs/paper",
+    "docs/reflection",
+)
+
+# Agent workspace subdirectories (created under each agent directory)
+AGENT_WORK_SUBDIRECTORIES = tuple(
+    f"agents/{agent}/{subdir}"
+    for agent in ("survey", "critic", "coder", "adviser", "writer", "reviewer", "reflector", "curator")
+    for subdir in ("workspace", "battle", "output")
 )
 
 
@@ -117,6 +124,7 @@ def initialize_research_project(
     clarity_score: float = 0.0,
     clarification_rounds: int = 0,
     clarified_idea: str | None = None,
+    existing_resources_mode: str | None = None,
 ) -> dict[str, object]:
     """Initialize a research project with optional interactive wizard.
 
@@ -139,6 +147,8 @@ def initialize_research_project(
         clarity_score: Intent clarity score from wizard.
         clarification_rounds: Number of clarification rounds performed.
         clarified_idea: Final clarified research idea.
+        existing_resources_mode: How to handle existing files in interactive mode
+            ("preserve", "migrate", or "cancel"). Only used when interactive=True.
 
     Returns:
         Dictionary with initialization results.
@@ -157,6 +167,16 @@ def initialize_research_project(
             )
             if migration_result.legacy_path:
                 print(f"Preserved existing files in: {migration_result.legacy_path}")
+        elif not analysis.is_empty and interactive and existing_resources_mode:
+            # Interactive mode with non-empty directory - use wizard-chosen mode
+            migration_result = handle_non_empty_directory(
+                project_root,
+                mode=existing_resources_mode,
+            )
+            if existing_resources_mode == "cancel":
+                return {"status": "cancelled", "message": "Initialization cancelled by user"}
+            if migration_result.legacy_path:
+                print(f"Migrated existing files to: {migration_result.legacy_path}")
 
     # Ensure project structure using new directory layout
     ensure_project_structure(project_root, create_if_missing=True)
@@ -175,6 +195,10 @@ def initialize_research_project(
 
     # Create main work subdirectories
     for subdir in MAIN_WORK_SUBDIRECTORIES:
+        (project_root / subdir).mkdir(parents=True, exist_ok=True)
+
+    # Create agent workspace subdirectories
+    for subdir in AGENT_WORK_SUBDIRECTORIES:
         (project_root / subdir).mkdir(parents=True, exist_ok=True)
 
     # Initialize GitMem for version tracking
@@ -356,15 +380,24 @@ def main() -> int:
         print()
 
         # Run the interactive wizard
-        wizard_responses = run_wizard(
-            project_root=project_root,
-            interactive=True,
-            prefill={
-                "project_id": args.project_id,
-                "starting_phase": normalized_phase,
-                "research_type": args.research_type,
-            },
-        )
+        try:
+            wizard_responses = run_wizard(
+                project_root=project_root,
+                interactive=True,
+                prefill={
+                    "project_id": args.project_id,
+                    "starting_phase": normalized_phase,
+                    "research_type": args.research_type,
+                },
+            )
+        except (KeyboardInterrupt, SystemExit):
+            print("Initialization cancelled.")
+            return 0
+        except Exception as e:
+            if "cancelled" in str(e).lower():
+                print("Initialization cancelled by user.")
+                return 0
+            raise
 
         # Use wizard responses for initialization
         topic = wizard_responses.get("research_idea", args.topic)
@@ -376,6 +409,7 @@ def main() -> int:
         clarity_score = wizard_responses.get("clarity_score", 0.0)
         clarification_rounds = wizard_responses.get("clarification_rounds", 0)
         clarified_idea = wizard_responses.get("clarified_idea", "")
+        existing_resources_mode = wizard_responses.get("existing_resources_mode")
 
         result = initialize_research_project(
             project_root=project_root,
@@ -396,6 +430,7 @@ def main() -> int:
             clarity_score=clarity_score,
             clarification_rounds=clarification_rounds,
             clarified_idea=clarified_idea or topic,
+            existing_resources_mode=existing_resources_mode,
         )
     else:
         # Non-interactive mode (original behavior)

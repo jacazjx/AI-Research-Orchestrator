@@ -163,7 +163,7 @@ MARKDOWN_FIELD_RE = re.compile(r"^- ([^:\n]+):\s*(.+)$", re.MULTILINE)
 # GitMem configuration
 GITMEM_DIR = ".gitmem"
 GITMEM_LOOP_THRESHOLD = 5  # Warn if file has 5+ changes without checkpoint
-GITMEM_TRACKED_DIRS = ("docs/reports/", "paper/", "code/", "agents/")
+GITMEM_TRACKED_DIRS = ("docs/", "paper/", "code/", "agents/")
 
 
 # ============================================================================
@@ -1515,7 +1515,7 @@ def gitmem_init(project_root: Path) -> None:
     readme_content = """# GitMem Version Tracking
 
 This directory contains a git repository that tracks changes to files in:
-- docs/reports/
+- docs/
 - paper/
 - code/
 - agents/

@@ -10,6 +10,14 @@ loop_limits:
 runtime:
   stale_after_minutes: 30
   auto_discover_gpu: true
+gpu:
+  device_id: "{{GPU_DEVICE_ID}}"    # e.g., "cuda:0" or SSH alias; leave empty for auto
+  use_registry: true                 # Read from ~/.autoresearch/gpu-registry.yaml
+quality:
+  min_references: 30                 # Minimum citations required in survey phase
+  paper_type: "{{PAPER_TYPE}}"       # journal / conference / letter
+  target_venue: "{{TARGET_VENUE}}"   # e.g., "NeurIPS", "ICML", "Nature"; leave empty if unknown
+  latex_template: "{{LATEX_TEMPLATE}}"  # neurips / icml / ieee / acm / springer / custom
 backends:
   local: enabled
   ssh: enabled
@@ -55,18 +63,21 @@ phases:
       - name: literature_survey
         primary_skill: research-lit
         reviewer_skill: audit-survey
+        max_attempts: 3
         required_artifacts:
-          - docs/reports/survey/literature-review.md
+          - docs/survey/literature-review.md
       - name: idea_definition
         primary_skill: define-idea
         reviewer_skill: novelty-check
+        max_attempts: 3
         required_artifacts:
-          - docs/reports/survey/idea-definition.md
+          - docs/survey/idea-definition.md
       - name: research_plan
         primary_skill: research-plan
         reviewer_skill: audit-plan
+        max_attempts: 3
         required_artifacts:
-          - docs/reports/survey/research-readiness-report.md
+          - docs/survey/research-readiness-report.md
 
   pilot:
     agents:
@@ -76,23 +87,27 @@ phases:
       - name: problem_validation
         primary_skill: validate-problem
         reviewer_skill: audit-validation
+        max_attempts: 2
         required_artifacts:
-          - docs/reports/pilot/problem-validation-report.md
+          - docs/pilot/problem-validation-report.md
       - name: problem_analysis
         primary_skill: analyze-problem
         reviewer_skill: audit-analysis
+        max_attempts: 2
         required_artifacts:
-          - docs/reports/pilot/problem-analysis.md
+          - docs/pilot/problem-analysis.md
       - name: pilot_design
         primary_skill: design-pilot
         reviewer_skill: audit-design
+        max_attempts: 2
         required_artifacts:
-          - docs/reports/pilot/pilot-design.md
+          - docs/pilot/pilot-design.md
       - name: pilot_execution
         primary_skill: run-pilot
         reviewer_skill: audit-pilot
+        max_attempts: 2
         required_artifacts:
-          - docs/reports/pilot/pilot-validation-report.md
+          - docs/pilot/pilot-validation-report.md
 
   experiments:
     agents:
@@ -102,18 +117,21 @@ phases:
       - name: experiment_design
         primary_skill: design-exp
         reviewer_skill: audit-exp-design
+        max_attempts: 3
         required_artifacts:
-          - docs/reports/experiments/experiment-spec.md
+          - docs/experiments/experiment-spec.md
       - name: experiment_execution
         primary_skill: run-experiment
         reviewer_skill: monitor-experiment
+        max_attempts: 3
         required_artifacts:
-          - docs/reports/experiments/run-registry.md
+          - docs/experiments/run-registry.md
       - name: results_analysis
         primary_skill: analyze-results
         reviewer_skill: audit-results
+        max_attempts: 3
         required_artifacts:
-          - docs/reports/experiments/evidence-package-index.md
+          - docs/experiments/evidence-package-index.md
 
   paper:
     agents:
@@ -123,16 +141,19 @@ phases:
       - name: paper_planning
         primary_skill: paper-plan
         reviewer_skill: audit-paper-plan
+        max_attempts: 3
         required_artifacts:
           - paper/paper-outline.md
       - name: paper_writing
         primary_skill: paper-write
         reviewer_skill: audit-paper
+        max_attempts: 3
         required_artifacts:
           - paper/paper-draft.md
       - name: citation_curation
         primary_skill: curate-citation
         reviewer_skill: audit-citation
+        max_attempts: 3
         required_artifacts:
           - paper/citation-audit-report.md
 
@@ -144,10 +165,12 @@ phases:
       - name: lessons_extraction
         primary_skill: extract-lessons
         reviewer_skill: audit-lessons
+        max_attempts: 3
         required_artifacts:
-          - docs/reports/reflection/lessons-learned.md
+          - docs/reflection/lessons-learned.md
       - name: overlay_proposal
         primary_skill: propose-overlay
         reviewer_skill: audit-overlay
+        max_attempts: 3
         required_artifacts:
-          - docs/reports/reflection/runtime-improvement-report.md
+          - docs/reflection/runtime-improvement-report.md

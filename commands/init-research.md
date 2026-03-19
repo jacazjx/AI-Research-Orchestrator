@@ -21,6 +21,25 @@ Creates the five-phase research workflow structure with:
 python3 "${CLAUDE_PLUGIN_ROOT}/scripts/init_research_project.py" $ARGUMENTS
 ```
 
+> **Interactive Mode (no arguments):** When this command is called without arguments, Claude acting
+> as Orchestrator MUST NOT run the script immediately. Instead, ask the user interactively for:
+>
+> 1. **Project location** — where should the project be created? (default: current working directory)
+> 2. **Research idea** — a brief description of the research topic or problem statement
+> 3. **Research type** — one of: `ml_experiment` (default), `theory`, `survey`, `applied`
+> 4. **GPU availability** — does the user have GPU access? (yes/no; affects resource planning)
+>
+> Once all four parameters are collected, invoke the script with the gathered values:
+>
+> ```bash
+> python3 "${CLAUDE_PLUGIN_ROOT}/scripts/init_research_project.py" \
+>   --project-root "<collected_path>" \
+>   --topic "<collected_idea>" \
+>   --client-type auto
+> ```
+>
+> This replaces the previous non-interactive invocation that fails without `--project-root`.
+
 ## Usage
 
 ```bash

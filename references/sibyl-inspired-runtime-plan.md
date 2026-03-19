@@ -84,10 +84,10 @@ Borrowed from Sibyl:
 
 Primary outputs:
 
-- `docs/reports/survey/survey-round-summary.md`
-- `docs/reports/survey/critic-round-review.md`
-- `docs/reports/survey/research-readiness-report.md`
-- `docs/reports/survey/phase-scorecard.md`
+- `docs/survey/survey-round-summary.md`
+- `docs/survey/critic-round-review.md`
+- `docs/survey/research-readiness-report.md`
+- `docs/survey/phase-scorecard.md`
 
 Gate decision:
 
@@ -114,12 +114,12 @@ Borrowed from Sibyl:
 
 Primary outputs:
 
-- `docs/reports/pilot/problem-analysis.md`
+- `docs/pilot/problem-analysis.md`
 - `code/configs/pilot-experiment-plan.md`
-- `docs/reports/pilot/pilot-results.md`
-- `docs/reports/pilot/pilot-adviser-review.md`
-- `docs/reports/pilot/pilot-validation-report.md`
-- `docs/reports/pilot/phase-scorecard.md`
+- `docs/pilot/pilot-results.md`
+- `docs/pilot/pilot-adviser-review.md`
+- `docs/pilot/pilot-validation-report.md`
+- `docs/pilot/phase-scorecard.md`
 
 Gate decision:
 
@@ -151,9 +151,9 @@ Primary outputs:
 - `code/experiments/run-registry.md`
 - `code/experiments/results-summary.md`
 - `code/experiments/checkpoint-index.md`
-- `docs/reports/experiments/experiment-adviser-review.md`
-- `docs/reports/experiments/evidence-package-index.md`
-- `docs/reports/experiments/phase-scorecard.md`
+- `docs/experiments/experiment-adviser-review.md`
+- `docs/experiments/evidence-package-index.md`
+- `docs/experiments/phase-scorecard.md`
 
 Gate decision:
 
@@ -214,10 +214,10 @@ Borrowed from Sibyl:
 
 Primary outputs:
 
-- `docs/reports/reflection/lessons-learned.md`
-- `docs/reports/reflection/overlay-draft.md`
-- `docs/reports/reflection/runtime-improvement-report.md`
-- `docs/reports/reflection/phase-scorecard.md`
+- `docs/reflection/lessons-learned.md`
+- `docs/reflection/overlay-draft.md`
+- `docs/reflection/runtime-improvement-report.md`
+- `docs/reflection/phase-scorecard.md`
 
 Gate decision:
 

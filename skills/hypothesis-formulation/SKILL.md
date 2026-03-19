@@ -268,7 +268,7 @@ least [threshold].
 3. Include all supporting evidence
 4. Provide clear recommendations
 
-**Output**: Save to `docs/reports/survey/hypothesis-report.md` and optionally compile LaTeX:
+**Output**: Save to `docs/survey/hypothesis-report.md` and optionally compile LaTeX:
 
 ```markdown
 # Hypothesis Formulation Report
@@ -361,7 +361,7 @@ This skill integrates with:
 
 | File | Location | Purpose |
 |------|----------|---------|
-| Hypothesis Report | `docs/reports/survey/hypothesis-report.md` | Main output |
-| LaTeX Report | `docs/reports/survey/hypothesis-report.tex` | Formatted PDF |
-| Evidence Tables | `docs/reports/survey/evidence-synthesis.md` | Supporting data |
-| Prediction Matrix | `docs/reports/survey/prediction-matrix.md` | Testable predictions |
+| Hypothesis Report | `docs/survey/hypothesis-report.md` | Main output |
+| LaTeX Report | `docs/survey/hypothesis-report.tex` | Formatted PDF |
+| Evidence Tables | `docs/survey/evidence-synthesis.md` | Supporting data |
+| Prediction Matrix | `docs/survey/prediction-matrix.md` | Testable predictions |

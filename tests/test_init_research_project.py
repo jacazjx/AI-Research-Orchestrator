@@ -58,11 +58,11 @@ class InitializeResearchProjectTest(unittest.TestCase):
             self.assertTrue((project_root / "code/experiments").is_dir())
             self.assertTrue((project_root / "code/configs").is_dir())
             self.assertTrue((project_root / "code/checkpoints").is_dir())
-            self.assertTrue((project_root / "docs/reports/survey").is_dir())
-            self.assertTrue((project_root / "docs/reports/pilot").is_dir())
-            self.assertTrue((project_root / "docs/reports/experiments").is_dir())
-            self.assertTrue((project_root / "docs/reports/paper").is_dir())
-            self.assertTrue((project_root / "docs/reports/reflection").is_dir())
+            self.assertTrue((project_root / "docs/survey").is_dir())
+            self.assertTrue((project_root / "docs/pilot").is_dir())
+            self.assertTrue((project_root / "docs/experiments").is_dir())
+            self.assertTrue((project_root / "docs/paper").is_dir())
+            self.assertTrue((project_root / "docs/reflection").is_dir())
 
             self.assertTrue((project_root / "AGENTS.md").exists())
             # Note: workspace-manifest is in .autoresearch/ per template location
@@ -74,14 +74,14 @@ class InitializeResearchProjectTest(unittest.TestCase):
             self.assertTrue((project_root / ".autoresearch/reference-papers/README.md").exists())
             self.assertTrue((project_root / ".autoresearch/dashboard/progress.md").exists())
             self.assertTrue(
-                (project_root / "docs/reports/pilot/pilot-validation-report.md").exists()
+                (project_root / "docs/pilot/pilot-validation-report.md").exists()
             )
             self.assertTrue(
-                (project_root / "docs/reports/experiments/evidence-package-index.md").exists()
+                (project_root / "docs/experiments/evidence-package-index.md").exists()
             )
-            # runtime-improvement-report is now in docs/reports/reflection/
+            # runtime-improvement-report is now in docs/reflection/
             self.assertTrue(
-                (project_root / "docs/reports/reflection/runtime-improvement-report.md").exists()
+                (project_root / "docs/reflection/runtime-improvement-report.md").exists()
             )
             self.assertTrue((project_root / ".autoresearch/archive/archive-index.md").exists())
 

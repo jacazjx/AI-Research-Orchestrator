@@ -18,11 +18,11 @@ The project uses semantic phase names:
 
 ## Required Human Gates
 
-- Gate 1: approve `docs/reports/survey/research-readiness-report.md` before pilot analysis.
-- Gate 2: approve `docs/reports/pilot/pilot-validation-report.md` before full experiments.
-- Gate 3: approve `docs/reports/experiments/evidence-package-index.md` before paper writing.
+- Gate 1: approve `docs/survey/research-readiness-report.md` before pilot analysis.
+- Gate 2: approve `docs/pilot/pilot-validation-report.md` before full experiments.
+- Gate 3: approve `docs/experiments/evidence-package-index.md` before paper writing.
 - Gate 4: approve `paper/final-acceptance-report.md` before reflection or final handoff.
-- Gate 5: approve `docs/reports/reflection/runtime-improvement-report.md` before any overlay or runtime policy change becomes active.
+- Gate 5: approve `docs/reflection/runtime-improvement-report.md` before any overlay or runtime policy change becomes active.
 
 When a human gate rejects the current phase:
 

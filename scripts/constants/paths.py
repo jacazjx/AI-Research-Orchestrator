@@ -36,6 +36,12 @@ AGENT_DIRECTORIES = (
     "agents/curator",
 )
 
+AGENT_WORKSPACE_SUBDIRS = (
+    "workspace",
+    "battle",
+    "output",
+)
+
 SYSTEM_DIRECTORIES = (
     ".autoresearch/state",
     ".autoresearch/config",

@@ -152,10 +152,10 @@ class TestUpdatedDeliverablesPaths(unittest.TestCase):
             COMMON.DEFAULT_DELIVERABLES["citation_audit_report"], "paper/citation-audit-report.md"
         )
         self.assertEqual(COMMON.DEFAULT_DELIVERABLES["rebuttal_log"], "paper/rebuttal-log.md")
-        # final_acceptance_report is in docs/reports/paper/ per design
+        # final_acceptance_report is in docs/paper/ per design
         self.assertEqual(
             COMMON.DEFAULT_DELIVERABLES["final_acceptance_report"],
-            "docs/reports/paper/final-acceptance-report.md",
+            "docs/paper/final-acceptance-report.md",
         )
 
     def test_experiment_files_in_code(self) -> None:

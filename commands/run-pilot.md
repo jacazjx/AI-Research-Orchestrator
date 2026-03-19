@@ -9,11 +9,11 @@ allowed-tools: "Read, Write, Edit, Grep, Glob, Bash(${CLAUDE_PLUGIN_ROOT}/script
 
 Executes the Code <-> Adviser loop for pilot analysis:
 
-- `docs/reports/pilot/problem-analysis.md`
-- `docs/reports/pilot/pilot-experiment-plan.md`
-- `docs/reports/pilot/pilot-results.md`
-- `docs/reports/pilot/pilot-validation-report.md`
-- `docs/reports/pilot/phase-scorecard.md`
+- `docs/pilot/problem-analysis.md`
+- `docs/pilot/pilot-experiment-plan.md`
+- `docs/pilot/pilot-results.md`
+- `docs/pilot/pilot-validation-report.md`
+- `docs/pilot/phase-scorecard.md`
 
 ## Execution
 

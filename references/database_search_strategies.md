@@ -326,7 +326,7 @@ done
 
 ## Search Log Format
 
-Record all searches in `docs/reports/survey/search-log.md`:
+Record all searches in `docs/survey/search-log.md`:
 
 ```markdown
 # Search Log

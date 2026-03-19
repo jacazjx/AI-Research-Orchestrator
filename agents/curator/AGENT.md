@@ -108,9 +108,9 @@ The Curator Agent operates with a "safety gatekeeper" mindset:
 
 | Deliverable | Path | Content |
 |-------------|------|---------|
-| Lessons Audit | `docs/reports/reflection/lessons-audit-report.md` | Lessons quality review |
-| Overlay Audit | `docs/reports/reflection/overlay-audit-report.md` | Safety assessment |
-| Runtime Improvement | `docs/reports/reflection/runtime-improvement-report.md` | Final recommendations |
+| Lessons Audit | `docs/reflection/lessons-audit-report.md` | Lessons quality review |
+| Overlay Audit | `docs/reflection/overlay-audit-report.md` | Safety assessment |
+| Runtime Improvement | `docs/reflection/runtime-improvement-report.md` | Final recommendations |
 
 ### Lessons Audit Structure
 
@@ -283,8 +283,8 @@ task_id: "audit-reflection-001"
 skill: "audit-overlay"
 context:
   reflection_deliverables:
-    - "docs/reports/reflection/lessons-learned.md"
-    - "docs/reports/reflection/overlay-draft.md"
+    - "docs/reflection/lessons-learned.md"
+    - "docs/reflection/overlay-draft.md"
 ```
 
 **Completion Report Format:**

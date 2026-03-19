@@ -61,4 +61,4 @@ Output `IDEA_REPORT.md` with:
 
 ## Output
 
-- `docs/reports/survey/idea-candidates.md` - Ranked idea list with pilot results
+- `docs/survey/idea-candidates.md` - Ranked idea list with pilot results

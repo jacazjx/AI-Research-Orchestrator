@@ -325,7 +325,7 @@ $$
 
 ## Output
 
-Save to `docs/reports/survey/theoretical-derivation.md`:
+Save to `docs/survey/theoretical-derivation.md`:
 
 ```markdown
 # Theoretical Derivation Report

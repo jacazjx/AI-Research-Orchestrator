@@ -56,24 +56,24 @@ class ValidateHandoffTest(unittest.TestCase):
                 "code/configs/experiment-spec.md",
                 "code/checkpoints/run-registry.md",
                 "code/checkpoints/checkpoint-index.md",
-                "docs/reports/experiments/evidence-package-index.md",
+                "docs/experiments/evidence-package-index.md",
             ):
                 (project_root / relative_path).write_text(
                     f"ready: {relative_path}\n", encoding="utf-8"
                 )
-            (project_root / "docs/reports/experiments/experiment-adviser-review.md").write_text(
+            (project_root / "docs/experiments/experiment-adviser-review.md").write_text(
                 "# Experiment Adviser Review\n\n"
                 "- Status: `approved`\n"
                 "- Recommendation: `approve`\n"
                 "- Handoff decision: `approve`\n",
                 encoding="utf-8",
             )
-            (project_root / "docs/reports/experiments/phase-scorecard.md").write_text(
+            (project_root / "docs/experiments/phase-scorecard.md").write_text(
                 "# Phase 3 Scorecard\n\n- Gate readiness: `approve`\n- Recommendation: `approve`\n",
                 encoding="utf-8",
             )
             # Delete the results-summary to test missing file detection
-            results_summary_path = project_root / "docs/reports/experiments/results-summary.md"
+            results_summary_path = project_root / "docs/experiments/results-summary.md"
             if results_summary_path.exists():
                 results_summary_path.unlink()
 
@@ -81,7 +81,7 @@ class ValidateHandoffTest(unittest.TestCase):
 
             self.assertFalse(result["ok"])
             # Check for new path in missing_files
-            self.assertIn("docs/reports/experiments/results-summary.md", result["missing_files"])
+            self.assertIn("docs/experiments/results-summary.md", result["missing_files"])
 
     def test_pilot_to_experiments_requires_phase_review_approval(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

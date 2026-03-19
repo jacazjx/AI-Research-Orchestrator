@@ -62,7 +62,7 @@ Tasks:
 3. Define atomic definitions
 4. Produce research-readiness-report.md
 
-Write to agents/survey/ and docs/reports/survey/.
+Write to agents/survey/ and docs/survey/.
 """
 )
 ```
@@ -102,11 +102,12 @@ my-project/
 │   └── curator/
 ├── paper/                   # Paper-related files
 ├── code/                    # Code-related files
-└── docs/                    # Documentation and reports
-    └── reports/
-        ├── survey/
-        ├── pilot/
-        └── experiments/
+└── docs/                    # Phase deliverables
+    ├── survey/
+    ├── pilot/
+    ├── experiments/
+    ├── paper/
+    └── reflection/
 ```
 
 ## Phase Names
@@ -311,22 +312,22 @@ These skills execute the research workflow phases:
 
 | Skill | Agent | Output | Purpose |
 |-------|-------|--------|---------|
-| `define-idea` | Survey | `docs/reports/survey/idea-definition.md` | Formulate research hypothesis |
-| `research-plan` | Survey | `docs/reports/survey/research-readiness-report.md` | Create research execution plan |
+| `define-idea` | Survey | `docs/survey/idea-definition.md` | Formulate research hypothesis |
+| `research-plan` | Survey | `docs/survey/research-readiness-report.md` | Create research execution plan |
 | `research-lit` | Survey | Working notes | Literature survey using academic APIs |
 | `novelty-check` | Survey | Novelty report | Verify novelty against existing work |
-| `analyze-problem` | Code | `docs/reports/pilot/problem-analysis.md` | Analyze research problem |
-| `design-pilot` | Code | `docs/reports/pilot/pilot-design.md` | Design pilot experiment |
-| `run-pilot` | Code | `docs/reports/pilot/pilot-validation-report.md` | Execute pilot experiment |
-| `design-exp` | Code | `docs/reports/experiments/experiment-spec.md` | Design full experiment matrix |
+| `analyze-problem` | Code | `docs/pilot/problem-analysis.md` | Analyze research problem |
+| `design-pilot` | Code | `docs/pilot/pilot-design.md` | Design pilot experiment |
+| `run-pilot` | Code | `docs/pilot/pilot-validation-report.md` | Execute pilot experiment |
+| `design-exp` | Code | `docs/experiments/experiment-spec.md` | Design full experiment matrix |
 | `run-experiment` | Code | Experiment logs | Deploy and run ML experiments |
 | `monitor-experiment` | Code | Progress reports | Monitor running experiments |
 | `analyze-results` | Code | Results summary | Analyze experiment results |
 | `paper-plan` | Writer | `paper/PAPER_PLAN.md` | Create paper outline |
 | `paper-write` | Writer | `paper/main.tex` | Write paper sections |
 | `curate-citation` | Writer | `paper/citation-index.md` | Finalize and verify citations |
-| `extract-lessons` | Reflector | `docs/reports/reflection/lessons-learned.md` | Extract lessons learned |
-| `propose-overlay` | Reflector | `docs/reports/reflection/overlay-draft.md` | Propose system improvements |
+| `extract-lessons` | Reflector | `docs/reflection/lessons-learned.md` | Extract lessons learned |
+| `propose-overlay` | Reflector | `docs/reflection/overlay-draft.md` | Propose system improvements |
 
 ### Audit Skills (12)
 
@@ -454,15 +455,15 @@ When transitioning between phases:
 4. Pass handoff summaries if resuming from rollback
 
 - Phase 1: `Survey <-> Critic`
-  Produce `docs/reports/survey/research-readiness-report.md` and `docs/reports/survey/phase-scorecard.md`, then stop for Gate 1.
+  Produce `docs/survey/research-readiness-report.md` and `docs/survey/phase-scorecard.md`, then stop for Gate 1.
 - Phase 2: `Code <-> Adviser` for pilot analysis
-  Produce `docs/reports/pilot/pilot-validation-report.md` and `docs/reports/pilot/phase-scorecard.md`, then stop for Gate 2.
+  Produce `docs/pilot/pilot-validation-report.md` and `docs/pilot/phase-scorecard.md`, then stop for Gate 2.
 - Phase 3: `Code <-> Adviser` for full experiments
-  Produce `docs/reports/experiments/evidence-package-index.md` and `docs/reports/experiments/phase-scorecard.md`, then stop for Gate 3.
+  Produce `docs/experiments/evidence-package-index.md` and `docs/experiments/phase-scorecard.md`, then stop for Gate 3.
 - Phase 4: `Paper Writer <-> Reviewer & Editor`
   Produce `paper/citation-audit-report.md`, `paper/final-acceptance-report.md`, and `paper/phase-scorecard.md`, then stop for Gate 4.
 - Phase 5: `Reflector <-> Curator`
-  Produce `docs/reports/reflection/runtime-improvement-report.md` and `docs/reports/reflection/phase-scorecard.md`, then stop for Gate 5 before any overlay or policy change is activated.
+  Produce `docs/reflection/runtime-improvement-report.md` and `docs/reflection/phase-scorecard.md`, then stop for Gate 5 before any overlay or policy change is activated.
 
 ## Subagent-Driven Architecture
 
@@ -583,7 +584,7 @@ phase_status:
         skill: research-lit
         agent: survey-agent
         state: completed
-        result_path: docs/reports/survey/literature-review.md
+        result_path: docs/survey/literature-review.md
       - task_id: survey-002
         skill: audit-survey
         agent: critic-agent
@@ -885,6 +886,52 @@ decision_options:
   - "request_more_analysis"
 ```
 
+## Agent Teams Communication Protocol
+
+When Agent Teams are enabled (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`), agents operate as
+teammates that can communicate directly via SendMessage instead of routing through the Orchestrator.
+
+### Team Setup per Phase
+
+At phase start, the Orchestrator should:
+1. Spawn the Primary agent with `Agent(subagent_type="airesearchorchestrator:<role>", name="<role>", ...)`
+2. Spawn the Reviewer agent with `Agent(subagent_type="airesearchorchestrator:<reviewer>", name="<reviewer>", ...)`
+3. Use TaskCreate to create phase tasks, TaskUpdate to assign to teammates
+
+### Battle Phase via SendMessage
+
+Primary and Reviewer communicate directly during Battle Phase:
+
+**Primary sends deliverables ready:**
+```
+SendMessage(to="<reviewer>", message="deliverables_ready: <phase> substep completed", summary="...")
+```
+
+**Reviewer sends audit report:**
+```
+SendMessage(to="<primary>", message={"type":"audit_report","decision":"revise","issues":[...]}, summary="...")
+```
+
+**Primary challenges (CHALLENGE response):**
+```
+SendMessage(to="<reviewer>", message={"type":"battle_challenge","disputed_points":[...]}, summary="Challenging findings")
+```
+
+**Reviewer responds:**
+```
+SendMessage(to="<primary>", message={"type":"battle_response","responses":[...]}, summary="Response to challenge")
+```
+
+Maximum 3 debate rounds. If no consensus: escalate to Orchestrator via TaskUpdate(status="blocked").
+
+### Phase Shutdown
+
+After gate approval:
+```
+SendMessage(to="<primary>", message={"type":"shutdown_request","reason":"Phase complete"})
+SendMessage(to="<reviewer>", message={"type":"shutdown_request","reason":"Phase complete"})
+```
+
 ### Battle Rules
 
 1. **Max Rounds**: Maximum 3 debate rounds before arbitration
@@ -952,8 +999,8 @@ dispatch:
     current_phase: "survey"
     handoff_summary: "..." # if resuming
   deliverables:
-    - "docs/reports/survey/literature-review.md"
-    - "docs/reports/survey/novelty-report.md"
+    - "docs/survey/literature-review.md"
+    - "docs/survey/novelty-report.md"
   constraints:
     max_iterations: 5
     timeout_minutes: 60
@@ -970,7 +1017,7 @@ completion:
   task_id: "survey-001"
   status: "completed"  # or "failed"
   deliverables:
-    - path: "docs/reports/survey/literature-review.md"
+    - path: "docs/survey/literature-review.md"
       status: "created"
       summary: "Reviewed 15 papers on attention mechanisms"
   errors: []  # populated if failed
@@ -1151,12 +1198,12 @@ Before initialization, the research intent is clarified through:
 ### Gate 1: Survey → Pilot
 
 **Required Deliverables:**
-- [ ] `docs/reports/survey/research-readiness-report.md` exists and contains:
+- [ ] `docs/survey/research-readiness-report.md` exists and contains:
   - [ ] Problem statement with clear research questions
   - [ ] Literature review summary (min 10 papers)
   - [ ] Gap analysis with proposed contribution
   - [ ] Recommended method/approach
-- [ ] `docs/reports/survey/phase-scorecard.md` exists
+- [ ] `docs/survey/phase-scorecard.md` exists
 - [ ] Phase score ≥ 3.5 (on 5-point scale)
 
 **Quality Checks:**
@@ -1167,12 +1214,12 @@ Before initialization, the research intent is clarified through:
 ### Gate 2: Pilot → Experiments
 
 **Required Deliverables:**
-- [ ] `docs/reports/pilot/pilot-validation-report.md` exists and contains:
+- [ ] `docs/pilot/pilot-validation-report.md` exists and contains:
   - [ ] Pilot experiment design
   - [ ] Implementation details
   - [ ] Preliminary results with error bars
   - [ ] Go/No-Go recommendation
-- [ ] `docs/reports/pilot/phase-scorecard.md` exists
+- [ ] `docs/pilot/phase-scorecard.md` exists
 - [ ] Phase score ≥ 3.5
 
 **Quality Checks:**
@@ -1184,13 +1231,13 @@ Before initialization, the research intent is clarified through:
 ### Gate 3: Experiments → Paper
 
 **Required Deliverables:**
-- [ ] `docs/reports/experiments/evidence-package-index.md` exists and contains:
+- [ ] `docs/experiments/evidence-package-index.md` exists and contains:
   - [ ] Complete experiment configurations
   - [ ] All results with statistical analysis
   - [ ] Figures and tables for paper
   - [ ] Ablation studies (if applicable)
-- [ ] `docs/reports/experiments/results-summary.md` exists
-- [ ] `docs/reports/experiments/phase-scorecard.md` exists
+- [ ] `docs/experiments/results-summary.md` exists
+- [ ] `docs/experiments/phase-scorecard.md` exists
 - [ ] Phase score ≥ 3.5
 
 **Quality Checks:**
@@ -1207,7 +1254,7 @@ Before initialization, the research intent is clarified through:
 - [ ] `paper/citation-audit-report.md` exists with:
   - [ ] All citations verified authentic
   - [ ] No fabricated references
-- [ ] `docs/reports/paper/final-acceptance-report.md` exists
+- [ ] `docs/paper/final-acceptance-report.md` exists
 - [ ] Phase score ≥ 3.5
 
 **Quality Checks:**
@@ -1220,11 +1267,11 @@ Before initialization, the research intent is clarified through:
 ### Gate 5: Reflection → Close
 
 **Required Deliverables:**
-- [ ] `docs/reports/reflection/lessons-learned.md` exists and contains:
+- [ ] `docs/reflection/lessons-learned.md` exists and contains:
   - [ ] What worked well
   - [ ] What could be improved
   - [ ] Recommendations for future projects
-- [ ] `docs/reports/reflection/runtime-improvement-report.md` exists
+- [ ] `docs/reflection/runtime-improvement-report.md` exists
 - [ ] `.autoresearch/archive/archive-index.md` exists
 
 **Final Decisions:**

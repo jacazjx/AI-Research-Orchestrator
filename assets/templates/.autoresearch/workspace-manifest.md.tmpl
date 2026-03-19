@@ -15,8 +15,8 @@
 
 ## Runtime control files
 
-- Machine-readable state: `00-admin/research-state.yaml`
-- Human-readable manifest: `00-admin/workspace-manifest.md`
+- Machine-readable state: `.autoresearch/state/research-state.yaml`
+- Human-readable manifest: `.autoresearch/workspace-manifest.md`
 - Project config: `{{PROJECT_CONFIG_PATH}}`
 - Dashboard status: `{{DASHBOARD_STATUS_PATH}}`
 - Dashboard progress: `{{DASHBOARD_PROGRESS_PATH}}`
@@ -26,12 +26,12 @@
 
 ## Directory contracts
 
-### `00-admin`
+### `.autoresearch`
 
 - Purpose: hold project state, idea intake, user references, runtime registries, and dashboard artifacts.
 - Required outputs:
-  - `00-admin/workspace-manifest.md`
-  - `00-admin/research-state.yaml`
+  - `.autoresearch/workspace-manifest.md`
+  - `.autoresearch/state/research-state.yaml`
   - `{{PROJECT_CONFIG_PATH}}`
   - `{{IDEA_BRIEF_PATH}}`
   - `{{REFERENCE_LIBRARY_INDEX_PATH}}`
@@ -39,72 +39,72 @@
 - Acceptance rule: every runtime transition and every deliverable path must be tracked through `research-state.yaml`.
 - Next consumer: every later phase.
 
-### `01-survey`
+### `docs/survey`
 
 - Purpose: run the `Survey <-> Critic` loop for literature, novelty, theory risk, and research framing.
 - Required outputs:
-  - `01-survey/survey-round-summary.md`
-  - `01-survey/critic-round-review.md`
-  - `01-survey/research-readiness-report.md`
-  - `01-survey/phase-scorecard.md`
+  - `docs/survey/survey-round-summary.md`
+  - `docs/survey/critic-round-review.md`
+  - `docs/survey/research-readiness-report.md`
+  - `docs/survey/phase-scorecard.md`
 - Acceptance rule: `{{GATE_1_REPORT_PATH}}` must bound the scope, define the problem, summarize recent work, analyze risks, and state a minimum viable path.
-- Next consumer: `02-pilot-analysis` after human Gate 1 approval.
+- Next consumer: `pilot` after human Gate 1 approval.
 
-### `02-pilot-analysis`
+### `docs/pilot`
 
 - Purpose: run `Pilot Code <-> Pilot Adviser` on problem analysis and low-cost validation before large compute spend.
 - Required outputs:
-  - `02-pilot-analysis/problem-analysis.md`
-  - `02-pilot-analysis/pilot-experiment-plan.md`
-  - `02-pilot-analysis/pilot-results.md`
-  - `02-pilot-analysis/pilot-adviser-review.md`
-  - `02-pilot-analysis/pilot-validation-report.md`
-  - `02-pilot-analysis/phase-scorecard.md`
+  - `docs/pilot/problem-analysis.md`
+  - `docs/pilot/pilot-experiment-plan.md`
+  - `docs/pilot/pilot-results.md`
+  - `docs/pilot/pilot-adviser-review.md`
+  - `docs/pilot/pilot-validation-report.md`
+  - `docs/pilot/phase-scorecard.md`
 - Acceptance rule: `{{GATE_2_REPORT_PATH}}` must justify whether the idea deserves full experiments or a pivot.
-- Next consumer: `03-full-experiments` after human Gate 2 approval.
+- Next consumer: `experiments` after human Gate 2 approval.
 
-### `03-full-experiments`
+### `docs/experiments`
 
 - Purpose: run `Experiment Code <-> Experiment Adviser` on the complete experiment matrix, provenance, and handoff evidence.
 - Required outputs:
-  - `03-full-experiments/experiment-spec.md`
-  - `03-full-experiments/run-registry.md`
-  - `03-full-experiments/results-summary.md`
-  - `03-full-experiments/checkpoints/checkpoint-index.md`
-  - `03-full-experiments/experiment-adviser-review.md`
-  - `03-full-experiments/evidence-package-index.md`
-  - `03-full-experiments/phase-scorecard.md`
+  - `docs/experiments/experiment-spec.md`
+  - `docs/experiments/run-registry.md`
+  - `docs/experiments/results-summary.md`
+  - `docs/experiments/checkpoints/checkpoint-index.md`
+  - `docs/experiments/experiment-adviser-review.md`
+  - `docs/experiments/evidence-package-index.md`
+  - `docs/experiments/phase-scorecard.md`
 - Acceptance rule: `{{GATE_3_REPORT_PATH}}` must index every evidence artifact used to justify the transition to paper writing.
-- Next consumer: `04-paper` after human Gate 3 approval.
+- Next consumer: `paper` after human Gate 3 approval.
 
-### `04-paper`
+### `paper`
 
 - Purpose: run `Paper Writer <-> Reviewer & Editor` until the manuscript reaches top-tier submission readiness.
 - Required outputs:
-  - `04-paper/paper-draft.md`
-  - `04-paper/citation-audit-report.md`
-  - `04-paper/reviewer-report.md`
-  - `04-paper/rebuttal-log.md`
-  - `04-paper/final-acceptance-report.md`
-  - `04-paper/phase-scorecard.md`
+  - `paper/paper-draft.md`
+  - `paper/citation-audit-report.md`
+  - `paper/reviewer-report.md`
+  - `paper/rebuttal-log.md`
+  - `paper/final-acceptance-report.md`
+  - `paper/phase-scorecard.md`
 - Acceptance rule: `{{GATE_4_REPORT_PATH}}` must explicitly state whether the draft is at top-tier submission level, and `{{CITATION_AUDIT_REPORT_PATH}}` must summarize citation authenticity checks and unresolved citation risks.
-- Next consumer: `05-reflection-evolution` after human Gate 4 approval.
+- Next consumer: `reflection` after human Gate 4 approval.
 
-### `05-reflection-evolution`
+### `docs/reflection`
 
 - Purpose: run `Reflector <-> Curator` on project-level lessons, overlay drafts, and runtime improvement proposals.
 - Required outputs:
-  - `05-reflection-evolution/lessons-learned.md`
-  - `05-reflection-evolution/overlay-draft.md`
-  - `05-reflection-evolution/runtime-improvement-report.md`
-  - `05-reflection-evolution/phase-scorecard.md`
+  - `docs/reflection/lessons-learned.md`
+  - `docs/reflection/overlay-draft.md`
+  - `docs/reflection/runtime-improvement-report.md`
+  - `docs/reflection/phase-scorecard.md`
 - Acceptance rule: `{{GATE_5_REPORT_PATH}}` must separate safe overlay proposals from ideas that still need human judgment.
 - Next consumer: future projects only, after human Gate 5 approval.
 
-### `06-archive`
+### `.autoresearch/archive`
 
 - Purpose: store superseded drafts, rejected pivots, and retired overlays without polluting live outputs.
 - Required outputs:
-  - `06-archive/archive-index.md`
+  - `.autoresearch/archive/archive-index.md`
 - Acceptance rule: archived items point back to the reason and the replacement artifact, if any.
 - Next consumer: future audit only.

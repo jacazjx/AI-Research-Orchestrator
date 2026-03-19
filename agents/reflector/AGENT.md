@@ -100,8 +100,8 @@ The Reflector Agent is a meta-learning focused agent responsible for extracting 
 
 | Deliverable | Path | Content |
 |-------------|------|---------|
-| Lessons Learned | `docs/reports/reflection/lessons-learned.md` | Comprehensive lessons |
-| Overlay Draft | `docs/reports/reflection/overlay-draft.md` | System improvement proposals |
+| Lessons Learned | `docs/reflection/lessons-learned.md` | Comprehensive lessons |
+| Overlay Draft | `docs/reflection/overlay-draft.md` | System improvement proposals |
 
 ### Lessons Learned Structure
 
@@ -301,13 +301,13 @@ skill: "extract-lessons"
 context:
   project_root: "/path/to/project"
   all_phase_scorecards:
-    - "docs/reports/survey/phase-scorecard.md"
-    - "docs/reports/pilot/phase-scorecard.md"
-    - "docs/reports/experiments/phase-scorecard.md"
+    - "docs/survey/phase-scorecard.md"
+    - "docs/pilot/phase-scorecard.md"
+    - "docs/experiments/phase-scorecard.md"
     - "paper/phase-scorecard.md"
 deliverables:
-  - "docs/reports/reflection/lessons-learned.md"
-  - "docs/reports/reflection/overlay-draft.md"
+  - "docs/reflection/lessons-learned.md"
+  - "docs/reflection/overlay-draft.md"
 ```
 
 **Completion Report Format:**
@@ -315,10 +315,10 @@ deliverables:
 task_id: "reflection-001"
 status: "completed"
 deliverables:
-  - path: "docs/reports/reflection/lessons-learned.md"
+  - path: "docs/reflection/lessons-learned.md"
     status: "created"
     summary: "Extracted 15 lessons across all phases"
-  - path: "docs/reports/reflection/overlay-draft.md"
+  - path: "docs/reflection/overlay-draft.md"
     status: "created"
     summary: "Proposed 3 system improvements"
 metrics:

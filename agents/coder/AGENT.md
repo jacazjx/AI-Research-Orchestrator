@@ -18,7 +18,7 @@ The Code Agent is an implementation-focused agent responsible for executing pilo
    - Gather evidence from literature, data, and practical sources
    - Assess significance (academic, practical, timeliness, feasibility)
    - Produce validation verdict (Validated/Reformulate/Defer/Pivot)
-   - **Output**: `docs/reports/pilot/problem-validation-report.md`
+   - **Output**: `docs/pilot/problem-validation-report.md`
 
 2. **Operational Problem Analysis**: Translate the validated problem into operational hypotheses that can be tested.
 
@@ -111,21 +111,21 @@ The Code Agent is an implementation-focused agent responsible for executing pilo
 
 | Deliverable | Path | Content |
 |-------------|------|---------|
-| Problem Validation Report | `docs/reports/pilot/problem-validation-report.md` | Evidence, significance, verdict |
-| Problem Analysis | `docs/reports/pilot/problem-analysis.md` | Hypothesis translation |
-| Pilot Design | `docs/reports/pilot/pilot-design.md` | Minimal experiment spec |
-| Pilot Results | `docs/reports/pilot/pilot-results.md` | Execution outcomes |
-| Pilot Validation Report | `docs/reports/pilot/pilot-validation-report.md` | Go/No-Go recommendation |
+| Problem Validation Report | `docs/pilot/problem-validation-report.md` | Evidence, significance, verdict |
+| Problem Analysis | `docs/pilot/problem-analysis.md` | Hypothesis translation |
+| Pilot Design | `docs/pilot/pilot-design.md` | Minimal experiment spec |
+| Pilot Results | `docs/pilot/pilot-results.md` | Execution outcomes |
+| Pilot Validation Report | `docs/pilot/pilot-validation-report.md` | Go/No-Go recommendation |
 
 ### Experiments Phase Deliverables
 
 | Deliverable | Path | Content |
 |-------------|------|---------|
-| Experiment Spec | `docs/reports/experiments/experiment-spec.md` | Full experiment matrix |
-| Run Registry | `docs/reports/experiments/run-registry.md` | All run metadata |
-| Checkpoint Index | `docs/reports/experiments/checkpoint-index.md` | Model checkpoint locations |
-| Results Summary | `docs/reports/experiments/results-summary.md` | Aggregated results |
-| Evidence Package Index | `docs/reports/experiments/evidence-package-index.md` | Complete package |
+| Experiment Spec | `docs/experiments/experiment-spec.md` | Full experiment matrix |
+| Run Registry | `docs/experiments/run-registry.md` | All run metadata |
+| Checkpoint Index | `docs/experiments/checkpoint-index.md` | Model checkpoint locations |
+| Results Summary | `docs/experiments/results-summary.md` | Aggregated results |
+| Evidence Package Index | `docs/experiments/evidence-package-index.md` | Complete package |
 
 ### Quality Requirements
 
@@ -229,13 +229,13 @@ The Code Agent receives tasks from and reports to the Orchestrator only.
 task_id: "pilot-001"
 skill: "design-pilot"
 context:
-  research_readiness_report: "docs/reports/survey/research-readiness-report.md"
-  problem_analysis: "docs/reports/pilot/problem-analysis.md"
+  research_readiness_report: "docs/survey/research-readiness-report.md"
+  problem_analysis: "docs/pilot/problem-analysis.md"
   compute_resources:
     gpu: "available"
     max_hours: 24
 deliverables:
-  - "docs/reports/pilot/pilot-design.md"
+  - "docs/pilot/pilot-design.md"
 ```
 
 **Completion Report Format:**
@@ -243,7 +243,7 @@ deliverables:
 task_id: "pilot-001"
 status: "completed"
 deliverables:
-  - path: "docs/reports/pilot/pilot-validation-report.md"
+  - path: "docs/pilot/pilot-validation-report.md"
     status: "created"
     summary: "Pilot validated core hypothesis with 85% accuracy"
     recommendation: "GO"

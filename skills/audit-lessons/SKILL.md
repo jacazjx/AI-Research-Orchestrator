@@ -13,7 +13,7 @@ Critically review lessons learned for transferability and practical applicabilit
 
 ### Step 1: Review Lessons Document
 
-Read `docs/reports/reflection/lessons-learned.md` for content and structure.
+Read `docs/reflection/lessons-learned.md` for content and structure.
 
 ### Step 2: Assess What Worked
 

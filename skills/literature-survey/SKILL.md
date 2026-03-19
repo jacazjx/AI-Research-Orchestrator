@@ -68,7 +68,7 @@ Document explicit criteria:
 
 #### 1.3 Protocol Documentation
 
-Create survey protocol at `docs/reports/survey/survey-protocol.md`:
+Create survey protocol at `docs/survey/survey-protocol.md`:
 
 ```markdown
 # Survey Protocol
@@ -97,7 +97,7 @@ Create survey protocol at `docs/reports/survey/survey-protocol.md`:
 - [Fields to extract from each paper]
 ```
 
-**Deliverable:** `docs/reports/survey/survey-protocol.md`
+**Deliverable:** `docs/survey/survey-protocol.md`
 
 ---
 
@@ -140,7 +140,7 @@ curl "https://dblp.org/search/publ/api?q=YOUR_QUERY&format=json&h=50"
 
 #### 2.3 Search Logging
 
-Record all searches in `docs/reports/survey/search-log.md`:
+Record all searches in `docs/survey/search-log.md`:
 
 ```markdown
 # Search Log
@@ -166,7 +166,7 @@ Record all searches in `docs/reports/survey/search-log.md`:
 - Duplicates removed: [count]
 ```
 
-**Deliverable:** `docs/reports/survey/search-log.md` with raw results
+**Deliverable:** `docs/survey/search-log.md` with raw results
 
 ---
 
@@ -182,7 +182,7 @@ Screen based on titles and abstracts:
 2. Apply inclusion/exclusion criteria
 3. Record decision with rationale
 
-Create screening record at `docs/reports/survey/screening-record.md`:
+Create screening record at `docs/survey/screening-record.md`:
 
 ```markdown
 # Screening Record
@@ -214,7 +214,7 @@ For papers passing initial screening:
 2. Assess against all criteria
 3. Record detailed exclusion reasons
 
-**Deliverable:** `docs/reports/survey/screening-record.md`
+**Deliverable:** `docs/survey/screening-record.md`
 
 ---
 
@@ -253,7 +253,7 @@ For each included paper, extract:
 
 #### 4.2 Extraction Database
 
-Compile extractions into `docs/reports/survey/extraction-database.md`:
+Compile extractions into `docs/survey/extraction-database.md`:
 
 | Field | Description |
 |-------|-------------|
@@ -267,7 +267,7 @@ Compile extractions into `docs/reports/survey/extraction-database.md`:
 | Relevance Score | 1-10 relevance to RQ |
 | Verification Grade | A-F citation grade |
 
-**Deliverable:** `docs/reports/survey/extraction-database.md`
+**Deliverable:** `docs/survey/extraction-database.md`
 
 ---
 
@@ -322,7 +322,7 @@ Rate evidence strength:
 | **Limited** | Few studies, inconsistent results, or low-quality venues |
 | **Insufficient** | Not enough evidence to draw conclusions |
 
-**Deliverable:** `docs/reports/survey/synthesis.md`
+**Deliverable:** `docs/survey/synthesis.md`
 
 ---
 
@@ -343,7 +343,7 @@ See [references/citation_standards.md](references/citation_standards.md) for gra
 
 #### 6.2 Verification Report
 
-Create `docs/reports/survey/citation-verification-report.md`:
+Create `docs/survey/citation-verification-report.md`:
 
 ```markdown
 # Citation Verification Report
@@ -371,7 +371,7 @@ Create `docs/reports/survey/citation-verification-report.md`:
 - [Any citations needing manual verification]
 ```
 
-**Deliverable:** `docs/reports/survey/citation-verification-report.md`
+**Deliverable:** `docs/survey/citation-verification-report.md`
 
 ---
 
@@ -381,7 +381,7 @@ Generate final survey report with mandatory visualizations.
 
 #### 7.1 Report Structure
 
-Create `docs/reports/survey/research-readiness-report.md`:
+Create `docs/survey/research-readiness-report.md`:
 
 ```markdown
 # Literature Survey Report
@@ -471,7 +471,7 @@ Use AI image generation or create visualizations programmatically:
 - Clear labeling and legend
 - Professional appearance suitable for academic reports
 - Include source data/methodology notes
-- Save as PDF or PNG in `docs/reports/survey/figures/`
+- Save as PDF or PNG in `docs/survey/figures/`
 
 #### 7.3 Quality Checklist
 
@@ -484,7 +484,7 @@ Before finalizing report:
 - [ ] Methodology fully documented
 - [ ] No fabricated references
 
-**Deliverable:** `docs/reports/survey/research-readiness-report.md` with visualizations
+**Deliverable:** `docs/survey/research-readiness-report.md` with visualizations
 
 ---
 
@@ -492,14 +492,14 @@ Before finalizing report:
 
 | Artifact | Location | Phase |
 |----------|----------|-------|
-| Survey Protocol | `docs/reports/survey/survey-protocol.md` | Phase 1 |
-| Search Log | `docs/reports/survey/search-log.md` | Phase 2 |
-| Screening Record | `docs/reports/survey/screening-record.md` | Phase 3 |
-| Extraction Database | `docs/reports/survey/extraction-database.md` | Phase 4 |
-| Synthesis | `docs/reports/survey/synthesis.md` | Phase 5 |
-| Citation Verification | `docs/reports/survey/citation-verification-report.md` | Phase 6 |
-| Final Report | `docs/reports/survey/research-readiness-report.md` | Phase 7 |
-| Visualizations | `docs/reports/survey/figures/` | Phase 7 |
+| Survey Protocol | `docs/survey/survey-protocol.md` | Phase 1 |
+| Search Log | `docs/survey/search-log.md` | Phase 2 |
+| Screening Record | `docs/survey/screening-record.md` | Phase 3 |
+| Extraction Database | `docs/survey/extraction-database.md` | Phase 4 |
+| Synthesis | `docs/survey/synthesis.md` | Phase 5 |
+| Citation Verification | `docs/survey/citation-verification-report.md` | Phase 6 |
+| Final Report | `docs/survey/research-readiness-report.md` | Phase 7 |
+| Visualizations | `docs/survey/figures/` | Phase 7 |
 
 ---
 

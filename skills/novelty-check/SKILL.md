@@ -42,4 +42,4 @@ Output:
 
 ## Output
 
-- `docs/reports/survey/novelty-report.md` - Novelty verification report with closest papers and differentiation points
+- `docs/survey/novelty-report.md` - Novelty verification report with closest papers and differentiation points

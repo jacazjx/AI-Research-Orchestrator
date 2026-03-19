@@ -52,7 +52,7 @@ List expected contributions:
 
 ## Output
 
-Save to `docs/reports/survey/idea-definition.md`:
+Save to `docs/survey/idea-definition.md`:
 
 ```markdown
 # Idea Definition

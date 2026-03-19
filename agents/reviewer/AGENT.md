@@ -258,7 +258,7 @@ task_id: "review-paper-001"
 skill: "audit-paper"
 context:
   paper_directory: "paper/"
-  evidence_package: "docs/reports/experiments/evidence-package-index.md"
+  evidence_package: "docs/experiments/evidence-package-index.md"
   target_venue: "NeurIPS 2024"
 ```
 

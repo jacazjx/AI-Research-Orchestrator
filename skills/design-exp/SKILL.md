@@ -13,7 +13,7 @@ Design a comprehensive experiment matrix based on pilot results, with proper hyp
 
 ### Step 1: Review Pilot Results
 
-Read `docs/reports/pilot/pilot-validation-report.md` for:
+Read `docs/pilot/pilot-validation-report.md` for:
 - Validated approach
 - Key hyperparameters
 - Lessons learned
@@ -58,7 +58,7 @@ Calculate:
 
 ## Output
 
-Save to `docs/reports/experiments/experiment-spec.md`:
+Save to `docs/experiments/experiment-spec.md`:
 
 ```markdown
 # Experiment Specification

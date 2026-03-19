@@ -540,7 +540,7 @@ my-project/
 │   └── curator/             # Curator agent 工作区
 ├── paper/                   # 论文相关文件
 ├── code/                    # 代码和实验
-└── docs/reports/            # 阶段交付物
+└── docs/                    # 阶段交付物
     ├── survey/
     ├── pilot/
     ├── experiments/

@@ -90,19 +90,19 @@ def sample_config():
                         "name": "literature_survey",
                         "primary_skill": "research-lit",
                         "reviewer_skill": "audit-survey",
-                        "required_artifacts": ["docs/reports/survey/literature-review.md"],
+                        "required_artifacts": ["docs/survey/literature-review.md"],
                     },
                     {
                         "name": "idea_definition",
                         "primary_skill": "define-idea",
                         "reviewer_skill": "novelty-check",
-                        "required_artifacts": ["docs/reports/survey/idea-definition.md"],
+                        "required_artifacts": ["docs/survey/idea-definition.md"],
                     },
                     {
                         "name": "research_plan",
                         "primary_skill": "research-plan",
                         "reviewer_skill": "audit-plan",
-                        "required_artifacts": ["docs/reports/survey/research-readiness-report.md"],
+                        "required_artifacts": ["docs/survey/research-readiness-report.md"],
                     },
                 ],
             },
@@ -116,8 +116,8 @@ class TestCheckRequiredArtifacts:
     def test_all_artifacts_exist(self, temp_project_root):
         """Test when all required artifacts exist."""
         # Create artifacts
-        artifact1 = temp_project_root / "docs/reports/survey/literature-review.md"
-        artifact2 = temp_project_root / "docs/reports/survey/idea-definition.md"
+        artifact1 = temp_project_root / "docs/survey/literature-review.md"
+        artifact2 = temp_project_root / "docs/survey/idea-definition.md"
         artifact1.parent.mkdir(parents=True, exist_ok=True)
         artifact1.write_text("content")
         artifact2.write_text("content")
@@ -125,8 +125,8 @@ class TestCheckRequiredArtifacts:
         result = check_required_artifacts(
             temp_project_root,
             [
-                "docs/reports/survey/literature-review.md",
-                "docs/reports/survey/idea-definition.md",
+                "docs/survey/literature-review.md",
+                "docs/survey/idea-definition.md",
             ],
         )
 
@@ -136,22 +136,22 @@ class TestCheckRequiredArtifacts:
 
     def test_some_artifacts_missing(self, temp_project_root):
         """Test when some artifacts are missing."""
-        artifact1 = temp_project_root / "docs/reports/survey/literature-review.md"
+        artifact1 = temp_project_root / "docs/survey/literature-review.md"
         artifact1.parent.mkdir(parents=True, exist_ok=True)
         artifact1.write_text("content")
 
         result = check_required_artifacts(
             temp_project_root,
             [
-                "docs/reports/survey/literature-review.md",
-                "docs/reports/survey/missing.md",
+                "docs/survey/literature-review.md",
+                "docs/survey/missing.md",
             ],
         )
 
         assert result["all_exist"] is False
         assert len(result["missing"]) == 1
-        assert "docs/reports/survey/missing.md" in result["missing"]
-        assert "docs/reports/survey/literature-review.md" in result["existing"]
+        assert "docs/survey/missing.md" in result["missing"]
+        assert "docs/survey/literature-review.md" in result["existing"]
 
     def test_no_artifacts_required(self, temp_project_root):
         """Test when no artifacts are required."""
@@ -382,7 +382,7 @@ class TestCanAdvanceSubstep:
     def test_can_advance_success(self, temp_project_root, sample_state, sample_config):
         """Test when substep can advance."""
         # Create artifact
-        artifact = temp_project_root / "docs/reports/survey/literature-review.md"
+        artifact = temp_project_root / "docs/survey/literature-review.md"
         artifact.parent.mkdir(parents=True, exist_ok=True)
         artifact.write_text("content")
 
@@ -548,7 +548,7 @@ class TestEdgeCases:
 
         result = check_required_artifacts(
             temp_project_root,
-            ["docs/reports/survey/nested/deep/file.md"],
+            ["docs/survey/nested/deep/file.md"],
         )
 
         assert result["all_exist"] is True
@@ -684,7 +684,7 @@ class TestEdgeCases:
 
         result = check_required_artifacts(
             temp_project_root,
-            ["docs/reports/survey/file-with-dashes_and_underscores.md"],
+            ["docs/survey/file-with-dashes_and_underscores.md"],
         )
 
         assert result["all_exist"] is True

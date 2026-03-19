@@ -32,7 +32,7 @@ class RunStageLoopTest(unittest.TestCase):
             )
 
             # Use new paths
-            problem_analysis = project_root / "docs/reports/pilot/problem-analysis.md"
+            problem_analysis = project_root / "docs/pilot/problem-analysis.md"
             problem_analysis.parent.mkdir(parents=True, exist_ok=True)
             problem_analysis.write_text(
                 "# Problem Analysis\n\n- runtime finding: real pilot still blocked\n",
@@ -82,7 +82,7 @@ class RunStageLoopTest(unittest.TestCase):
             )
 
             # Create required artifact for literature_survey
-            artifact = project_root / "docs/reports/survey/literature-review.md"
+            artifact = project_root / "docs/survey/literature-review.md"
             artifact.parent.mkdir(parents=True, exist_ok=True)
             artifact.write_text("# Literature Review\n\nContent here.\n", encoding="utf-8")
 
@@ -108,7 +108,7 @@ class RunStageLoopTest(unittest.TestCase):
             )
 
             # Create required artifact for literature_survey
-            artifact = project_root / "docs/reports/survey/literature-review.md"
+            artifact = project_root / "docs/survey/literature-review.md"
             artifact.parent.mkdir(parents=True, exist_ok=True)
             artifact.write_text("# Literature Review\n\nContent here.\n", encoding="utf-8")
 
@@ -144,22 +144,22 @@ class RunStageLoopTest(unittest.TestCase):
 
             # Create files needed for gate to pass
             for relative_path in (
-                "docs/reports/survey/survey-round-summary.md",
-                "docs/reports/survey/critic-round-review.md",
-                "docs/reports/survey/literature-review.md",
-                "docs/reports/survey/idea-definition.md",
-                "docs/reports/survey/research-readiness-report.md",
+                "docs/survey/survey-round-summary.md",
+                "docs/survey/critic-round-review.md",
+                "docs/survey/literature-review.md",
+                "docs/survey/idea-definition.md",
+                "docs/survey/research-readiness-report.md",
             ):
                 file_path = project_root / relative_path
                 file_path.parent.mkdir(parents=True, exist_ok=True)
                 file_path.write_text(f"ready: {relative_path}\n", encoding="utf-8")
 
-            readiness_report = project_root / "docs/reports/survey/research-readiness-report.md"
+            readiness_report = project_root / "docs/survey/research-readiness-report.md"
             readiness_report.write_text(
                 "# Research Readiness Report\n\n- Recommendation: `approve`\n",
                 encoding="utf-8",
             )
-            phase_scorecard = project_root / "docs/reports/survey/phase-scorecard.md"
+            phase_scorecard = project_root / "docs/survey/phase-scorecard.md"
             phase_scorecard.write_text(
                 "# Phase 1 Scorecard\n\n- Gate readiness: `approve`\n- Recommendation: `approve`\n",
                 encoding="utf-8",
@@ -227,18 +227,18 @@ class RunStageLoopTest(unittest.TestCase):
 
             # Use new paths
             for relative_path in (
-                "docs/reports/survey/survey-round-summary.md",
-                "docs/reports/survey/critic-round-review.md",
+                "docs/survey/survey-round-summary.md",
+                "docs/survey/critic-round-review.md",
             ):
                 file_path = project_root / relative_path
                 file_path.parent.mkdir(parents=True, exist_ok=True)
                 file_path.write_text(f"ready: {relative_path}\n", encoding="utf-8")
-            readiness_report = project_root / "docs/reports/survey/research-readiness-report.md"
+            readiness_report = project_root / "docs/survey/research-readiness-report.md"
             readiness_report.write_text(
                 "# Research Readiness Report\n\n- Recommendation: `approve`\n",
                 encoding="utf-8",
             )
-            phase_scorecard = project_root / "docs/reports/survey/phase-scorecard.md"
+            phase_scorecard = project_root / "docs/survey/phase-scorecard.md"
             phase_scorecard.write_text(
                 "# Phase 1 Scorecard\n\n- Gate readiness: `approve`\n- Recommendation: `approve`\n",
                 encoding="utf-8",
@@ -327,18 +327,18 @@ class RunStageLoopTest(unittest.TestCase):
 
             # Create files needed for gate to pass
             for relative_path in (
-                "docs/reports/survey/survey-round-summary.md",
-                "docs/reports/survey/critic-round-review.md",
+                "docs/survey/survey-round-summary.md",
+                "docs/survey/critic-round-review.md",
             ):
                 file_path = project_root / relative_path
                 file_path.parent.mkdir(parents=True, exist_ok=True)
                 file_path.write_text(f"ready: {relative_path}\n", encoding="utf-8")
-            readiness_report = project_root / "docs/reports/survey/research-readiness-report.md"
+            readiness_report = project_root / "docs/survey/research-readiness-report.md"
             readiness_report.write_text(
                 "# Research Readiness Report\n\n- Recommendation: `approve`\n",
                 encoding="utf-8",
             )
-            phase_scorecard = project_root / "docs/reports/survey/phase-scorecard.md"
+            phase_scorecard = project_root / "docs/survey/phase-scorecard.md"
             phase_scorecard.write_text(
                 "# Phase 1 Scorecard\n\n- Gate readiness: `approve`\n- Recommendation: `approve`\n",
                 encoding="utf-8",
@@ -375,18 +375,18 @@ class RunStageLoopTest(unittest.TestCase):
 
             # Create files needed for gate to pass
             for relative_path in (
-                "docs/reports/survey/survey-round-summary.md",
-                "docs/reports/survey/critic-round-review.md",
+                "docs/survey/survey-round-summary.md",
+                "docs/survey/critic-round-review.md",
             ):
                 file_path = project_root / relative_path
                 file_path.parent.mkdir(parents=True, exist_ok=True)
                 file_path.write_text(f"ready: {relative_path}\n", encoding="utf-8")
-            readiness_report = project_root / "docs/reports/survey/research-readiness-report.md"
+            readiness_report = project_root / "docs/survey/research-readiness-report.md"
             readiness_report.write_text(
                 "# Research Readiness Report\n\n- Recommendation: `approve`\n",
                 encoding="utf-8",
             )
-            phase_scorecard = project_root / "docs/reports/survey/phase-scorecard.md"
+            phase_scorecard = project_root / "docs/survey/phase-scorecard.md"
             phase_scorecard.write_text(
                 "# Phase 1 Scorecard\n\n- Gate readiness: `approve`\n- Recommendation: `approve`\n",
                 encoding="utf-8",
