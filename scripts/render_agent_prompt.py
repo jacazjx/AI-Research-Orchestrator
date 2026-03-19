@@ -63,6 +63,9 @@ ROLE_TO_PHASE = {
 # Derived from NEXT_PHASE inverse; defined here explicitly for clarity.
 PREV_PHASE = {v: k for k, v in NEXT_PHASE.items() if k in NEXT_PHASE}
 
+# Paths use the legacy workspace directory layout (00-admin/, 01-survey/, etc.),
+# not the semantic docs/<phase>/ scheme used by DEFAULT_DELIVERABLES.
+# Do not change to docs/<phase>/ without also updating tests/test_render_agent_prompt.py.
 DEFAULT_MUST_READ = {
     "orchestrator": [
         "00-admin/research-state.yaml",
