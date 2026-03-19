@@ -1,13 +1,33 @@
 ---
 name: airesearchorchestrator:run-experiments
 description: "Run the full Experiments phase for comprehensive evaluation"
-argument-hint: "[--project-root <path>] [--max-loops <number>]"
-allowed-tools: "Read, Write, Edit, Grep, Glob, Bash(${CLAUDE_PLUGIN_ROOT}/scripts/*:*), Agent"
+argument-hint: ""
+allowed-tools: "Read, Write, Edit, Grep, Glob, Bash(${CLAUDE_PLUGIN_ROOT}/scripts/*:*), Agent, Skill"
 ---
 
 # Run Experiments Phase
 
-Executes the Code <-> Adviser loop for full experiments:
+Execute the **Code ↔ Adviser** loop for full experiments. No arguments needed.
+
+## Steps
+
+1. **Read project state** — load `.autoresearch/state/research-state.yaml`. Confirm Gate 2 was approved.
+
+2. **Spawn Coder agent**:
+   ```
+   Agent(subagent_type="airesearchorchestrator:coder", prompt="...")
+   ```
+
+3. **Spawn Adviser agent** after Coder completes:
+   ```
+   Agent(subagent_type="airesearchorchestrator:adviser", prompt="...")
+   ```
+
+4. **Evaluate gate** — read `docs/experiments/phase-scorecard.md` and present Gate 3 scorecard to the user.
+
+5. **Loop or advance** — score < 3.5: loop with Adviser feedback. Score ≥ 3.5: await human approval before `/write-paper`.
+
+## Required deliverables
 
 - `docs/experiments/experiment-spec.md`
 - `docs/experiments/run-registry.md`
@@ -16,43 +36,11 @@ Executes the Code <-> Adviser loop for full experiments:
 - `docs/experiments/evidence-package-index.md`
 - `docs/experiments/phase-scorecard.md`
 
-## Execution
-
-```!
-python3 "${CLAUDE_PLUGIN_ROOT}/scripts/run_stage_loop.py" --phase experiments $ARGUMENTS
-```
-
-## Process
-
-1. Code finalizes experiment matrix and runs experiments
-2. Adviser reviews evidence strength
-3. Loop until ready for Gate 3
-
-## Gate 3 Requirements
+## Gate 3 requirements
 
 - Frozen experiment spec
-- All runs traceable
+- All runs traceable with checksums
 - Results match experiment plan
-- Checkpoints documented
 - Complete evidence package
 
-## Agent Invocation
-
-**You MUST invoke subagents using the Agent tool.** Simply running the script is NOT enough.
-
-### Agent Pair
-
-| Role | Agent |
-|------|-------|
-| Primary | `code` |
-| Reviewer | `adviser` |
-
-### Workflow
-
-1. Initialize phase state (script above)
-2. Invoke Code agent with experiment execution task
-3. Invoke Adviser agent to verify experiment integrity
-4. Loop if score < 3.5
-5. Present Gate 3 to human for approval
-
-**Wait for human approval before advancing to Paper phase.**
+**Do NOT advance to Paper without explicit human approval.**

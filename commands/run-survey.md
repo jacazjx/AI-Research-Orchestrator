@@ -1,54 +1,44 @@
 ---
 name: airesearchorchestrator:run-survey
 description: "Run the Survey phase for literature review and research gap identification"
-argument-hint: "[--project-root <path>] [--max-loops <number>]"
-allowed-tools: "Read, Write, Edit, Grep, Glob, Bash(${CLAUDE_PLUGIN_ROOT}/scripts/*:*), Agent"
+argument-hint: ""
+allowed-tools: "Read, Write, Edit, Grep, Glob, Bash(${CLAUDE_PLUGIN_ROOT}/scripts/*:*), Agent, Skill"
 ---
 
 # Run Survey Phase
 
-Executes the Survey <-> Critic loop to produce:
+Execute the **Survey ↔ Critic** loop. No arguments needed — Orchestrator reads the project state and drives the agents directly.
 
+## Steps
+
+1. **Read project state** — load `.autoresearch/state/research-state.yaml` and `.autoresearch/config/orchestrator-config.yaml`.
+
+2. **Spawn Survey agent**:
+   ```
+   Agent(subagent_type="airesearchorchestrator:survey", prompt="...")
+   ```
+
+3. **Spawn Critic agent** after Survey completes:
+   ```
+   Agent(subagent_type="airesearchorchestrator:critic", prompt="...")
+   ```
+
+4. **Evaluate gate** — read `docs/survey/phase-scorecard.md` and present Gate 1 scorecard to the user.
+
+5. **Loop or advance** — score < 3.5: loop with Critic feedback. Score ≥ 3.5: await human approval before `/run-pilot`.
+
+## Required deliverables
+
+- `docs/survey/survey-round-summary.md`
+- `docs/survey/critic-round-review.md`
 - `docs/survey/research-readiness-report.md`
 - `docs/survey/phase-scorecard.md`
 
-## Execution
+## Gate 1 requirements
 
-```!
-python3 "${CLAUDE_PLUGIN_ROOT}/scripts/run_stage_loop.py" --phase survey $ARGUMENTS
-```
+- Bounded scope with atomic definitions
+- Literature coverage (recent 5 years + seminal works)
+- Novelty argument documented
+- Validation route identified
 
-## Process
-
-1. Survey agent expands literature and defines atomic academic definitions
-2. Critic reviews novelty, feasibility, theory risk
-3. Loop until ready for Gate 1
-
-## Gate 1 Requirements
-
-- Bounded scope
-- Atomic definitions
-- Literature coverage (recent 5 years + seminal)
-- Novelty argument
-- Validation route
-
-## Agent Invocation
-
-**You MUST invoke subagents using the Agent tool.** Simply running the script is NOT enough.
-
-### Agent Pair
-
-| Role | Agent |
-|------|-------|
-| Primary | `survey` |
-| Reviewer | `critic` |
-
-### Workflow
-
-1. Initialize phase state (script above)
-2. Invoke Survey agent with literature review task
-3. Invoke Critic agent to audit work
-4. Loop if score < 3.5
-5. Present Gate 1 to human for approval
-
-**Wait for human approval before advancing to Pilot phase.**
+**Do NOT advance to Pilot without explicit human approval.**
