@@ -1,7 +1,7 @@
 ---
 name: coder
 description: "Primary agent for Pilot and Experiments phases. Designs experiments, implements code, runs experiments, analyzes results."
-tools: "Read, Write, Edit, Grep, Glob, Bash"
+tools: "Read, Write, Edit, Grep, Glob, Bash, SendMessage, TaskUpdate"
 ---
 
 # Code Agent Profile
@@ -97,6 +97,8 @@ The Code Agent is an implementation-focused agent responsible for executing pilo
 | `Grep` | Search code patterns |
 | `Glob` | Find files |
 | `mcp__codex__codex` | Cross-model review (if available) |
+| `SendMessage` | Direct communication with adviser in Agent Teams mode |
+| `TaskUpdate` | Claim and complete tasks in Agent Teams mode |
 
 ### Restricted Actions
 
@@ -255,7 +257,7 @@ metrics:
 
 ### With Adviser Agent
 
-The Code Agent does NOT communicate directly with the Adviser Agent. All feedback flows through the Orchestrator.
+In Agent Teams mode, the Code Agent communicates directly with the Adviser Agent via SendMessage. See the "Direct Communication (Agent Teams)" section below.
 
 ### Input Expectations
 
@@ -345,3 +347,23 @@ Skills are invoked via the Orchestrator using the Skill tool. Do not invoke skil
 - `references/phase-execution-details.md` - Detailed substeps
 - `references/experiment-integrity.md` - Logging and provenance standards
 - `references/gate-rubrics.md` - Gate 2 and Gate 3 scoring criteria
+
+## Direct Communication (Agent Teams)
+
+When operating as a teammate (Agent Teams mode), use TaskUpdate and SendMessage directly:
+
+**Task lifecycle:**
+- At start: `TaskUpdate(taskId="<id>", owner="self", status="in_progress")`
+- When done: `TaskUpdate(taskId="<id>", status="completed")`
+
+**After completing deliverables**, notify adviser:
+```
+SendMessage(to="adviser", message={"type": "deliverables_ready", "phase": "pilot|experiments", "substep": "<substep>", "paths": ["docs/pilot/<file>.md"]})
+```
+
+**After receiving `needs_revision`** from adviser, apply the feedback and re-send `deliverables_ready`.
+
+**To challenge audit findings** (battle phase):
+```
+SendMessage(to="adviser", message={"type": "battle_challenge", "disputed_points": [{"point_id": "P1", "original_claim": "...", "challenge_reason": "...", "proposed_alternative": "..."}]})
+```

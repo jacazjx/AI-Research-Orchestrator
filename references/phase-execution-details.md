@@ -2,6 +2,8 @@
 
 This document expands each phase into concrete substeps, drawing structural inspiration from Sibyl's stage decomposition and AI-Researcher's role-specific task definitions while preserving the two-agent-per-phase rule in this Skill.
 
+**Agent Teams Update:** Within each phase, Primary and Reviewer iterate directly via `SendMessage` without the Orchestrator relaying their exchanges. When a substep is blocked and cannot be resolved internally, the Primary agent signals the Orchestrator by calling `TaskUpdate(status="blocked")`, which triggers Orchestrator escalation handling.
+
 ## Phase 1: Literature and IDEA Research
 
 Internal progress pattern:

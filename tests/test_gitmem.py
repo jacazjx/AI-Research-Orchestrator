@@ -582,9 +582,7 @@ class GitMemRollbackEdgeCasesTest(unittest.TestCase):
             test_file.write_text("content\n", encoding="utf-8")
             COMMON.gitmem_commit(project_root, "docs/test.md", "Initial")
 
-            result = COMMON.gitmem_rollback(
-                project_root, "docs/test.md", to_rev="nonexistent"
-            )
+            result = COMMON.gitmem_rollback(project_root, "docs/test.md", to_rev="nonexistent")
             self.assertFalse(result)
 
 

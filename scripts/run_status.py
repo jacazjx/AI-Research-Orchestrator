@@ -18,9 +18,9 @@ from typing import Any
 SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from constants import PHASE_SEQUENCE
-from quality_gate import evaluate_quality_gate
-from reload_project import get_next_actions, load_project_state
+from constants import PHASE_SEQUENCE  # noqa: E402
+from quality_gate import evaluate_quality_gate  # noqa: E402
+from reload_project import get_next_actions, load_project_state  # noqa: E402
 
 # Maps decision key → human label
 _DECISION_LABELS: dict[str, str] = {
@@ -195,7 +195,10 @@ def main() -> int:
         project_root = find_project_root()
 
     if project_root is None:
-        print("Error: no AI Research project found in the current directory or its parents.", file=sys.stderr)
+        print(
+            "Error: no AI Research project found in the current directory or its parents.",
+            file=sys.stderr,
+        )
         print("Hint: run /init-research first, or pass --project-root explicitly.", file=sys.stderr)
         return 1
 

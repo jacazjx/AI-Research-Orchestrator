@@ -73,12 +73,8 @@ class InitializeResearchProjectTest(unittest.TestCase):
             self.assertTrue((project_root / ".autoresearch/idea-brief.md").exists())
             self.assertTrue((project_root / ".autoresearch/reference-papers/README.md").exists())
             self.assertTrue((project_root / ".autoresearch/dashboard/progress.md").exists())
-            self.assertTrue(
-                (project_root / "docs/pilot/pilot-validation-report.md").exists()
-            )
-            self.assertTrue(
-                (project_root / "docs/experiments/evidence-package-index.md").exists()
-            )
+            self.assertTrue((project_root / "docs/pilot/pilot-validation-report.md").exists())
+            self.assertTrue((project_root / "docs/experiments/evidence-package-index.md").exists())
             # runtime-improvement-report is now in docs/reflection/
             self.assertTrue(
                 (project_root / "docs/reflection/runtime-improvement-report.md").exists()

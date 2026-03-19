@@ -154,6 +154,36 @@ AI-Research-Orchestrator/
 └── references/              # Protocol documentation
 ```
 
+## Agent Teams Architecture
+
+This plugin uses the Claude Code Agent Teams feature for inter-agent communication.
+
+### Required Environment Variable
+
+Set before using phase commands:
+```bash
+CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
+```
+
+### Agent Teams Tools Available
+
+When Agent Teams is enabled, the following tools become available:
+- `TeamCreate` - Create a named team of agents for a phase
+- `TeamDelete` - Disband team when phase completes
+- `TaskCreate` - Create trackable tasks with dependencies
+- `TaskUpdate` - Update task status/owner
+- `TaskGet`/`TaskList` - Monitor task progress
+- `SendMessage` - Direct agent-to-agent communication
+
+### Team Lifecycle per Phase
+
+1. Orchestrator: `TeamCreate(team_name="research-<phase>", description="...")`
+2. Orchestrator: Creates tasks with `TaskCreate` and dependency chains, then assigns tasks with `TaskUpdate(taskId=..., owner="<agent_name>")`
+3. Orchestrator: Spawns Primary Agent with `Agent(subagent_type=..., name=..., team_name=...)`
+4. Orchestrator: Spawns Reviewer Agent with `Agent(subagent_type=..., name=..., team_name=...)`
+5. Agents communicate directly via `SendMessage`
+6. Orchestrator: Sends shutdown signals (`SendMessage(to="<primary>", message={"type": "shutdown_request"})` and `SendMessage(to="<reviewer>", message={"type": "shutdown_request"})`) then calls `TeamDelete()` when phase complete
+
 ## Hard Rules
 
 1. **EXACTLY 2 agents per phase** (primary + reviewer). Do NOT spawn explore agents or helpers.

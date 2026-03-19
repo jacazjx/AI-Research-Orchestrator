@@ -1,7 +1,7 @@
 ---
 name: critic
 description: "Reviewer agent for Survey phase. Audits novelty, feasibility, theory risk, and citation authenticity."
-tools: "Read, Write, Edit, Grep, Glob, Bash"
+tools: "Read, Write, Edit, Grep, Glob, Bash, SendMessage, TaskUpdate"
 ---
 
 # Critic Agent Profile
@@ -94,6 +94,7 @@ Automatically block Gate 1 if:
 | `Glob` | Find relevant files |
 | `WebFetch` | Access paper metadata and verify sources |
 | `SendMessage` | Direct communication with survey in Agent Teams mode |
+| `TaskUpdate` | Claim and complete tasks in Agent Teams mode |
 
 ### Restricted Actions
 
@@ -295,7 +296,7 @@ recommendations:
 
 ### With Survey Agent
 
-The Critic Agent does NOT communicate directly with the Survey Agent. All feedback flows through the Orchestrator.
+In Agent Teams mode, the Critic Agent communicates directly with the Survey Agent via SendMessage. See the "Direct Communication (Agent Teams)" section below.
 
 ### Input Expectations
 
@@ -383,8 +384,25 @@ Skills are invoked via the Orchestrator using the Skill tool. Do not invoke skil
 
 ## Direct Communication (Agent Teams)
 
-When operating as a teammate (Agent Teams mode), communicate directly with survey using SendMessage:
+When operating as a teammate (Agent Teams mode), use TaskUpdate and SendMessage directly:
 
-- **After completing audit:** `SendMessage(to="survey", message={"type":"audit_report","decision":"approve|revise","issues":[...]}, summary="Audit complete")`
-- **To respond to challenge:** `SendMessage(to="survey", message={"type":"battle_response","responses":[...]}, summary="Response to challenge")`
-- **Maximum 3 debate rounds:** If unresolved after 3 rounds, `SendMessage(to="orchestrator", message={"type":"escalate","reason":"No consensus after 3 rounds",...})`
+**Task lifecycle:**
+- At start: `TaskUpdate(taskId="<id>", owner="self", status="in_progress")`
+- When done: `TaskUpdate(taskId="<id>", status="completed")`
+
+**Wait for survey** to send a `deliverables_ready` message before beginning audit.
+
+**After completing audit**, send result to survey:
+```
+SendMessage(to="survey", message={"type": "audit_report", "decision": "approve|needs_revision", "issues": [{"id": "I1", "severity": "critical|major|minor", "description": "..."}]})
+```
+
+**To respond to a battle challenge** from survey:
+```
+SendMessage(to="survey", message={"type": "battle_response", "responses": [{"point_id": "P1", "action": "accept|reject|modify", "reason": "...", "modified_position": "..."}]})
+```
+
+**Maximum 3 debate rounds:** If unresolved after 3 rounds, escalate to orchestrator:
+```
+TaskUpdate(taskId="survey-reviewer", status="blocked", metadata={"reason": "battle_escalation", "round": 3, "unresolved": [...]})
+```

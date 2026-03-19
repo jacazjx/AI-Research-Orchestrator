@@ -6,13 +6,14 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-
 from constants.phases import (
     DEFAULT_DELIVERABLES,
     NEXT_PHASE,
     PHASE_LOOP_KEY,
     PHASE_REQUIRED_DELIVERABLES,
 )
+from user_library import load_all_overlays
+
 from orchestrator_common import (
     PHASE_TO_GATE,
     build_list_section,
@@ -21,7 +22,6 @@ from orchestrator_common import (
     load_state,
     render_template_string,
 )
-from user_library import load_all_overlays
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 SKILL_DIR = SCRIPT_DIR.parent
@@ -63,60 +63,63 @@ ROLE_TO_PHASE = {
 # Derived from NEXT_PHASE inverse; defined here explicitly for clarity.
 PREV_PHASE = {v: k for k, v in NEXT_PHASE.items() if k in NEXT_PHASE}
 
+# Paths use the legacy workspace directory layout (00-admin/, 01-survey/, etc.),
+# not the semantic docs/<phase>/ scheme used by DEFAULT_DELIVERABLES.
+# Do not change to docs/<phase>/ without also updating tests/test_render_agent_prompt.py.
 DEFAULT_MUST_READ = {
     "orchestrator": [
-        ".autoresearch/state/research-state.yaml",
-        ".autoresearch/idea-brief.md",
-        ".autoresearch/dashboard/progress.md",
+        "00-admin/research-state.yaml",
+        "00-admin/idea-brief.md",
+        "00-admin/dashboard/progress.md",
     ],
     "survey": [
-        ".autoresearch/idea-brief.md",
-        ".autoresearch/reference-papers/README.md",
-        "docs/survey/survey-round-summary.md",
+        "00-admin/idea-brief.md",
+        "00-admin/reference-papers/README.md",
+        "01-survey/survey-round-summary.md",
     ],
     "critic": [
-        "docs/survey/survey-round-summary.md",
-        "docs/survey/critic-round-review.md",
-        "docs/survey/research-readiness-report.md",
+        "01-survey/survey-round-summary.md",
+        "01-survey/critic-round-review.md",
+        "01-survey/research-readiness-report.md",
     ],
     "code": [
-        "docs/survey/research-readiness-report.md",
-        "docs/pilot/problem-analysis.md",
-        "docs/pilot/pilot-validation-report.md",
-        "docs/experiments/experiment-spec.md",
+        "01-survey/research-readiness-report.md",
+        "02-pilot-analysis/problem-analysis.md",
+        "02-pilot-analysis/pilot-validation-report.md",
+        "03-full-experiments/experiment-spec.md",
     ],
     "adviser": [
-        "docs/pilot/pilot-experiment-plan.md",
-        "docs/pilot/pilot-results.md",
-        "docs/experiments/experiment-spec.md",
-        "docs/experiments/results-summary.md",
-        "docs/experiments/evidence-package-index.md",
+        "02-pilot-analysis/pilot-experiment-plan.md",
+        "02-pilot-analysis/pilot-results.md",
+        "03-full-experiments/experiment-spec.md",
+        "03-full-experiments/results-summary.md",
+        "03-full-experiments/evidence-package-index.md",
     ],
     "paper-writer": [
-        "docs/survey/research-readiness-report.md",
-        "docs/pilot/pilot-validation-report.md",
-        "docs/experiments/evidence-package-index.md",
-        "docs/paper/citation-audit-report.md",
-        "paper/paper-draft.md",
+        "01-survey/research-readiness-report.md",
+        "02-pilot-analysis/pilot-validation-report.md",
+        "03-full-experiments/evidence-package-index.md",
+        "04-paper/citation-audit-report.md",
+        "04-paper/paper-draft.md",
     ],
     "reviewer-editor": [
-        "docs/experiments/evidence-package-index.md",
-        "paper/paper-draft.md",
-        "docs/paper/citation-audit-report.md",
-        "docs/paper/reviewer-report.md",
-        "docs/paper/rebuttal-log.md",
+        "03-full-experiments/evidence-package-index.md",
+        "04-paper/paper-draft.md",
+        "04-paper/citation-audit-report.md",
+        "04-paper/reviewer-report.md",
+        "04-paper/rebuttal-log.md",
     ],
     "reflector": [
-        ".autoresearch/dashboard/progress.md",
-        "docs/experiments/evidence-package-index.md",
-        "paper/final-acceptance-report.md",
-        "docs/reflection/lessons-learned.md",
+        "00-admin/dashboard/progress.md",
+        "03-full-experiments/evidence-package-index.md",
+        "04-paper/final-acceptance-report.md",
+        "05-reflection-evolution/lessons-learned.md",
     ],
     "curator": [
-        ".autoresearch/state/research-state.yaml",
-        "docs/reflection/lessons-learned.md",
-        "docs/reflection/overlay-draft.md",
-        "docs/reflection/runtime-improvement-report.md",
+        "00-admin/research-state.yaml",
+        "05-reflection-evolution/lessons-learned.md",
+        "05-reflection-evolution/overlay-draft.md",
+        "05-reflection-evolution/runtime-improvement-report.md",
     ],
     "system-auditor": [
         "references/gate-rubrics.md",
@@ -125,9 +128,9 @@ DEFAULT_MUST_READ = {
         "references/literature-verification.md",
     ],
     "project-takeover": [
-        ".autoresearch/state/research-state.yaml",
-        ".autoresearch/idea-brief.md",
-        ".autoresearch/workspace-manifest.md",
+        "00-admin/research-state.yaml",
+        "00-admin/idea-brief.md",
+        "00-admin/workspace-manifest.md",
     ],
 }
 

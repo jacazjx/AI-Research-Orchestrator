@@ -478,9 +478,7 @@ class TestGitMemCheckpointsThroughWorkflow(unittest.TestCase):
         artifacts = {
             "docs/survey/literature-review.md": "# Lit\n",
             "docs/survey/idea-definition.md": "# Idea\n",
-            "docs/survey/research-readiness-report.md": (
-                "# Ready\n- Recommendation: `approve`\n"
-            ),
+            "docs/survey/research-readiness-report.md": ("# Ready\n- Recommendation: `approve`\n"),
             "docs/survey/survey-round-summary.md": "# Summary\n",
             "docs/survey/critic-round-review.md": "# Review\n",
             "docs/survey/phase-scorecard.md": "# Scorecard\n- Gate readiness: `approve`\n",
@@ -792,9 +790,7 @@ class TestFullResearchProjectWorkflow(unittest.TestCase):
             "docs/pilot/problem-analysis.md": (
                 "# Problem Analysis\n\nDetailed problem breakdown.\n"
             ),
-            "docs/pilot/pilot-design.md": (
-                "# Pilot Design\n\nExperimental design for pilot.\n"
-            ),
+            "docs/pilot/pilot-design.md": ("# Pilot Design\n\nExperimental design for pilot.\n"),
             "docs/pilot/pilot-validation-report.md": (
                 "# Pilot Validation Report\n\n- Continue to full experiments: `yes`\n"
             ),
@@ -808,9 +804,7 @@ class TestFullResearchProjectWorkflow(unittest.TestCase):
             # Other artifacts
             "docs/pilot/pilot-round-summary.md": "# Pilot Round Summary\n",
             "docs/pilot/adviser-round-review.md": "# Adviser Round Review\n",
-            "docs/pilot/phase-scorecard.md": (
-                "# Phase Scorecard\n\n- Gate readiness: `approve`\n"
-            ),
+            "docs/pilot/phase-scorecard.md": ("# Phase Scorecard\n\n- Gate readiness: `approve`\n"),
         }
         for path, content in pilot_artifacts.items():
             file_path = self.project_root / path
@@ -893,9 +887,7 @@ class TestFullResearchProjectWorkflow(unittest.TestCase):
             "docs/experiments/experiment-spec.md": (
                 "# Experiment Specification\n\nDetailed experiment design.\n"
             ),
-            "docs/experiments/run-registry.md": (
-                "# Run Registry\n\nExperiment run logs.\n"
-            ),
+            "docs/experiments/run-registry.md": ("# Run Registry\n\nExperiment run logs.\n"),
             "docs/experiments/evidence-package-index.md": (
                 "# Evidence Package Index\n\n- Results: `positive`\n"
             ),
@@ -913,9 +905,7 @@ class TestFullResearchProjectWorkflow(unittest.TestCase):
                 "- Handoff decision: `approve`\n"
             ),
             # Other artifacts
-            "docs/experiments/experiments-round-summary.md": (
-                "# Experiments Round Summary\n"
-            ),
+            "docs/experiments/experiments-round-summary.md": ("# Experiments Round Summary\n"),
             "docs/experiments/adviser-round-review.md": "# Adviser Round Review\n",
             "docs/experiments/phase-scorecard.md": (
                 "# Phase Scorecard\n\n- Gate readiness: `approve`\n"
@@ -1004,9 +994,7 @@ class TestFullResearchProjectWorkflow(unittest.TestCase):
                 "- Meets top-tier venue bar: `yes`\n"
                 "- Recommendation: `approve`\n"
             ),
-            "docs/paper/phase-scorecard.md": (
-                "# Phase Scorecard\n\n- Gate readiness: `approve`\n"
-            ),
+            "docs/paper/phase-scorecard.md": ("# Phase Scorecard\n\n- Gate readiness: `approve`\n"),
             # Other artifacts
             "paper/paper-round-summary.md": "# Paper Round Summary\n",
             "paper/reviewer-round-review.md": "# Reviewer Round Review\n",

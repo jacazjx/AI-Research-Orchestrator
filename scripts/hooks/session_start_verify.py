@@ -49,8 +49,8 @@ SCRIPT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
 # Import from existing scripts
-from reload_project import detect_project_root
-from verify_system import (
+from reload_project import detect_project_root  # noqa: E402
+from verify_system import (  # noqa: E402
     check_directory_structure,
     check_required_files,
     check_state_integrity,

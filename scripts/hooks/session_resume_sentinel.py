@@ -51,8 +51,8 @@ SCRIPT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
 # Import from existing scripts
-from reload_project import detect_project_root
-from sentinel import inspect_runtime
+from reload_project import detect_project_root  # noqa: E402
+from sentinel import inspect_runtime  # noqa: E402
 
 
 def read_hook_input() -> dict:

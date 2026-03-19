@@ -3,7 +3,7 @@ name: airesearchorchestrator:orchestrator
 description: "Initialize and run a gated five-phase AI research project from idea through paper. Use when user says 'start research project', '帮我做一个研究', 'research workflow', '五阶段研究流程', 'research orchestrator', or needs structured AI/ML research management with Survey, Pilot, Experiments, Paper, and Reflection phases."
 user-invocable: false
 argument-hint: [research-topic-or-idea]
-allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, Skill, mcp__codex__codex, mcp__codex__codex-reply
+allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, Skill, TeamCreate, TeamDelete, TaskCreate, TaskUpdate, TaskGet, TaskList, SendMessage, mcp__codex__codex, mcp__codex__codex-reply
 ---
 # AI Research Orchestrator
 
@@ -11,46 +11,128 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, Skill, mcp__codex_
 
 This skill turns a loose research request into a controlled five-phase project with fixed directories, scored gate checks, visible progress artifacts, and explicit human approval between phases. It is optimized for AI/ML algorithm research that needs literature review, pilot validation, experiments, paper writing, and controlled post-project reflection without losing provenance.
 
-## ⚠️ CRITICAL: Subagent Invocation
+## Agent Teams: Team Lead Role
 
-**You are the orchestrator. Your PRIMARY job is to invoke and coordinate subagents.**
+The Orchestrator acts as **Team Lead** in the Agent Teams architecture. Each phase is managed as a team with direct agent-to-agent communication.
+
+### Phase Lifecycle (Team Lead Pattern)
+
+```
+1. TeamCreate(team_name="research-<phase>", description="<phase> phase team")
+2. TaskCreate for primary task (e.g., task_id="<phase>-primary")
+3. TaskCreate for reviewer task with blockedBy=["<phase>-primary"]
+4. Agent(..., team_name="research-<phase>") — spawn Primary
+5. TaskUpdate(taskId="<phase>-primary", owner="<primary-agent-name>")
+6. Agent(..., team_name="research-<phase>") — spawn Reviewer
+7. TaskUpdate(taskId="<phase>-reviewer", owner="<reviewer-agent-name>")
+8. Monitor with TaskGet / TaskList
+9. (Phase complete) SendMessage shutdown to both agents
+10. TeamDelete(team_name="research-<phase>")
+```
+
+### Team Create / Task Create / Assign Pattern
+
+```python
+# 1. Create the team for this phase
+TeamCreate(team_name="research-survey", description="Survey phase: literature review and novelty check")
+
+# 2. Create tasks with dependency chain
+TaskCreate(
+  taskId="survey-primary",
+  title="Survey Agent: literature review and idea definition",
+  description="Run define-idea, research-lit, novelty-check skills"
+)
+TaskCreate(
+  taskId="survey-reviewer",
+  title="Critic Agent: audit survey deliverables",
+  description="Run audit-survey, audit-derivation skills",
+  blockedBy=["survey-primary"]
+)
+
+# 3. Spawn agents with team membership
+Agent(
+  subagent_type="airesearchorchestrator:survey",
+  name="survey",
+  team_name="research-survey",
+  prompt="..."
+)
+Agent(
+  subagent_type="airesearchorchestrator:critic",
+  name="critic",
+  team_name="research-survey",
+  prompt="..."
+)
+
+# 4. Assign tasks to agents
+TaskUpdate(taskId="survey-primary", owner="survey")
+TaskUpdate(taskId="survey-reviewer", owner="critic")
+
+# 5. Monitor
+TaskList(team_name="research-survey")
+TaskGet(taskId="survey-primary")
+```
+
+### Phase Shutdown Sequence
+
+Before calling TeamDelete, always send shutdown signals:
+
+```python
+SendMessage(to="survey",  message={"type": "shutdown_request", "reason": "Phase complete, gate approved"})
+SendMessage(to="critic",  message={"type": "shutdown_request", "reason": "Phase complete, gate approved"})
+TeamDelete(team_name="research-survey")
+```
+
+### Agent Pairs by Phase
+
+| Phase | Primary Agent | Reviewer Agent | Team Name |
+|-------|--------------|----------------|-----------|
+| Survey | `survey` | `critic` | `research-survey` |
+| Pilot | `coder` | `adviser` | `research-pilot` |
+| Experiments | `coder` | `adviser` | `research-experiments` |
+| Paper | `writer` | `reviewer` | `research-paper` |
+| Reflection | `reflector` | `curator` | `research-reflection` |
+
+### Key Benefit: Direct Agent Communication
+
+Agents in the same team can use `SendMessage` to communicate **directly** without routing through the Orchestrator. The Orchestrator only intervenes when escalation is required (e.g., battle fails to reach consensus after 3 rounds).
+
+---
+
+## ⚠️ CRITICAL: Agent Invocation
+
+**You are the orchestrator. Your PRIMARY job is to invoke and coordinate agents via the Agent Teams pattern.**
 
 ### What This Means
 
 1. **DO NOT just run scripts** — Running `run_stage_loop.py` only updates state; it does NOT do the actual work
-2. **You MUST use the Agent tool** — Spawn subagents to do the actual research work
+2. **You MUST use the Agent tool with team_name** — Spawn agents into teams so they can communicate directly
 3. **Each phase has two agents** — Primary (doer) and Reviewer (auditor)
-
-### Agent Pairs by Phase
-
-| Phase | Primary Agent | Reviewer Agent |
-|-------|--------------|----------------|
-| Survey | `survey` | `critic` |
-| Pilot | `code` | `adviser` |
-| Experiments | `code` | `adviser` |
-| Paper | `writer` | `reviewer` |
-| Reflection | `reflector` | `curator` |
 
 ### Correct Workflow
 
 ```
 1. Run script to initialize phase state
-2. Invoke Primary agent via Agent tool with detailed prompt
-3. Wait for Primary to complete
-4. Invoke Reviewer agent via Agent tool with Primary's output
-5. Wait for Reviewer to complete
-6. Check gate score
-7. If score < 3.5, loop back to Primary with feedback
-8. If score >= 3.5, present gate to human for approval
-9. After human approval, advance to next phase
+2. TeamCreate for this phase
+3. TaskCreate for primary and reviewer tasks (with blockedBy dependency)
+4. Spawn Primary agent with team_name; assign task via TaskUpdate
+5. Primary completes work, notifies Reviewer via SendMessage
+6. Spawn Reviewer agent with team_name; assign task via TaskUpdate
+7. Reviewer sends audit_report to Primary via SendMessage
+8. Agents battle directly if needed (up to 3 rounds via SendMessage)
+9. Check gate score (TaskList / TaskGet or read deliverables)
+10. If score < 3.5, loop back to Primary with feedback
+11. If score >= 3.5, present gate to human for approval
+12. After human approval: send shutdown_request, TeamDelete, advance phase
 ```
 
-### Example Agent Invocation
+### Example Agent Invocation (Agent Teams Pattern)
 
 ```python
+# Spawn Primary agent into the phase team
 Agent(
-  subagent_type="general-purpose",
+  subagent_type="airesearchorchestrator:survey",
   name="survey",
+  team_name="research-survey",
   prompt="""
 You are the Survey agent for project at /path/to/project.
 
@@ -62,7 +144,24 @@ Tasks:
 3. Define atomic definitions
 4. Produce research-readiness-report.md
 
+When done, notify the Critic agent:
+  SendMessage(to="critic", message={"type": "deliverables_ready", "phase": "survey", "deliverables": [...]})
+
 Write to agents/survey/ and docs/survey/.
+"""
+)
+
+# Spawn Reviewer agent into the same team
+Agent(
+  subagent_type="airesearchorchestrator:critic",
+  name="critic",
+  team_name="research-survey",
+  prompt="""
+You are the Critic agent for project at /path/to/project.
+
+Wait for a deliverables_ready message from the survey agent, then audit.
+Send your audit report back:
+  SendMessage(to="survey", message={"type": "audit_report", "decision": "...", "issues": [...]})
 """
 )
 ```
@@ -71,9 +170,11 @@ Write to agents/survey/ and docs/survey/.
 
 ❌ **WRONG**: Just run script, then say "phase complete"
 ❌ **WRONG**: Do the literature search yourself without spawning survey agent
-❌ **WRONG**: Update state but never invoke subagents
+❌ **WRONG**: Update state but never invoke agents
+❌ **WRONG**: Relay battle messages yourself — agents communicate directly via SendMessage
+❌ **WRONG**: Call TeamDelete without sending shutdown_request first
 
-✅ **CORRECT**: Run script → Invoke Primary agent → Wait → Invoke Reviewer → Wait → Check score → Present to human
+✅ **CORRECT**: TeamCreate → TaskCreate → Spawn agents with team_name → Assign tasks → Monitor → shutdown_request → TeamDelete → Advance
 
 ## Directory Structure
 
@@ -465,34 +566,38 @@ When transitioning between phases:
 - Phase 5: `Reflector <-> Curator`
   Produce `docs/reflection/runtime-improvement-report.md` and `docs/reflection/phase-scorecard.md`, then stop for Gate 5 before any overlay or policy change is activated.
 
-## Subagent-Driven Architecture
+## Agent-Driven Architecture
 
-### Core Principle: Orchestrator Never Executes
+### Core Principle: Orchestrator Acts as Team Lead, Never Executes
 
-**The Orchestrator is a coordinator, not an executor.** The Orchestrator NEVER directly performs research tasks. All research work must be delegated to specialized subagents.
+**The Orchestrator is the Team Lead, not an executor.** The Orchestrator NEVER directly performs research tasks. All research work is delegated to specialized agents spawned into phase teams, where they communicate directly with each other.
 
 ```
-CORRECT Architecture:
+CORRECT Architecture (Agent Teams):
 ┌─────────────────────────────────────────────────────────────────┐
-│                    Orchestrator (Main Session)                   │
+│              Orchestrator (Team Lead / Main Session)             │
 │  ┌─────────────────────────────────────────────────────────────┐ │
-│  │  Responsibilities:                                          │ │
+│  │  Team Lead Responsibilities:                                │ │
+│  │  • TeamCreate / TeamDelete per phase                        │ │
+│  │  • TaskCreate / TaskUpdate (assign, monitor)                │ │
+│  │  • Spawn agents with team_name                              │ │
+│  │  • Send shutdown_request before TeamDelete                  │ │
 │  │  • Coordinate phase transitions                             │ │
-│  │  • Spawn/dismiss subagents                                 │ │
-│  │  • Collect and aggregate results                           │ │
-│  │  • Present gates to human for decision                     │ │
+│  │  • Present gates to human for decision                      │ │
 │  │  • Maintain state file                                      │ │
 │  │  • Handle human interaction                                 │ │
+│  │  • Arbitrate only when battle escalates (blocked task)      │ │
 │  └─────────────────────────────────────────────────────────────┘ │
-│         │                    │                    │              │
-│         ▼                    ▼                    ▼              │
-│  ┌─────────────┐      ┌─────────────┐      ┌─────────────┐      │
-│  │ Survey Agent│      │ Critic Agent│      │ Other Agent │      │
-│  │ (Subagent)  │      │ (Subagent)  │      │ (Subagent)  │      │
-│  └─────────────┘      └─────────────┘      └─────────────┘      │
-│         │                    │                    │              │
-│         ▼                    ▼                    ▼              │
-│  research-lit skill    audit-survey skill   relevant skill       │
+│         │ spawn+assign             │ spawn+assign               │
+│         ▼                          ▼                            │
+│  ┌─────────────┐     SendMessage  ┌─────────────┐              │
+│  │ Survey Agent│ ◀──────────────▶ │ Critic Agent│              │
+│  │  (Primary)  │  (direct, no     │  (Reviewer) │              │
+│  │team_name=.. │   relay needed)  │team_name=.. │              │
+│  └─────────────┘                  └─────────────┘              │
+│         │                               │                       │
+│         ▼                               ▼                       │
+│  research-lit skill            audit-survey skill               │
 └─────────────────────────────────────────────────────────────────┘
 
 WRONG Architecture (DO NOT DO THIS):
@@ -503,21 +608,34 @@ WRONG Architecture (DO NOT DO THIS):
 │  │  ❌ Directly writing survey reports                         │ │
 │  │  ❌ Directly running experiments                            │ │
 │  │  ❌ Directly writing paper sections                          │ │
+│  │  ❌ Relaying battle messages between agents                  │ │
+│  │  ❌ Calling TeamDelete without shutdown_request first        │ │
+│  │  ❌ Spawning agents without team_name                        │ │
 │  └─────────────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### Subagent Dispatch Pattern
+### Agent Dispatch Pattern (Agent Teams)
 
-Each phase follows a **Primary Agent + Reviewer Agent** pattern:
+Each phase follows a **Primary Agent + Reviewer Agent** pattern, spawned into a named team. Agents communicate directly via SendMessage.
 
-| Phase | Primary Agent | Reviewer Agent | Primary Skill | Reviewer Skill |
-|-------|---------------|----------------|---------------|----------------|
-| Survey | Survey Agent | Critic Agent | `define-idea`, `theoretical-derivation`, `research-lit`, `novelty-check` | `audit-derivation`, `audit-survey` |
-| Pilot | Code Agent | Adviser Agent | `analyze-problem`, `design-pilot`, `run-pilot` | `audit-analysis`, `audit-design`, `audit-pilot` |
-| Experiments | Code Agent | Adviser Agent | `design-exp`, `run-experiment`, `analyze-results` | `audit-exp-design`, `audit-results` |
-| Paper | Writer Agent | Reviewer Agent | `paper-plan`, `paper-write`, `curate-citation` | `audit-paper-plan`, `audit-paper`, `audit-citation` |
-| Reflection | Reflector Agent | Curator Agent | `extract-lessons`, `propose-overlay` | `audit-lessons`, `audit-overlay` |
+**Spawn pattern:**
+```python
+Agent(
+  subagent_type="airesearchorchestrator:<role>",
+  name="<role>",
+  team_name="research-<phase>",
+  prompt="..."
+)
+```
+
+| Phase | Primary Agent | Reviewer Agent | Team Name | Primary Skill | Reviewer Skill |
+|-------|---------------|----------------|-----------|---------------|----------------|
+| Survey | Survey Agent | Critic Agent | `research-survey` | `define-idea`, `theoretical-derivation`, `research-lit`, `novelty-check` | `audit-derivation`, `audit-survey` |
+| Pilot | Code Agent | Adviser Agent | `research-pilot` | `analyze-problem`, `design-pilot`, `run-pilot` | `audit-analysis`, `audit-design`, `audit-pilot` |
+| Experiments | Code Agent | Adviser Agent | `research-experiments` | `design-exp`, `run-experiment`, `analyze-results` | `audit-exp-design`, `audit-results` |
+| Paper | Writer Agent | Reviewer Agent | `research-paper` | `paper-plan`, `paper-write`, `curate-citation` | `audit-paper-plan`, `audit-paper`, `audit-citation` |
+| Reflection | Reflector Agent | Curator Agent | `research-reflection` | `extract-lessons`, `propose-overlay` | `audit-lessons`, `audit-overlay` |
 
 ### Survey Phase Workflow (Updated with Theoretical Derivation)
 
@@ -705,10 +823,10 @@ The Primary Agent can choose:
 challenge:
   type: "formal_challenge"
   issues_contested:
-    - issue_id: "critical-1"
+    - point_id: "critical-1"
       primary_position: "This is not actually a critical issue because..."
       evidence: "[Supporting argument]"
-    - issue_id: "major-2"
+    - point_id: "major-2"
       primary_position: "The reviewer misunderstood the approach..."
       evidence: "[Clarification]"
   max_rounds: 3  # Maximum debate rounds
@@ -722,11 +840,11 @@ The Reviewer Agent responds to each contested issue:
 challenge_response:
   type: "reviewer_rebuttal"
   responses:
-    - issue_id: "critical-1"
+    - point_id: "critical-1"
       reviewer_position: "I maintain this is critical because..."
       counter_evidence: "[Counter-argument]"
       stance: "UPHELD" | "MODIFIED" | "WITHDRAWN"
-    - issue_id: "major-2"
+    - point_id: "major-2"
       reviewer_position: "I acknowledge the clarification, but..."
       stance: "MODIFIED"
       revised_severity: "minor"
@@ -753,11 +871,11 @@ If consensus is NOT reached after max rounds (default: 3), the Orchestrator arbi
 arbitration:
   type: "orchestrator_decision"
   disputed_issues:
-    - issue_id: "issue-2"
+    - point_id: "issue-2"
       primary_argument: "..."
       reviewer_argument: "..."
   orchestrator_ruling:
-    - issue_id: "issue-2"
+    - point_id: "issue-2"
       decision: "UPHOLD_REVIEWER" | "UPHOLD_PRIMARY" | "COMPROMISE"
       reasoning: "..."
       final_severity: "critical" | "major" | "minor" | "dismissed"
@@ -835,40 +953,58 @@ escalation:
 
 ### Battle Communication Protocol
 
-**Primary Agent → Orchestrator (Challenge):**
-```yaml
-message_type: "battle_challenge"
-task_id: "survey-001"
-challenges:
-  - issue_id: "crit-1"
-    position: "This finding is incorrect because..."
-    evidence: "[Supporting details]"
-    requested_action: "withdraw" | "modify_severity"
+> **Agent Teams Architecture**: Agents battle **directly** via SendMessage. The Orchestrator does NOT relay messages during battle. Orchestrator only intervenes when `status="blocked"` is set (escalation after 3 rounds).
+
+**Primary Agent → Reviewer Agent (Challenge):**
+```python
+SendMessage(
+  to="<reviewer>",
+  message={
+    "type": "battle_challenge",
+    "disputed_points": [
+      {"point_id": "crit-1", "position": "This finding is incorrect because...", "evidence": "[Supporting details]"},
+    ]
+  }
+)
 ```
 
-**Reviewer Agent → Orchestrator (Response):**
-```yaml
-message_type: "battle_response"
-task_id: "audit-survey-001"
-responses:
-  - issue_id: "crit-1"
-    stance: "upheld" | "modified" | "withdrawn"
-    reasoning: "[Why upheld/modified/withdrawn]"
-    revised_severity: "critical" | "major" | "minor"  # if modified
+**Reviewer Agent → Primary Agent (Battle Response):**
+```python
+SendMessage(
+  to="<primary>",
+  message={
+    "type": "battle_response",
+    "responses": [
+      {"point_id": "crit-1", "stance": "upheld" | "modified" | "withdrawn",
+       "reasoning": "[Why upheld/modified/withdrawn]", "revised_severity": "major"}
+    ]
+  }
+)
 ```
 
-**Orchestrator → Both Agents (Arbitration):**
-```yaml
-message_type: "arbitration_ruling"
-disputed_issues:
-  - issue_id: "..."
-    ruling: "uphold_reviewer" | "uphold_primary" | "compromise"
-    reasoning: "[Technical justification]"
-    final_severity: "..."
-mandatory: true  # Both agents must accept this ruling
+**Agent → Orchestrator (Escalation after max rounds):**
+```python
+# Either agent sets task to blocked when battle fails to converge
+TaskUpdate(taskId="<phase>-reviewer", status="blocked", reason="No consensus after 3 battle rounds")
 ```
 
-**Orchestrator → Human (Escalation):**
+**Orchestrator → Both Agents (Arbitration — only after escalation):**
+```python
+SendMessage(
+  to="<primary>",
+  message={
+    "type": "arbitration_ruling",
+    "disputed_issues": [
+      {"point_id": "...", "ruling": "uphold_reviewer" | "uphold_primary" | "compromise",
+       "reasoning": "[Technical justification]", "final_severity": "..."}
+    ],
+    "mandatory": True
+  }
+)
+SendMessage(to="<reviewer>", message={"type": "arbitration_ruling", ...})  # same ruling
+```
+
+**Orchestrator → Human (Escalation when Orchestrator cannot rule):**
 ```yaml
 message_type: "human_escalation"
 escalation_id: "esc-001"
@@ -888,48 +1024,83 @@ decision_options:
 
 ## Agent Teams Communication Protocol
 
-When Agent Teams are enabled (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`), agents operate as
-teammates that can communicate directly via SendMessage instead of routing through the Orchestrator.
+When Agent Teams is enabled (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`), agents operate as
+teammates that communicate **directly** via SendMessage. The Orchestrator does NOT relay messages
+between agents; it only intervenes when escalation is required.
 
 ### Team Setup per Phase
 
-At phase start, the Orchestrator should:
-1. Spawn the Primary agent with `Agent(subagent_type="airesearchorchestrator:<role>", name="<role>", ...)`
-2. Spawn the Reviewer agent with `Agent(subagent_type="airesearchorchestrator:<reviewer>", name="<reviewer>", ...)`
-3. Use TaskCreate to create phase tasks, TaskUpdate to assign to teammates
+At phase start, the Orchestrator (as Team Lead):
+1. `TeamCreate(team_name="research-<phase>", description="...")` — create the phase team
+2. `TaskCreate(taskId="<phase>-primary", ...)` — primary task
+3. `TaskCreate(taskId="<phase>-reviewer", ..., blockedBy=["<phase>-primary"])` — reviewer task, blocked until primary done
+4. `Agent(subagent_type="airesearchorchestrator:<role>", name="<role>", team_name="research-<phase>", prompt="...")` — spawn Primary
+5. `TaskUpdate(taskId="<phase>-primary", owner="<role>")` — assign task to Primary
+6. `Agent(subagent_type="airesearchorchestrator:<reviewer>", name="<reviewer>", team_name="research-<phase>", prompt="...")` — spawn Reviewer
+7. `TaskUpdate(taskId="<phase>-reviewer", owner="<reviewer>")` — assign task to Reviewer
 
-### Battle Phase via SendMessage
+### Direct Agent-to-Agent Communication
 
-Primary and Reviewer communicate directly during Battle Phase:
+Agents in the same team communicate directly — the Orchestrator does NOT relay these messages:
 
-**Primary sends deliverables ready:**
-```
-SendMessage(to="<reviewer>", message="deliverables_ready: <phase> substep completed", summary="...")
-```
-
-**Reviewer sends audit report:**
-```
-SendMessage(to="<primary>", message={"type":"audit_report","decision":"revise","issues":[...]}, summary="...")
-```
-
-**Primary challenges (CHALLENGE response):**
-```
-SendMessage(to="<reviewer>", message={"type":"battle_challenge","disputed_points":[...]}, summary="Challenging findings")
+**Primary → Reviewer (deliverables ready):**
+```python
+SendMessage(
+  to="<reviewer>",
+  message={"type": "deliverables_ready", "phase": "<phase>", "deliverables": [...], "summary": "..."}
+)
 ```
 
-**Reviewer responds:**
-```
-SendMessage(to="<primary>", message={"type":"battle_response","responses":[...]}, summary="Response to challenge")
+**Reviewer → Primary (audit report):**
+```python
+SendMessage(
+  to="<primary>",
+  message={"type": "audit_report", "decision": "approve" | "revise" | "reject", "issues": [...]}
+)
 ```
 
-Maximum 3 debate rounds. If no consensus: escalate to Orchestrator via TaskUpdate(status="blocked").
-
-### Phase Shutdown
-
-After gate approval:
+**Primary → Reviewer (battle challenge):**
+```python
+SendMessage(
+  to="<reviewer>",
+  message={"type": "battle_challenge", "disputed_points": [
+    {"point_id": "...", "position": "...", "evidence": "..."}
+  ]}
+)
 ```
-SendMessage(to="<primary>", message={"type":"shutdown_request","reason":"Phase complete"})
-SendMessage(to="<reviewer>", message={"type":"shutdown_request","reason":"Phase complete"})
+
+**Reviewer → Primary (battle response):**
+```python
+SendMessage(
+  to="<primary>",
+  message={"type": "battle_response", "responses": [
+    {"point_id": "...", "stance": "upheld" | "modified" | "withdrawn", "reasoning": "..."}
+  ]}
+)
+```
+
+**Agent escalates to Orchestrator (battle unresolved after 3 rounds):**
+```python
+TaskUpdate(taskId="<phase>-reviewer", status="blocked", reason="Battle unresolved after 3 rounds")
+```
+The Orchestrator detects the blocked status and performs arbitration or human escalation.
+
+### Orchestrator Role During Battle
+
+- **Orchestrator does NOT relay messages** between Primary and Reviewer during battle
+- Agents battle directly via SendMessage (up to 3 rounds)
+- Orchestrator only intervenes when:
+  - A task is marked `status="blocked"` (battle escalation)
+  - No consensus after 3 rounds (Orchestrator arbitrates)
+  - Orchestrator cannot arbitrate confidently (escalate to human)
+
+### Phase Shutdown Sequence
+
+After gate approval, before TeamDelete:
+```python
+SendMessage(to="<primary>",  message={"type": "shutdown_request", "reason": "Phase complete, gate approved"})
+SendMessage(to="<reviewer>", message={"type": "shutdown_request", "reason": "Phase complete, gate approved"})
+TeamDelete(team_name="research-<phase>")
 ```
 
 ### Battle Rules
@@ -950,11 +1121,11 @@ battle_history:
   rounds:
     - round: 1
       primary_challenges:
-        - issue_id: "crit-1"
+        - point_id: "crit-1"
           position: "..."
           evidence: "..."
       reviewer_responses:
-        - issue_id: "crit-1"
+        - point_id: "crit-1"
           stance: "upheld"
           reasoning: "..."
     - round: 2
@@ -962,7 +1133,7 @@ battle_history:
   outcome:
     type: "arbitrated" | "consensus" | "escalated"
     final_issues:
-      - issue_id: "crit-1"
+      - point_id: "crit-1"
         final_severity: "major"  # Reduced from critical
         resolution: "compromise"
   resolution_at: "2024-01-15T15:30:00Z"
@@ -974,17 +1145,20 @@ The Orchestrator MUST NOT:
 
 | Prohibition | Reason | Correct Approach |
 |-------------|--------|------------------|
-| ❌ Execute `research-lit` directly | Survey work requires domain expertise | Spawn Survey Agent subagent |
-| ❌ Execute `audit-survey` directly | Review requires independent perspective | Spawn Critic Agent subagent |
+| ❌ Execute `research-lit` directly | Survey work requires domain expertise | Spawn Survey Agent with team_name |
+| ❌ Execute `audit-survey` directly | Review requires independent perspective | Spawn Critic Agent with team_name |
 | ❌ Write survey reports directly | Research synthesis needs focused agent | Delegate to Survey Agent |
-| ❌ Run experiments directly | Experiment execution needs isolation | Spawn Code Agent subagent |
-| ❌ Write paper sections directly | Writing requires dedicated focus | Spawn Writer Agent subagent |
+| ❌ Run experiments directly | Experiment execution needs isolation | Spawn Code Agent with team_name |
+| ❌ Write paper sections directly | Writing requires dedicated focus | Spawn Writer Agent with team_name |
 | ❌ Make gate decisions autonomously | Human oversight is mandatory | Present options, await human input |
 | ❌ Skip phase gates | Quality control requires checkpoints | Always pause at gates |
 | ❌ Spawn helper/explore agents | Only 2 agents per phase allowed | Stick to Primary + Reviewer pattern |
 | ❌ Auto-proceed without human approval | Research direction requires human judgment | Wait for explicit approval |
+| ❌ Relay battle messages between agents | Agents communicate directly in a team | Let agents use SendMessage directly |
+| ❌ Call TeamDelete without shutdown_request | Agents need graceful shutdown signal | Send shutdown_request to both agents first |
+| ❌ Spawn agents without team_name | Agents must be in a team to use SendMessage | Always pass `team_name="research-<phase>"` |
 
-### Subagent Communication Protocol
+### Agent Communication Protocol
 
 When dispatching a subagent, the Orchestrator provides:
 
@@ -1025,11 +1199,11 @@ completion:
     - "Consider expanding to transformer variants"
 ```
 
-### Subagent Lifecycle Management
+### Agent Lifecycle Management
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Subagent Lifecycle                        │
+│                    Agent Lifecycle                           │
 ├─────────────────────────────────────────────────────────────┤
 │                                                              │
 │  1. SPAWN                                                    │
@@ -1332,12 +1506,15 @@ Each gate is scored on these dimensions (see `references/gate-rubrics.md` for de
 
 ## Hard Rules
 
-### Subagent Execution Rules
+### Agent Execution Rules (Agent Teams)
 
-- **Orchestrator NEVER executes research tasks directly.** All research work must be delegated to subagents via the Agent tool.
+- **Orchestrator NEVER executes research tasks directly.** All research work must be delegated to specialized agents via the Agent tool.
 - **Each phase has EXACTLY 2 active agents** (primary + reviewer). Do NOT spawn explore agents or other helper agents.
-- **Spawn subagents for all skills** in the Skills Registry. The Orchestrator coordinates; subagents execute.
-- **Use the Agent tool to dispatch subagents**, passing task context, skill name, and deliverable requirements.
+- **Spawn agents with `team_name`** so they join the phase team and can communicate directly via SendMessage.
+- **Use `TeamCreate` before spawning agents** and `TeamDelete` (after shutdown_request) when the phase ends.
+- **Use `TaskCreate` + `TaskUpdate`** to create and assign tasks with dependency chains (reviewer blocked by primary).
+- **Do NOT relay battle messages** — agents communicate directly during battle; Orchestrator only intervenes on escalation.
+- **Always send `shutdown_request`** to both agents before calling `TeamDelete`.
 
 ### Literature Search Rules
 

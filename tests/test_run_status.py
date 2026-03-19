@@ -12,12 +12,11 @@ import pytest
 SCRIPT_DIR = Path(__file__).resolve().parent.parent / "scripts"
 sys.path.insert(0, str(SCRIPT_DIR))
 
-import init_research_project as INIT
-
-from run_status import (
-    format_phase_bar,
-    format_gate_scores,
+import init_research_project as INIT  # noqa: E402
+from run_status import (  # noqa: E402
     format_blockers,
+    format_gate_scores,
+    format_phase_bar,
     get_decision_label,
     run_status,
 )

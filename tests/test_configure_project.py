@@ -3,20 +3,19 @@
 
 from __future__ import annotations
 
+# Add scripts directory to path
+import sys
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 import yaml
 
-# Add scripts directory to path
-import sys
-
 SCRIPT_DIR = Path(__file__).resolve().parent.parent / "scripts"
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from constants import DEFAULT_DELIVERABLES
-from configure_project import (
+from configure_project import (  # noqa: E402
+    configure_project,
     get_nested_value,
     load_project_config,
     load_project_state,
@@ -27,8 +26,8 @@ from configure_project import (
     show_current_config,
     update_config,
     validate_config_value,
-    configure_project,
 )
+from constants import DEFAULT_DELIVERABLES  # noqa: E402
 
 
 class TestLoadProjectState:

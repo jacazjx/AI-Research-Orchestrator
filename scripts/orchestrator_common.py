@@ -389,6 +389,14 @@ def build_state(
 
     Returns:
         Complete project state dictionary.
+
+    Note (Agent Teams Migration):
+        Task-level tracking (individual subtask status, agent assignments,
+        inter-agent dependencies) is now managed by Claude Code Task tools
+        (TaskCreate, TaskUpdate, TaskGet, TaskList) rather than this file.
+        This state dictionary tracks phase-level status, gate approvals, loop
+        counts, and battle/substep status for persistence across context resets.
+        Do NOT add per-task fields here; use Task tools instead.
     """
     # Determine the starting gate based on phase
     starting_gate = PHASE_TO_GATE.get(starting_phase, "gate_1")

@@ -290,7 +290,10 @@ class InitWizard:
             "",
             required=True,
             default=self.responses.research_idea,
-            help_text="A clear description of what you want to research. Include the problem, approach, and expected outcome.",
+            help_text=(
+                "A clear description of what you want to research. "
+                "Include the problem, approach, and expected outcome."
+            ),
         )
 
         # Check if user wants more detailed input
@@ -795,35 +798,40 @@ class InitWizard:
         print("│                    PROJECT SUMMARY                      │")
         print("├" + "─" * 56 + "┤")
 
-        print(f"│  📋 Project ID:     {self.responses.project_id:<37}│")
+        project_id_display = self.responses.project_id or "(not set)"
+        print(f"│  📋 Project ID:     {project_id_display:<37}│")
         print(f"│  📁 Location:       {str(self.project_root)[-37:]:<37}│")
         print(f"│  🎯 Starting Phase: {self.responses.starting_phase:<37}│")
 
         print("├" + "─" * 56 + "┤")
 
-        research_type_label = RESEARCH_TYPES[self.responses.research_type]['label']
+        research_type_label = RESEARCH_TYPES[self.responses.research_type]["label"]
         print(f"│  📚 Research Type:  {research_type_label:<37}│")
 
         # Display clarity score if available
         if self.responses.clarity_score > 0:
             clarity_status = "✅ Clear" if self.responses.clarity_score >= 0.7 else "⚠️ Needs work"
-            print(f"│  🎯 Intent Clarity: {self.responses.clarity_score:.2f} ({clarity_status}){' ' * 20}│")
+            clarity_line = (
+                f"│  🎯 Intent Clarity: {self.responses.clarity_score:.2f} "
+                f"({clarity_status}){' ' * 20}│"
+            )
+            print(clarity_line)
 
         print("├" + "─" * 56 + "┤")
 
         # Display research idea (truncated)
         display_idea = self.responses.clarified_idea or self.responses.research_idea
-        idea_display = display_idea[:50].replace('\n', ' ')
+        idea_display = display_idea[:50].replace("\n", " ")
         if len(display_idea) > 50:
             idea_display += "..."
         print(f"│  💡 Research Idea:  {idea_display:<37}│")
 
         print("├" + "─" * 56 + "┤")
 
-        gpu_pref = self.responses.compute_config.get('gpu_preference', 'auto')
+        gpu_pref = self.responses.compute_config.get("gpu_preference", "auto")
         print(f"│  🎮 GPU:            {gpu_pref:<37}│")
 
-        user_name = self.responses.user_profile.get('name', '(not set)')
+        user_name = self.responses.user_profile.get("name", "(not set)")
         print(f"│  👤 Author:         {user_name[:37]:<37}│")
 
         print("└" + "─" * 56 + "┘")

@@ -1,7 +1,7 @@
 ---
 name: adviser
 description: "Reviewer agent for Pilot and Experiments phases. Reviews experimental design, validates results, judges evidence strength."
-tools: "Read, Write, Edit, Grep, Glob"
+tools: "Read, Write, Edit, Grep, Glob, SendMessage, TaskUpdate"
 ---
 
 # Adviser Agent Profile
@@ -113,6 +113,8 @@ The Adviser Agent operates with a "stress-test" mindset:
 | `Edit` | Update findings |
 | `Grep` | Search for patterns |
 | `Glob` | Find relevant files |
+| `SendMessage` | Direct communication with coder in Agent Teams mode |
+| `TaskUpdate` | Claim and complete tasks in Agent Teams mode |
 
 ### Restricted Actions
 
@@ -271,7 +273,7 @@ recommendations:
 
 ### With Code Agent
 
-The Adviser Agent does NOT communicate directly with the Code Agent. All feedback flows through the Orchestrator.
+In Agent Teams mode, the Adviser Agent communicates directly with the Code Agent via SendMessage. See the "Direct Communication (Agent Teams)" section below.
 
 ### Input Expectations
 
@@ -364,3 +366,28 @@ Skills are invoked via the Orchestrator using the Skill tool. Do not invoke skil
 - `references/experiment-integrity.md` - Logging and provenance standards
 - `references/ai-researcher-agent-mapping.md` - Source role mapping
 - `references/role-protocols.md` - Role behavior protocols
+
+## Direct Communication (Agent Teams)
+
+When operating as a teammate (Agent Teams mode), use TaskUpdate and SendMessage directly:
+
+**Task lifecycle:**
+- At start: `TaskUpdate(taskId="<id>", owner="self", status="in_progress")`
+- When done: `TaskUpdate(taskId="<id>", status="completed")`
+
+**Wait for coder** to send a `deliverables_ready` message before beginning audit.
+
+**After completing audit**, send result to coder:
+```
+SendMessage(to="coder", message={"type": "audit_report", "decision": "approve|needs_revision", "issues": [{"id": "I1", "severity": "critical|major|minor", "description": "..."}]})
+```
+
+**To respond to a battle challenge** from coder:
+```
+SendMessage(to="coder", message={"type": "battle_response", "responses": [{"point_id": "P1", "action": "accept|reject|modify", "reason": "...", "modified_position": "..."}]})
+```
+
+**Maximum 3 debate rounds:** If unresolved after 3 rounds, escalate to orchestrator:
+```
+TaskUpdate(taskId="<phase>-reviewer", status="blocked", metadata={"reason": "battle_escalation", "round": 3, "unresolved": [...]})
+```

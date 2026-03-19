@@ -13,7 +13,7 @@ sys.path.insert(0, str(SCRIPTS_DIR))
 sys.path.insert(0, str(SCRIPTS_DIR / "citation"))
 
 # Import after path setup
-from fetch_verified_bibtex import (
+from fetch_verified_bibtex import (  # noqa: E402
     EMPIRICAL_TERMS,
     STOPWORDS,
     FetchError,
