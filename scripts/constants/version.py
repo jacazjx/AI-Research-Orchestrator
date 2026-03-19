@@ -1,7 +1,7 @@
 """Version and version history constants."""
 
 # System version
-SYSTEM_VERSION = "1.13.0"
+SYSTEM_VERSION = "1.14.0"
 SYSTEM_VERSION_NAME = "Research Orchestrator"
 
 VERSION_HISTORY = [
@@ -55,5 +55,12 @@ VERSION_HISTORY = [
         "Semantic directory layout (docs/reports/ flattened), agent workspace "
         "structure, battle_protocol state machine, render_agent_prompt auto-inject, "
         "Agent Teams communication protocol, config quality/gpu fields",
+    ),
+    (
+        "1.14.0",
+        "2026-03-19",
+        "Removed /reload command (auto-reload via SessionStart hook), "
+        "removed argument-hint from commands, added interactive command workflows "
+        "with AskUserQuestion, updated CLAUDE.md with plugin development standards",
     ),
 ]

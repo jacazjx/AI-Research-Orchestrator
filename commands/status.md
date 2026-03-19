@@ -1,7 +1,6 @@
 ---
 name: airesearchorchestrator:status
 description: "Show live research project status: phase progress, gate scores, blockers, and next-action recommendation"
-argument-hint: "[--project-root <path>] [--verbose] [--json]"
 allowed-tools: "Read, Bash(${CLAUDE_PLUGIN_ROOT}/scripts/*:*)"
 ---
 

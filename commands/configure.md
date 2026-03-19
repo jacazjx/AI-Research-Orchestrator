@@ -1,51 +1,55 @@
 ---
 name: airesearchorchestrator:configure
 description: "Configure system parameters including research idea, GPU settings, loop limits, and language preferences"
-argument-hint: "[--project-root <path>] [--action <show|set|interactive>] [--key <config-key>] [--value <config-value>]"
-allowed-tools: "Read, Write, Bash(${CLAUDE_PLUGIN_ROOT}/scripts/*:*)"
+allowed-tools: "Read, Write, Bash(${CLAUDE_PLUGIN_ROOT}/scripts/*:*), AskUserQuestion"
 ---
 
 # Configure System Parameters
 
 Allows users to set or inspect system parameters: research idea, GPU configuration, per-phase loop limits, language settings, and author information.
 
-## Execution
+## Interactive Workflow
 
-```!
-python3 "${CLAUDE_PLUGIN_ROOT}/scripts/configure_project.py" $ARGUMENTS
-```
+When invoked, ask the user what they want to configure:
 
-## Usage
+### Step 1: Select Configuration Action
 
-```bash
-# Show current configuration
-python3 scripts/configure_project.py --project-root /abs/path
+Ask: "What would you like to do?"
 
-# Interactive configuration wizard
-python3 scripts/configure_project.py --project-root /abs/path --action interactive
+Options:
+- `show` - Display current configuration
+- `set` - Modify a specific setting
+- `interactive` - Full configuration wizard
 
-# Set a specific key
-python3 scripts/configure_project.py --project-root /abs/path --action set --key idea --value "New research idea"
-python3 scripts/configure_project.py --project-root /abs/path --action set --key max-loops --value 5
+### Step 2a: Show Current Configuration
 
-# Assign a GPU
-python3 scripts/configure_project.py --project-root /abs/path --action set --key gpu --value "gpu-001"
-```
+If user selects `show`, read and display:
 
-## Configuration Keys
+- `.autoresearch/config/orchestrator-config.yaml` (project-level)
+- `~/.autoresearch/user-config.yaml` (user-level, if exists)
 
-### Project-level (stored in `.autoresearch/config/`)
+Format output as a readable summary, not raw YAML.
+
+### Step 2b: Set Specific Setting
+
+If user selects `set`, ask:
+
+"Which setting would you like to modify?"
+
+Then show available keys grouped by scope:
+
+**Project-level settings:**
 
 | Key | Description | Type |
 |-----|-------------|------|
 | `idea` | Research idea | string |
 | `research-type` | Research type | enum: ml_experiment, theory, survey, applied |
 | `max-loops` | Maximum loop count per phase | int (1–10) |
-| `language` | Language setting | string: "process,lang" |
+| `language` | Language setting | string: "process,paper" |
 | `starting-phase` | Starting phase | enum: survey, pilot, experiments, paper, reflection |
 | `gpu` | Compute resource GPU ID | string |
 
-### User-level (stored in `~/.autoresearch/`)
+**User-level settings:**
 
 | Key | Description | Type |
 |-----|-------------|------|
@@ -54,10 +58,31 @@ python3 scripts/configure_project.py --project-root /abs/path --action set --key
 | `author.institution` | Institution | string |
 | `preferences.venue` | Default target venue | string |
 
+After selecting a key, ask for the new value, then invoke:
+
+```bash
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/configure_project.py" \
+  --project-root "<current_project>" \
+  --action set \
+  --key "<selected_key>" \
+  --value "<new_value>"
+```
+
+### Step 2c: Interactive Wizard
+
+If user selects `interactive`, guide through each setting:
+
+1. Show current value (if any)
+2. Ask if user wants to change it
+3. If yes, collect new value
+4. Repeat for all configurable items
+
+After collecting all changes, invoke script with all updates.
+
 ## Configuration Priority
 
 Highest to lowest:
-1. Command-line arguments (`--max-loops=5`)
+1. Values set during this session
 2. Project config (`.autoresearch/config/`)
 3. User config (`~/.autoresearch/`)
 4. System defaults

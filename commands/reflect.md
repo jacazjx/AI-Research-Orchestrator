@@ -1,7 +1,6 @@
 ---
 name: airesearchorchestrator:reflect
 description: "Run the Reflection phase for lessons learned and system improvement"
-argument-hint: ""
 allowed-tools: "Read, Write, Edit, Grep, Glob, Bash(${CLAUDE_PLUGIN_ROOT}/scripts/*:*), Agent, Skill"
 ---
 

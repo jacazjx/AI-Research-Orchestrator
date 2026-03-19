@@ -40,7 +40,6 @@ pre-commit run --all-files
 | Command | Phase | Trigger Phrases |
 |---------|-------|-----------------|
 | `/init-research` | Init | "init research", "初始化研究" |
-| `/reload` | Any | "reload", "重新加载", "恢复状态" |
 | `/configure` | Any | "configure", "配置", "设置参数" |
 | `/insight` | Init | "insight", "澄清意图", "明确想法" |
 | `/run-survey` | Survey | "run survey", "文献调研" |
@@ -50,7 +49,9 @@ pre-commit run --all-files
 | `/reflect` | Reflection | "reflect", "反思总结" |
 | `/status` | Any | "status", "查看状态", "项目状态" |
 
-Commands are defined in `commands/<name>/COMMAND.md`. Trigger flow: User Input → COMMAND.md → SKILL.md → Script execution.
+Commands are defined in `commands/<name>.md`. Trigger flow: User Input → COMMAND.md → SKILL.md → Script execution.
+
+> **Note**: Project state is automatically reloaded on session start via the `SessionStart` hook (see `hooks/hooks.json`).
 
 ## Key Scripts
 
@@ -63,12 +64,6 @@ python3 scripts/init_research_project.py --project-root /abs/path --interactive
 
 # Show live project status (gate scores, phase progress, blockers)
 python3 scripts/run_status.py --project-root /abs/path
-
-# Reload project state (restore context)
-python3 scripts/reload_project.py --project-root /abs/path
-
-# Reload with verbose output
-python3 scripts/reload_project.py --project-root /abs/path --verbose
 
 # Configure project settings
 python3 scripts/configure_project.py --project-root /abs/path
@@ -145,7 +140,7 @@ project/
 ```
 AI-Research-Orchestrator/
 ├── SKILL.md                 # Main skill definition
-├── commands/                # User-facing commands (10)
+├── commands/                # User-facing commands (9)
 ├── skills/                  # Sub-skills (52+)
 ├── scripts/                 # Python scripts (38)
 ├── agents/                  # Agent configurations

@@ -6,17 +6,16 @@ This directory contains user-facing commands for the five-phase research workflo
 
 ```
 commands/
-├── init-research/COMMAND.md    # Initialize a new research project
-├── reload/COMMAND.md           # Reload project state and configuration
-├── configure/COMMAND.md        # Configure system parameters
-├── insight/COMMAND.md          # Interactive intent clarification
-├── status/COMMAND.md           # Show live project status
-├── run-survey/COMMAND.md       # Literature survey and readiness assessment
-├── run-pilot/COMMAND.md        # Pilot validation and feasibility check
-├── run-experiments/COMMAND.md  # Full experiments and evidence collection
-├── write-paper/COMMAND.md      # Paper writing and submission preparation
-├── reflect/COMMAND.md          # Lessons learned and project evolution
-└── README.md                   # This file
+├── init-research.md    # Initialize a new research project
+├── configure.md        # Configure system parameters
+├── insight.md          # Interactive intent clarification
+├── status.md           # Show live project status
+├── run-survey.md       # Literature survey and readiness assessment
+├── run-pilot.md        # Pilot validation and feasibility check
+├── run-experiments.md  # Full experiments and evidence collection
+├── write-paper.md      # Paper writing and submission preparation
+├── reflect.md          # Lessons learned and project evolution
+└── README.md           # This file
 ```
 
 ## Available Commands
@@ -24,7 +23,6 @@ commands/
 | Command | Phase | Agents | Trigger Phrases |
 |---------|-------|--------|-----------------|
 | `/init-research` | Init | - | "init research", "初始化研究" |
-| `/reload` | Any | - | "reload", "重新加载", "恢复状态" |
 | `/configure` | Any | - | "configure", "配置", "设置参数" |
 | `/insight` | Init | - | "insight", "澄清意图", "明确想法" |
 | `/status` | Any | - | "status", "查看状态", "项目状态" |
@@ -45,10 +43,11 @@ commands/
 
 These commands can be used at any point in the workflow:
 
-- **`/reload`** - Restore context when starting a new session
 - **`/configure`** - Modify project or user settings
 - **`/insight`** - Clarify research intent before or during a project
 - **`/status`** - Show live project status with gate scores and blockers
+
+> **Note**: Project state is automatically reloaded on session start via the `SessionStart` hook.
 
 ## COMMAND.md Frontmatter Schema
 

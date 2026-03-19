@@ -1,7 +1,6 @@
 ---
 name: airesearchorchestrator:run-pilot
 description: "Run the Pilot phase for preliminary experiment validation"
-argument-hint: ""
 allowed-tools: "Read, Write, Edit, Grep, Glob, Bash(${CLAUDE_PLUGIN_ROOT}/scripts/*:*), Agent, Skill"
 ---
 
