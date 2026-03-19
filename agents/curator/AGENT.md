@@ -409,5 +409,5 @@ SendMessage(to="reflector", message={"type": "battle_response", "responses": [{"
 
 **Maximum 3 debate rounds:** If unresolved after 3 rounds, escalate to orchestrator:
 ```
-SendMessage(to="orchestrator", message={"type": "escalate", "reason": "No consensus after 3 rounds", "phase": "reflection", "substep": "<substep>"})
+TaskUpdate(taskId="reflection-reviewer", status="blocked", metadata={"reason": "battle_escalation", "round": 3, "unresolved": [...]})
 ```

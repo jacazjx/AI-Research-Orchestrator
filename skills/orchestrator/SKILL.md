@@ -87,8 +87,8 @@ TeamDelete(team_name="research-survey")
 | Phase | Primary Agent | Reviewer Agent | Team Name |
 |-------|--------------|----------------|-----------|
 | Survey | `survey` | `critic` | `research-survey` |
-| Pilot | `code` | `adviser` | `research-pilot` |
-| Experiments | `code` | `adviser` | `research-experiments` |
+| Pilot | `coder` | `adviser` | `research-pilot` |
+| Experiments | `coder` | `adviser` | `research-experiments` |
 | Paper | `writer` | `reviewer` | `research-paper` |
 | Reflection | `reflector` | `curator` | `research-reflection` |
 
@@ -823,10 +823,10 @@ The Primary Agent can choose:
 challenge:
   type: "formal_challenge"
   issues_contested:
-    - issue_id: "critical-1"
+    - point_id: "critical-1"
       primary_position: "This is not actually a critical issue because..."
       evidence: "[Supporting argument]"
-    - issue_id: "major-2"
+    - point_id: "major-2"
       primary_position: "The reviewer misunderstood the approach..."
       evidence: "[Clarification]"
   max_rounds: 3  # Maximum debate rounds
@@ -840,11 +840,11 @@ The Reviewer Agent responds to each contested issue:
 challenge_response:
   type: "reviewer_rebuttal"
   responses:
-    - issue_id: "critical-1"
+    - point_id: "critical-1"
       reviewer_position: "I maintain this is critical because..."
       counter_evidence: "[Counter-argument]"
       stance: "UPHELD" | "MODIFIED" | "WITHDRAWN"
-    - issue_id: "major-2"
+    - point_id: "major-2"
       reviewer_position: "I acknowledge the clarification, but..."
       stance: "MODIFIED"
       revised_severity: "minor"
@@ -871,11 +871,11 @@ If consensus is NOT reached after max rounds (default: 3), the Orchestrator arbi
 arbitration:
   type: "orchestrator_decision"
   disputed_issues:
-    - issue_id: "issue-2"
+    - point_id: "issue-2"
       primary_argument: "..."
       reviewer_argument: "..."
   orchestrator_ruling:
-    - issue_id: "issue-2"
+    - point_id: "issue-2"
       decision: "UPHOLD_REVIEWER" | "UPHOLD_PRIMARY" | "COMPROMISE"
       reasoning: "..."
       final_severity: "critical" | "major" | "minor" | "dismissed"
@@ -962,7 +962,7 @@ SendMessage(
   message={
     "type": "battle_challenge",
     "disputed_points": [
-      {"issue_id": "crit-1", "position": "This finding is incorrect because...", "evidence": "[Supporting details]"},
+      {"point_id": "crit-1", "position": "This finding is incorrect because...", "evidence": "[Supporting details]"},
     ]
   }
 )
@@ -975,7 +975,7 @@ SendMessage(
   message={
     "type": "battle_response",
     "responses": [
-      {"issue_id": "crit-1", "stance": "upheld" | "modified" | "withdrawn",
+      {"point_id": "crit-1", "stance": "upheld" | "modified" | "withdrawn",
        "reasoning": "[Why upheld/modified/withdrawn]", "revised_severity": "major"}
     ]
   }
@@ -995,7 +995,7 @@ SendMessage(
   message={
     "type": "arbitration_ruling",
     "disputed_issues": [
-      {"issue_id": "...", "ruling": "uphold_reviewer" | "uphold_primary" | "compromise",
+      {"point_id": "...", "ruling": "uphold_reviewer" | "uphold_primary" | "compromise",
        "reasoning": "[Technical justification]", "final_severity": "..."}
     ],
     "mandatory": True
@@ -1064,7 +1064,7 @@ SendMessage(
 SendMessage(
   to="<reviewer>",
   message={"type": "battle_challenge", "disputed_points": [
-    {"issue_id": "...", "position": "...", "evidence": "..."}
+    {"point_id": "...", "position": "...", "evidence": "..."}
   ]}
 )
 ```
@@ -1074,7 +1074,7 @@ SendMessage(
 SendMessage(
   to="<primary>",
   message={"type": "battle_response", "responses": [
-    {"issue_id": "...", "stance": "upheld" | "modified" | "withdrawn", "reasoning": "..."}
+    {"point_id": "...", "stance": "upheld" | "modified" | "withdrawn", "reasoning": "..."}
   ]}
 )
 ```
@@ -1121,11 +1121,11 @@ battle_history:
   rounds:
     - round: 1
       primary_challenges:
-        - issue_id: "crit-1"
+        - point_id: "crit-1"
           position: "..."
           evidence: "..."
       reviewer_responses:
-        - issue_id: "crit-1"
+        - point_id: "crit-1"
           stance: "upheld"
           reasoning: "..."
     - round: 2
@@ -1133,7 +1133,7 @@ battle_history:
   outcome:
     type: "arbitrated" | "consensus" | "escalated"
     final_issues:
-      - issue_id: "crit-1"
+      - point_id: "crit-1"
         final_severity: "major"  # Reduced from critical
         resolution: "compromise"
   resolution_at: "2024-01-15T15:30:00Z"
@@ -1158,7 +1158,7 @@ The Orchestrator MUST NOT:
 | ❌ Call TeamDelete without shutdown_request | Agents need graceful shutdown signal | Send shutdown_request to both agents first |
 | ❌ Spawn agents without team_name | Agents must be in a team to use SendMessage | Always pass `team_name="research-<phase>"` |
 
-### Subagent Communication Protocol
+### Agent Communication Protocol
 
 When dispatching a subagent, the Orchestrator provides:
 
@@ -1199,11 +1199,11 @@ completion:
     - "Consider expanding to transformer variants"
 ```
 
-### Subagent Lifecycle Management
+### Agent Lifecycle Management
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Subagent Lifecycle                        │
+│                    Agent Lifecycle                           │
 ├─────────────────────────────────────────────────────────────┤
 │                                                              │
 │  1. SPAWN                                                    │

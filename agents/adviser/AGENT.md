@@ -389,5 +389,5 @@ SendMessage(to="coder", message={"type": "battle_response", "responses": [{"poin
 
 **Maximum 3 debate rounds:** If unresolved after 3 rounds, escalate to orchestrator:
 ```
-SendMessage(to="orchestrator", message={"type": "escalate", "reason": "No consensus after 3 rounds", "phase": "pilot|experiments", "substep": "<substep>"})
+TaskUpdate(taskId="<phase>-reviewer", status="blocked", metadata={"reason": "battle_escalation", "round": 3, "unresolved": [...]})
 ```
