@@ -48,3 +48,5 @@ When a human gate rejects the current phase:
 - Every deliverable path referenced in the state must remain project-relative.
 - Pivots may be proposed automatically, but never executed without explicit human approval.
 - Paper writing must include a citation-authenticity pass before Gate 4.
+
+**Agent Teams Update:** At the start of each phase, the Orchestrator creates a team with `TeamCreate`. When the phase ends, the Orchestrator sends a `shutdown_request` to each agent via `SendMessage`, then calls `TeamDelete` to disband the team.

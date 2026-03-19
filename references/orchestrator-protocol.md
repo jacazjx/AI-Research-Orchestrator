@@ -284,6 +284,8 @@ Your decision: _______________
 - Give phase-specific context
 - Collect and synthesize outputs
 
+**Agent Teams Update:** The Orchestrator no longer relays messages between the Primary and Reviewer agents. Primary and Reviewer communicate directly with each other via `SendMessage`. The Orchestrator monitors their progress using `TaskGet`/`TaskList` without intercepting their exchange.
+
 ### In Documentation
 
 - Be precise and complete

@@ -37,8 +37,8 @@ Key:
 
 The runtime uses two loops:
 
-- `inner_loop`: phase-local iteration between the two agents assigned to the current phase
-- `outer_loop`: orchestrator-level control over phase transitions, gate evaluation, pivot proposals, recovery, and human approvals
+- `inner_loop`: phase-local iteration driven by direct `SendMessage` exchange between the Primary and Reviewer agents (not relayed through the Orchestrator)
+- `outer_loop`: Orchestrator manages phase lifecycle via Team/Task tools (`TeamCreate`, `TeamDelete`, `TaskCreate`, `TaskUpdate`) and monitors agent progress via `TaskList`
 
 Core files:
 
