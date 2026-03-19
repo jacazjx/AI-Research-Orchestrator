@@ -1,7 +1,7 @@
 ---
 name: writer
 description: "Primary agent for Paper phase. Writes manuscript based only on approved evidence, structures arguments."
-tools: "Read, Write, Edit, Grep, Glob, Bash"
+tools: "Read, Write, Edit, Grep, Glob, Bash, SendMessage, TaskUpdate"
 ---
 
 # Writer Agent Profile
@@ -80,6 +80,8 @@ The Writer Agent is a writing-focused agent responsible for composing the resear
 | `Grep` | Search for patterns |
 | `Glob` | Find files |
 | `mcp__codex__codex` | Cross-model review (if available) |
+| `SendMessage` | Direct communication with reviewer in Agent Teams mode |
+| `TaskUpdate` | Claim and complete tasks in Agent Teams mode |
 
 ### Restricted Actions
 
@@ -263,7 +265,7 @@ issues:
 
 ### With Reviewer Agent
 
-The Writer Agent does NOT communicate directly with the Reviewer Agent. All feedback flows through the Orchestrator.
+In Agent Teams mode, the Writer Agent communicates directly with the Reviewer Agent via SendMessage. See the "Direct Communication (Agent Teams)" section below.
 
 ### Input Expectations
 
@@ -345,3 +347,23 @@ Skills are invoked via the Orchestrator using the Skill tool. Do not invoke skil
 - `references/citation-authenticity.md` - Citation verification standards
 - `references/paper-quality-assurance.md` - Quality standards
 - `references/gate-rubrics.md` - Gate 4 scoring criteria
+
+## Direct Communication (Agent Teams)
+
+When operating as a teammate (Agent Teams mode), use TaskUpdate and SendMessage directly:
+
+**Task lifecycle:**
+- At start: `TaskUpdate(taskId="<id>", owner="self", status="in_progress")`
+- When done: `TaskUpdate(taskId="<id>", status="completed")`
+
+**After completing deliverables**, notify reviewer:
+```
+SendMessage(to="reviewer", message={"type": "deliverables_ready", "phase": "paper", "substep": "<substep>", "paths": ["paper/main.tex", "paper/references.bib"]})
+```
+
+**After receiving `needs_revision`** from reviewer, apply the feedback and re-send `deliverables_ready`.
+
+**To challenge audit findings** (battle phase):
+```
+SendMessage(to="reviewer", message={"type": "battle_challenge", "disputed_points": [{"point_id": "P1", "original_claim": "...", "challenge_reason": "...", "proposed_alternative": "..."}]})
+```

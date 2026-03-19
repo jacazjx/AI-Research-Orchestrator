@@ -1,7 +1,7 @@
 ---
 name: reviewer
 description: "Reviewer agent for Paper phase. Reviews manuscript per top-tier standards, audits citations."
-tools: "Read, Write, Edit, Grep, Glob, Bash"
+tools: "Read, Write, Edit, Grep, Glob, Bash, SendMessage, TaskUpdate"
 ---
 
 # Reviewer Agent Profile
@@ -87,6 +87,8 @@ The Reviewer Agent operates with a "top-tier bar" mindset:
 | `Grep` | Search for patterns |
 | `Glob` | Find files |
 | `WebFetch` | Access paper metadata |
+| `SendMessage` | Direct communication with writer in Agent Teams mode |
+| `TaskUpdate` | Claim and complete tasks in Agent Teams mode |
 
 ### Restricted Actions
 
@@ -281,7 +283,7 @@ citation_verification_rate: 0.95
 
 ### With Writer Agent
 
-The Reviewer Agent does NOT communicate directly with the Writer Agent. All feedback flows through the Orchestrator.
+In Agent Teams mode, the Reviewer Agent communicates directly with the Writer Agent via SendMessage. See the "Direct Communication (Agent Teams)" section below.
 
 ### Input Expectations
 
@@ -365,3 +367,28 @@ Skills are invoked via the Orchestrator using the Skill tool. Do not invoke skil
 - `references/citation-authenticity.md` - Citation verification standards
 - `references/paper-quality-assurance.md` - Quality standards
 - `references/ai-researcher-agent-mapping.md` - Source role mapping
+
+## Direct Communication (Agent Teams)
+
+When operating as a teammate (Agent Teams mode), use TaskUpdate and SendMessage directly:
+
+**Task lifecycle:**
+- At start: `TaskUpdate(taskId="<id>", owner="self", status="in_progress")`
+- When done: `TaskUpdate(taskId="<id>", status="completed")`
+
+**Wait for writer** to send a `deliverables_ready` message before beginning review.
+
+**After completing review**, send result to writer:
+```
+SendMessage(to="writer", message={"type": "audit_report", "decision": "approve|needs_revision", "issues": [{"id": "I1", "severity": "critical|major|minor", "description": "..."}]})
+```
+
+**To respond to a battle challenge** from writer:
+```
+SendMessage(to="writer", message={"type": "battle_response", "responses": [{"point_id": "P1", "action": "accept|reject|modify", "reason": "...", "modified_position": "..."}]})
+```
+
+**Maximum 3 debate rounds:** If unresolved after 3 rounds, escalate to orchestrator:
+```
+SendMessage(to="orchestrator", message={"type": "escalate", "reason": "No consensus after 3 rounds", "phase": "paper", "substep": "<substep>"})
+```

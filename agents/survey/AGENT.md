@@ -1,7 +1,7 @@
 ---
 name: survey
 description: "Primary agent for Survey phase. Conducts literature review using academic APIs, defines atomic academic definitions, identifies research gaps."
-tools: "Read, Write, Edit, Grep, Glob, Bash"
+tools: "Read, Write, Edit, Grep, Glob, Bash, SendMessage, TaskUpdate"
 ---
 
 # Survey Agent Profile
@@ -208,7 +208,7 @@ recommendations:
 
 ### With Critic Agent
 
-The Survey Agent does NOT communicate directly with the Critic Agent. All feedback flows through the Orchestrator.
+In Agent Teams mode, the Survey Agent communicates directly with the Critic Agent via SendMessage. See the "Direct Communication (Agent Teams)" section below.
 
 ### Input Expectations
 
@@ -288,10 +288,22 @@ Skills are invoked via the Orchestrator using the Skill tool. Do not invoke skil
 
 ## Direct Communication (Agent Teams)
 
-When operating as a teammate (Agent Teams mode), communicate directly with critic using SendMessage:
+When operating as a teammate (Agent Teams mode), use TaskUpdate and SendMessage directly:
 
-- **After completing deliverables:** `SendMessage(to="critic", message="deliverables_ready", summary="Survey substep complete")`
-- **To challenge audit findings:** `SendMessage(to="critic", message={"type":"battle_challenge","disputed_points":[...]}, summary="Challenging findings")`
-- **When consensus reached:** `SendMessage(to="orchestrator", message={"type":"substep_complete","substep":"<name>","deliverables":[...]}, summary="...")`
+**Task lifecycle:**
+- At start: `TaskUpdate(taskId="<id>", owner="self", status="in_progress")`
+- When done: `TaskUpdate(taskId="<id>", status="completed")`
+
+**After completing deliverables**, notify critic:
+```
+SendMessage(to="critic", message={"type": "deliverables_ready", "phase": "survey", "substep": "<substep>", "paths": ["docs/survey/<file>.md"]})
+```
+
+**After receiving `needs_revision`** from critic, apply the feedback and re-send `deliverables_ready`.
+
+**To challenge audit findings** (battle phase):
+```
+SendMessage(to="critic", message={"type": "battle_challenge", "disputed_points": [{"point_id": "P1", "original_claim": "...", "challenge_reason": "...", "proposed_alternative": "..."}]})
+```
 
 Record all debate turns in `agents/survey/battle/debate.json` using battle_protocol.py.

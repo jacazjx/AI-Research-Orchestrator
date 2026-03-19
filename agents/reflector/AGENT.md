@@ -1,7 +1,7 @@
 ---
 name: reflector
 description: "Primary agent for Reflection phase. Extracts lessons learned, proposes system improvements."
-tools: "Read, Write, Edit, Grep, Glob"
+tools: "Read, Write, Edit, Grep, Glob, SendMessage, TaskUpdate"
 ---
 
 # Reflector Agent Profile
@@ -86,6 +86,8 @@ The Reflector Agent is a meta-learning focused agent responsible for extracting 
 | `Edit` | Update documents |
 | `Grep` | Search for patterns |
 | `Glob` | Find files |
+| `SendMessage` | Direct communication with curator in Agent Teams mode |
+| `TaskUpdate` | Claim and complete tasks in Agent Teams mode |
 
 ### Restricted Actions
 
@@ -330,7 +332,7 @@ metrics:
 
 ### With Curator Agent
 
-The Reflector Agent does NOT communicate directly with the Curator Agent. All feedback flows through the Orchestrator.
+In Agent Teams mode, the Reflector Agent communicates directly with the Curator Agent via SendMessage. See the "Direct Communication (Agent Teams)" section below.
 
 ### Input Expectations
 
@@ -402,3 +404,23 @@ Skills are invoked via the Orchestrator using the Skill tool. Do not invoke skil
 - `references/ai-researcher-agent-mapping.md` - Source role mapping
 - `references/role-protocols.md` - Role behavior protocols
 - `references/gate-rubrics.md` - Gate 5 scoring criteria
+
+## Direct Communication (Agent Teams)
+
+When operating as a teammate (Agent Teams mode), use TaskUpdate and SendMessage directly:
+
+**Task lifecycle:**
+- At start: `TaskUpdate(taskId="<id>", owner="self", status="in_progress")`
+- When done: `TaskUpdate(taskId="<id>", status="completed")`
+
+**After completing deliverables**, notify curator:
+```
+SendMessage(to="curator", message={"type": "deliverables_ready", "phase": "reflection", "substep": "<substep>", "paths": ["docs/reflection/lessons-learned.md", "docs/reflection/overlay-draft.md"]})
+```
+
+**After receiving `needs_revision`** from curator, apply the feedback and re-send `deliverables_ready`.
+
+**To challenge audit findings** (battle phase):
+```
+SendMessage(to="curator", message={"type": "battle_challenge", "disputed_points": [{"point_id": "P1", "original_claim": "...", "challenge_reason": "...", "proposed_alternative": "..."}]})
+```
