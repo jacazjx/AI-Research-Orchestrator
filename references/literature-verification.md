@@ -265,3 +265,192 @@ When automated verification fails:
 2. **Unpublished seminal work** - document why unpublished is appropriate
 3. **Dataset/software citations** - cite repository, not paper
 4. **Historical context** - older seminal work may lack DOI
+
+## API Configuration
+
+### Semantic Scholar
+
+**Rate Limits:**
+- 100 requests per 5 minutes (unauthenticated)
+- 5000 requests per 5 minutes (with API key)
+
+**Configuration:**
+
+```bash
+# Set environment variable (optional, increases rate limit)
+export SEMANTIC_SCHOLAR_API_KEY="your-api-key"
+```
+
+**Error Handling:**
+
+```python
+import os
+import requests
+
+API_KEY = os.environ.get("SEMANTIC_SCHOLAR_API_KEY")
+headers = {"x-api-key": API_KEY} if API_KEY else {}
+
+def search_papers(query: str, limit: int = 10) -> dict:
+    """Search Semantic Scholar with rate limit handling."""
+    url = "https://api.semanticscholar.org/graph/v1/paper/search"
+    params = {"query": query, "limit": limit}
+
+    try:
+        response = requests.get(url, params=params, headers=headers, timeout=30)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 429:
+            import time
+            time.sleep(60)
+            return search_papers(query, limit)
+        raise
+    except requests.exceptions.Timeout:
+        raise TimeoutError("Semantic Scholar API request timed out")
+```
+
+### arXiv
+
+**Rate Limits:**
+- 1 request per 3 seconds (polite usage)
+
+**Error Handling:**
+
+```python
+import time
+import requests
+
+def search_arxiv(query: str, max_results: int = 10) -> str:
+    """Search arXiv with rate limit handling."""
+    url = "https://export.arxiv.org/api/query"
+    params = {"search_query": f"all:{query}", "max_results": max_results}
+
+    time.sleep(3)  # Rate limiting
+    response = requests.get(url, params=params, timeout=60)
+    response.raise_for_status()
+    return response.text
+```
+
+### CrossRef
+
+**Rate Limits:**
+- No strict limit, but be polite (add User-Agent header)
+
+**Configuration:**
+
+```python
+import requests
+
+headers = {
+    "User-Agent": "AI-Research-Orchestrator/1.0 (mailto:your-email@example.com)"
+}
+
+def verify_doi(doi: str) -> dict:
+    """Verify a DOI via CrossRef."""
+    url = f"https://api.crossref.org/works/{doi}"
+    response = requests.get(url, headers=headers, timeout=30)
+    response.raise_for_status()
+    return response.json()
+```
+
+### OpenAlex
+
+**Rate Limits:**
+- 100,000 requests per day (free tier)
+
+**Configuration:**
+
+```bash
+# Optional: set email for faster access
+export OPENALEX_EMAIL="your-email@example.com"
+```
+
+```python
+import os
+import requests
+
+def search_openalex(query: str, per_page: int = 10) -> dict:
+    """Search OpenAlex works."""
+    url = "https://api.openalex.org/works"
+    params = {"search": query, "per_page": per_page}
+
+    email = os.environ.get("OPENALEX_EMAIL")
+    if email:
+        params["mailto"] = email
+
+    response = requests.get(url, params=params, timeout=30)
+    response.raise_for_status()
+    return response.json()
+```
+
+## Common Error Patterns
+
+### Rate Limiting
+
+Most APIs return HTTP 429 when rate limited. Handle gracefully:
+
+```python
+def api_call_with_retry(func, max_retries=3, backoff=60):
+    """Call API with exponential backoff on rate limit."""
+    for attempt in range(max_retries):
+        try:
+            return func()
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 429 and attempt < max_retries - 1:
+                time.sleep(backoff * (attempt + 1))
+            else:
+                raise
+```
+
+### Timeout Handling
+
+Always set timeouts for external API calls:
+
+```python
+# Good: explicit timeout
+response = requests.get(url, timeout=30)
+
+# Bad: no timeout (can hang indefinitely)
+response = requests.get(url)
+```
+
+### Graceful Degradation
+
+When APIs are unavailable, log and continue:
+
+```python
+import logging
+
+logger = logging.getLogger(__name__)
+
+def search_with_fallback(query: str) -> list:
+    """Search with fallback to alternative APIs."""
+    results = []
+
+    try:
+        results = search_semantic_scholar(query)
+    except Exception as e:
+        logger.warning(f"Semantic Scholar failed: {e}")
+
+        try:
+            results = search_arxiv(query)
+        except Exception as e:
+            logger.error(f"All APIs failed: {e}")
+
+    return results
+```
+
+## Project Configuration
+
+Store API keys in `.autoresearch/config/orchestrator-config.yaml`:
+
+```yaml
+api_keys:
+  semantic_scholar: "${SEMANTIC_SCHOLAR_API_KEY}"
+  openalex_email: "${OPENALEX_EMAIL}"
+
+rate_limits:
+  respect_limits: true
+  retry_on_429: true
+  max_retries: 3
+```
