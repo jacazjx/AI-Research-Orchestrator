@@ -18,10 +18,10 @@ Runtime reference documents for the AI Research Orchestrator. Design documents l
 | Document | Description |
 |----------|-------------|
 | `citation-standards.md` | Citation verification, authenticity, formatting, academic API usage |
-| `evidence-standards.md` | Evidence rules, experiment integrity, logging, statistical validity |
+| `evidence-standards.md` | WHAT to document: traceability, reproducibility, directory structure for experiment artifacts |
 | `writing-standards.md` | Academic writing, figures/tables, citation formats, paper quality assurance |
-| `scientific-rigor.md` | Experimental design, hypothesis testing, reproducibility, fallacies, biases |
-| `statistical-reporting.md` | Statistical test reporting, effect sizes, confidence intervals |
+| `scientific-rigor.md` | HOW to design: experimental methodology, hypothesis testing, bias avoidance |
+| `statistical-reporting.md` | HOW to report: statistical tests, effect sizes, confidence intervals, APA format |
 | `reporting_standards.md` | CONSORT, PRISMA, STROBE, ARRIVE, MIAME reporting standards |
 
 ## Operations
@@ -29,7 +29,6 @@ Runtime reference documents for the AI Research Orchestrator. Design documents l
 | Document | Description |
 |----------|-------------|
 | `recovery-and-evolution.md` | Pivot policy, rollback, self-healing, controlled self-evolution |
-| `intent-clarification-protocol.md` | Clarifying research intent before phase work begins |
 | `project-takeover-protocol.md` | Edge-case guidance for adopting existing projects |
 | `database_search_strategies.md` | Academic database search strategies and query construction |
 

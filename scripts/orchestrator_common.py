@@ -12,12 +12,7 @@ This file will be kept for backward compatibility and will not be removed.
 
 from __future__ import annotations
 
-import json
 import logging
-import re
-import shlex
-from pathlib import Path
-from typing import Any
 
 # ============================================================================
 # Re-export from constants module
@@ -52,7 +47,6 @@ from constants import (  # noqa: F401
     SCRIPT_DIR,
     SEMANTIC_TO_LEGACY_PHASE,
     SKILL_DIR,
-    STRUCTURED_SIGNAL_REQUIREMENTS,
     SYSTEM_DIRECTORIES,
     SYSTEM_VERSION,
     SYSTEM_VERSION_NAME,
@@ -69,11 +63,14 @@ from constants import (  # noqa: F401
 # ============================================================================
 
 from utils import (  # noqa: F401
+    build_list_section,
     build_template_variables,
     normalize_relative_path,
     read_yaml,
     render_template_string,
     render_template_tree,
+    setup_logging,
+    shell_join,
     slugify,
     write_text_if_needed,
     write_yaml,
@@ -86,6 +83,7 @@ from utils import (  # noqa: F401
 # ============================================================================
 
 from state import (  # noqa: F401
+    append_state_log,
     build_state,
     ensure_complete_deliverables,
     is_unmodified_template,
@@ -93,6 +91,7 @@ from state import (  # noqa: F401
     load_state,
     normalize_signal_value,
     parse_markdown_fields,
+    resolve_deliverable_path,
     save_state,
     validate_deliverable_content,
     validate_deliverable_location,
@@ -111,6 +110,7 @@ from project import (  # noqa: F401
     DEFAULT_RUNTIME_CONFIG,
     allowed_return_phases,
     build_client_instruction_text,
+    detect_client_init_artifacts,
     detect_client_profile,
     detect_platform,
     ensure_project_structure,
@@ -150,73 +150,10 @@ logger = logging.getLogger(__name__)
 
 
 # ============================================================================
-# Remaining local constants
+# Re-export MARKDOWN_FIELD_RE from state.validator for backward compatibility
 # ============================================================================
 
-# Markdown field parsing regex (re-exported from state.validator)
-MARKDOWN_FIELD_RE = re.compile(r"^- ([^:\n]+):\s*(.+)$", re.MULTILINE)
-
-
-# ============================================================================
-# Remaining local utility functions
-# ============================================================================
-
-
-def detect_client_init_artifacts(project_root: Path) -> list[str]:
-    """Detect client init artifacts in the project root."""
-    artifacts: list[str] = []
-    for candidate in sorted(project_root.glob("*.md")):
-        if candidate.name in {"workspace-manifest.md"}:
-            continue
-        artifacts.append(candidate.relative_to(project_root).as_posix())
-    return artifacts
-
-
-def build_list_section(items: list[str], empty_message: str) -> str:
-    """Build a markdown list section."""
-    if not items:
-        return f"- {empty_message}"
-    return "\n".join(f"- {item}" for item in items)
-
-
-def resolve_deliverable_path(
-    project_root: Path, state: dict[str, Any], key: str
-) -> Path:
-    """Resolve a deliverable path from state."""
-    relative_value = state["deliverables"][key]
-    return (project_root / relative_value).resolve()
-
-
-def append_state_log(
-    state: dict[str, Any], key: str, entry: dict[str, Any] | str
-) -> None:
-    """Append an entry to a state log list."""
-    items = list(state.get(key, []))
-    if isinstance(entry, str):
-        items.append(entry)
-    else:
-        items.append(json.dumps(entry, ensure_ascii=False, sort_keys=True))
-    state[key] = items
-
-
-def shell_join(parts: list[str]) -> str:
-    """Join shell command parts with proper quoting."""
-    return " ".join(shlex.quote(part) for part in parts)
-
-
-def setup_logging(level: int = logging.INFO, log_file: Path | None = None) -> None:
-    """Configure logging for the orchestrator."""
-    handlers: list[logging.Handler] = [logging.StreamHandler()]
-    if log_file:
-        log_file.parent.mkdir(parents=True, exist_ok=True)
-        handlers.append(logging.FileHandler(log_file, encoding="utf-8"))
-
-    logging.basicConfig(
-        level=level,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-        handlers=handlers,
-    )
+from state.validator import MARKDOWN_FIELD_RE  # noqa: F401
 
 
 # ============================================================================
@@ -239,7 +176,7 @@ __all__ = [
     "HANDOFF_REQUIREMENTS", "LOOP_REQUIREMENTS",
     "PHASE_REQUIRED_DELIVERABLES", "PHASE_TO_REVIEW",
     "PHASE_LOOP_KEY", "PHASE_COMPLETION",
-    "DEFAULT_LOOP_LIMITS", "STRUCTURED_SIGNAL_REQUIREMENTS",
+    "DEFAULT_LOOP_LIMITS",
     # Phase helper functions
     "normalize_phase_name", "get_legacy_phase_name",
     "get_all_phase_aliases", "get_phase_agents",

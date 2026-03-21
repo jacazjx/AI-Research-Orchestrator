@@ -17,6 +17,41 @@ from utils import read_yaml, write_yaml
 logger = logging.getLogger(__name__)
 
 
+def resolve_deliverable_path(
+    project_root: Path, state: dict[str, Any], key: str
+) -> Path:
+    """Resolve a deliverable path from state.
+
+    Args:
+        project_root: Project root directory.
+        state: Project state dictionary.
+        key: Deliverable key.
+
+    Returns:
+        Resolved absolute path to the deliverable.
+    """
+    relative_value = state["deliverables"][key]
+    return (project_root / relative_value).resolve()
+
+
+def append_state_log(
+    state: dict[str, Any], key: str, entry: dict[str, Any] | str
+) -> None:
+    """Append an entry to a state log list.
+
+    Args:
+        state: Project state dictionary.
+        key: State key for the log list.
+        entry: Entry to append (string or dict, dicts are JSON-serialized).
+    """
+    items = list(state.get(key, []))
+    if isinstance(entry, str):
+        items.append(entry)
+    else:
+        items.append(json.dumps(entry, ensure_ascii=False, sort_keys=True))
+    state[key] = items
+
+
 def load_json(path: Path, default: Any) -> Any:
     """Load JSON file with default fallback.
 

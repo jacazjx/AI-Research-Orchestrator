@@ -12,38 +12,35 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-# Deliverables for each phase (relative to project root)
-PHASE_DELIVERABLES: dict[str, list[str]] = {
-    "survey": [
-        "docs/survey/survey-round-summary.md",
-        "docs/survey/critic-round-review.md",
-        "docs/survey/research-readiness-report.md",
-        "docs/survey/phase-scorecard.md",
-    ],
-    "pilot": [
-        "docs/pilot/problem-validation-report.md",
-        "docs/pilot/problem-analysis.md",
-        "docs/pilot/pilot-results.md",
-        "docs/pilot/pilot-validation-report.md",
-        "docs/pilot/phase-scorecard.md",
-    ],
-    "experiments": [
-        "docs/experiments/results-summary.md",
-        "docs/experiments/evidence-package-index.md",
-        "docs/experiments/phase-scorecard.md",
-    ],
-    "paper": [
-        "paper/paper-draft.md",
-        "paper/citation-audit-report.md",
-        "docs/paper/final-acceptance-report.md",
-        "docs/paper/phase-scorecard.md",
-    ],
-    "reflection": [
-        "docs/reflection/lessons-learned.md",
-        "docs/reflection/runtime-improvement-report.md",
-        "docs/reflection/phase-scorecard.md",
-    ],
+from constants.phases import DEFAULT_DELIVERABLES, HANDOFF_REQUIREMENTS
+
+# Map each phase to its handoff transition key
+_PHASE_TO_HANDOFF_KEY: dict[str, str] = {
+    "survey": "survey-to-pilot",
+    "pilot": "pilot-to-experiments",
+    "experiments": "experiments-to-paper",
+    "paper": "paper-to-reflection",
+    "reflection": "reflection-closeout",
 }
+
+
+def _build_phase_deliverables() -> dict[str, list[str]]:
+    """Derive phase deliverable paths from HANDOFF_REQUIREMENTS and DEFAULT_DELIVERABLES."""
+    result: dict[str, list[str]] = {}
+    for phase, handoff_key in _PHASE_TO_HANDOFF_KEY.items():
+        handoff = HANDOFF_REQUIREMENTS.get(handoff_key, {})
+        deliverable_keys = handoff.get("deliverables", ())
+        paths: list[str] = []
+        for key in deliverable_keys:
+            path = DEFAULT_DELIVERABLES.get(key)
+            if path is not None:
+                paths.append(path)
+        result[phase] = paths
+    return result
+
+
+# Derived once at import time from the canonical source
+PHASE_DELIVERABLES: dict[str, list[str]] = _build_phase_deliverables()
 
 
 def get_deliverables_for_phase(phase: str) -> list[str]:

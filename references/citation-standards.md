@@ -74,6 +74,41 @@ curl "https://api.openalex.org/works?search=vision+transformer&filter=publicatio
 
 ---
 
+## Citation Verification Methodology
+
+This section is the single source of truth for citation verification. Skills (`literature`, `audit`, `citation`) should reference this section rather than duplicating the methodology inline.
+
+### Verification Sources (Priority Order)
+
+| Priority | Source | Best For | Endpoint |
+|----------|--------|----------|----------|
+| 1 | Semantic Scholar API | AI/ML/CS papers, citation graphs | `api.semanticscholar.org/graph/v1/paper/search` |
+| 2 | CrossRef API | DOI resolution and metadata verification | `api.crossref.org/works/{DOI}` |
+| 3 | DBLP API | Computer science bibliographic records | `dblp.org/search/publ/api` |
+| 4 | arXiv API | Preprints, checking for published versions | `export.arxiv.org/api/query` |
+| 5 | OpenAlex API | Multi-disciplinary coverage, open metadata | `api.openalex.org/works` |
+
+### Citation Grades
+
+| Grade | Meaning | Verification Method | Use in Claims |
+|-------|---------|---------------------|---------------|
+| **A** | DOI-verified, peer-reviewed publication | DOI resolves via CrossRef, metadata matches | Primary evidence, novelty claims |
+| **B** | Confirmed in trusted database (DBLP, Semantic Scholar, publisher) | Source database lookup, metadata cross-check | Supporting evidence, methodology |
+| **C** | arXiv or reputable preprint server | arXiv ID verification, check for published version | Emerging work, technical details only |
+| **D** | Unverified -- not found in any database | Requires manual human review | Context only, never for claims |
+| **F** | Fabrication risk -- cannot locate or verify | Must be removed or flagged | None -- must be excluded |
+
+### Verification Workflow
+
+1. **Search**: Query Semantic Scholar and CrossRef with title and/or DOI.
+2. **Cross-check**: Verify metadata (title, authors, year, venue) across at least two sources.
+3. **Grade**: Assign a citation grade (A-F) based on the strongest verification achieved.
+4. **Document provenance**: Record which API confirmed the citation, the access date, and any discrepancies between sources.
+
+If a preprint has a formally published version, always cite the formal version and upgrade the grade accordingly.
+
+---
+
 ## Phase-Specific Requirements
 
 ### Minimum Standards by Phase

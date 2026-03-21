@@ -42,7 +42,6 @@ from .phases import (
     PHASE_TO_GATE,
     PHASE_TO_REVIEW,
     SEMANTIC_TO_LEGACY_PHASE,
-    STRUCTURED_SIGNAL_REQUIREMENTS,
     get_all_phase_aliases,
     get_legacy_phase_name,
     get_phase_agents,
@@ -81,7 +80,6 @@ __all__ = [
     "PHASE_LOOP_KEY",
     "PHASE_COMPLETION",
     "DEFAULT_LOOP_LIMITS",
-    "STRUCTURED_SIGNAL_REQUIREMENTS",
     # Phase helper functions
     "normalize_phase_name",
     "get_legacy_phase_name",

@@ -1,5 +1,6 @@
 ---
 name: airesearchorchestrator:run-experiment
+agent: coder
 description: "Execute experiments at any scale -- pilot validation or full experiment matrix. Scope is determined by the current phase context: pilot phase runs a minimal validation experiment, experiments phase runs the full matrix. Handles local and remote GPU deployment. Use when user says \"run experiment\", \"run pilot\", \"deploy to server\", \"跑实验\", \"运行 Pilot\", or needs to launch training jobs."
 user-invocable: false
 argument-hint: [experiment-description]

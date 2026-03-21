@@ -8,112 +8,102 @@ allowed-tools: Bash(curl, python, sympy), Read, Write, Edit, Grep, Glob, WebFetc
 ---
 # Audit
 
+This framework is a reference guide, not a rigid checklist. The auditor adapts depth and focus to the specific deliverable, its phase, and what matters most for quality.
+
 ## Overview
 
-A unified audit and quality review skill that systematically evaluates any research deliverable against quality criteria appropriate to its phase and type. This skill replaces phase-specific audit skills with a flexible, adaptive methodology.
+A unified audit and quality review skill that evaluates any research deliverable against quality criteria appropriate to its phase and type.
 
 ## Purpose
 
 Critically review research artifacts for quality, correctness, completeness, and scientific rigor. The agent adapts its evaluation focus based on the deliverable being reviewed, consulting `references/gate-rubrics.md` for detailed scoring rubrics and `references/reporting_standards.md` for applicable reporting standards.
 
-## General Audit Methodology
+## 7-Stage Review Framework
 
-Every audit follows a consistent high-level process, regardless of the specific deliverable:
+This is a thinking framework, not a mandatory sequential procedure. Use professional judgment to determine which stages warrant deep scrutiny for a given deliverable.
 
-### Step 1: Identify the Deliverable and Phase
-
-Determine what is being audited and which phase it belongs to. This determines which quality dimensions to prioritize.
-
-### Step 2: Apply the 7-Stage Review Framework
-
-Work through each stage, adapting the specific checks to the deliverable type:
-
-#### Stage 1: Initial Assessment
+### Stage 1: Initial Assessment
 - Does the deliverable meet its structural requirements?
-- Are all required sections/components present?
+- Are required sections/components present?
 - Is the scope clearly defined?
 - Are objectives and success criteria stated?
 
-#### Stage 2: Detailed Content Review
+### Stage 2: Detailed Content Review
 - Is each section complete and coherent?
 - Does the content address its stated objectives?
 - Are claims properly supported?
 - Is the logical flow sound?
 
-#### Stage 3: Methodological Rigor
+### Stage 3: Methodological Rigor
 - Is the methodology appropriate for the task?
 - Are assumptions stated and justified?
 - Is the approach reproducible?
 - Are controls, baselines, or comparisons adequate?
 
-#### Stage 4: Reproducibility Check
+### Stage 4: Reproducibility Check
 - Are all artifacts (code, data, configs, seeds) documented?
 - Can the work be reproduced from the documentation alone?
 - Are environment specifications complete?
 - Calculate a reproducibility score: (documented items / required items) * 10
 
-#### Stage 5: Presentation Quality
+### Stage 5: Presentation Quality
 - Are figures, tables, and visualizations clear and properly labeled?
 - Do error bars, captions, and legends meet standards?
 - Is data presented accurately and without distortion?
 
-#### Stage 6: Ethics and Integrity
+### Stage 6: Ethics and Integrity
 - Are data usage rights, privacy, and consent addressed?
 - Are conflicts of interest disclosed?
 - Are limitations honestly reported?
 - Are potential harms considered?
 
-#### Stage 7: Writing and Communication Quality
+### Stage 7: Writing and Communication Quality
 - Is the writing clear, concise, and well-organized?
 - Is terminology consistent?
 - Are all claims supported by evidence?
 - Is there any placeholder text (TODO, FIXME)?
 
-### Step 3: Apply Phase-Specific Quality Dimensions
+---
 
-Consult the relevant section below for additional quality dimensions specific to the deliverable's phase.
+## Statistical Rigor (when applicable)
 
-### Step 4: Evaluate Statistical Rigor (when applicable)
+For any deliverable containing quantitative claims, consider evaluating:
 
-For any deliverable containing quantitative claims:
-
-- **Sample Size Adequacy**: Power analysis documented? Minimum runs met (>= 3)?
+- **Sample Size Adequacy**: Power analysis documented? Sufficient runs (typically 3+)?
 - **Test Selection**: Are statistical tests appropriate for the data type and design?
-- **Multiple Comparisons**: Are corrections applied (Bonferroni, FDR, Holm)?
+- **Multiple Comparisons**: Are corrections applied (Bonferroni, FDR, Holm) where needed?
 - **Effect Size Reporting**: Are effect sizes reported with confidence intervals?
 - **P-value Interpretation**: Are exact p-values given? Is practical significance distinguished from statistical significance?
 
-### Step 5: Verify Citations (when applicable)
+## Citation Verification (when applicable)
+
+For verification sources, grades, and workflow, see `references/citation-standards.md` (Citation Verification Methodology section).
 
 For any deliverable containing references:
 
-- Verify each citation via academic APIs (Semantic Scholar, arXiv, CrossRef, DBLP)
+- Verify citations via academic APIs (Semantic Scholar, arXiv, CrossRef, DBLP), not web search
 - Check DOI validity and metadata accuracy
 - Flag potential fabrications (papers not found in any database)
 - Verify that claims accurately reflect cited content
 - Check attribution to original sources
 
-### Step 6: Produce Audit Report
-
-Generate a structured report with verdict and actionable recommendations.
-
 ---
 
 ## Phase-Specific Quality Dimensions
 
-Adapt your evaluation focus to the specific deliverable being reviewed. These are reference sections, not rigid checklists -- use professional judgment to determine which dimensions are relevant.
+Adapt evaluation focus to the deliverable being reviewed. These are reference sections -- use professional judgment to determine which dimensions are relevant.
 
 ### Survey Phase
 
 **Key deliverables**: Literature survey report, research readiness report, ideation reports, novelty assessments, idea definitions, theoretical derivations.
 
 **Priority dimensions**:
-- **Literature Coverage**: Minimum 10 papers, recency (last 2-3 years priority), seminal papers included, competing approaches covered, geographic/institutional diversity
+- **Literature Coverage**: Aim for sufficient coverage (typically 10+ papers), recency (last 2-3 years priority), seminal papers included, competing approaches covered, geographic/institutional diversity
 - **Search Methodology**: Databases documented, search queries reproducible, inclusion/exclusion criteria explicit, PRISMA guidelines followed if systematic
-- **Citation Authenticity**: Every citation verified via academic APIs, fabrication risk assessed, claims match cited content
+- **Citation Authenticity**: Verify citations via academic APIs to the extent feasible, assess fabrication risk, check that claims match cited content
 - **Novelty Claims**: Supported by gap analysis, similar/concurrent works acknowledged, differentiation clear, contribution size appropriate
 - **Problem Definition**: Hypothesis testable, success criteria clear, scope appropriate, assumptions explicit
-- **Theoretical Rigor** (for derivations): Mathematical formalization correct, theorem statements precise (quantifiers, bound variables, conditions), proofs valid (no circular reasoning, all cases covered), assumptions justified and realistic, complexity analysis verified, conjectures plausible with evidence
+- **Theoretical Rigor** (for derivations): Mathematical formalization correct, theorem statements precise, proofs valid, assumptions justified and realistic, complexity analysis verified
 - **Experiment Mapping** (for derivations): Predictions testable, critical experiments identified, boundary conditions covered
 
 ### Pilot Phase
@@ -121,12 +111,12 @@ Adapt your evaluation focus to the specific deliverable being reviewed. These ar
 **Key deliverables**: Problem validation report, problem analysis, pilot design, pilot results/validation report.
 
 **Priority dimensions**:
-- **Problem Validation**: Evidence from multiple sources (literature + practical/data), significance scores justified, gap clearly articulated, verdict follows from analysis
-- **Problem Decomposition**: All sub-problems identified, dependencies mapped, assumptions reasonable, at least 3 technical challenges identified
-- **Solution Approach**: Addresses all challenges, technically sound, implementation feasible, integration points clear
-- **Pilot Scope**: Tests core hypothesis directly, minimal but sufficient, completable in < 24 hours, success/failure determinable
+- **Problem Validation**: Evidence from multiple sources (literature + practical/data), significance scores justified, gap clearly articulated
+- **Problem Decomposition**: Sub-problems identified, dependencies mapped, assumptions reasonable, consider covering multiple technical challenges (typically 3+)
+- **Solution Approach**: Addresses identified challenges, technically sound, implementation feasible, integration points clear
+- **Pilot Scope**: Tests core hypothesis directly, minimal but sufficient, completable in reasonable time, success/failure determinable
 - **Success Criteria**: Measurable, Go/No-Go thresholds clear, no ambiguous conditions, early stopping defined
-- **Resource Estimates**: Time estimates realistic, GPU requirements appropriate, debugging buffer included (minimum 20%)
+- **Resource Estimates**: Time estimates realistic, GPU requirements appropriate, consider including debugging buffer (typically 20%+)
 - **Hypothesis Validation**: Results match success criteria, claims supported by data, negative results reported honestly
 - **Decision Support**: Go/No-Go recommendation supported by data, lessons learned actionable, next steps appropriate
 
@@ -136,12 +126,12 @@ Adapt your evaluation focus to the specific deliverable being reviewed. These ar
 
 **Priority dimensions**:
 - **Experiment Matrix**: Main experiments test core claims, ablation studies cover key components, baselines include strong and weak, sensitivity analysis appropriate
-- **Statistical Validity**: Sufficient seeds (minimum 3), appropriate statistical tests, significance thresholds defined, multiple comparison corrections applied
+- **Statistical Validity**: Use multiple seeds (typically 3+), apply appropriate statistical tests, define significance thresholds, apply multiple comparison corrections where needed
 - **Hyperparameter Design**: Search spaces appropriate, sampling strategy sound, computational budget feasible
-- **Traceability**: All results have run IDs, configs logged, checkpoints exist, logs accessible
+- **Traceability**: Results have run IDs, configs logged, checkpoints exist, logs accessible
 - **Baseline Comparisons**: Properly implemented, fair comparison conditions, reported accurately, statistical tests applied
 - **Negative Results**: All experiments reported, negative results not hidden, failure analysis included
-- **Resource Adequacy**: GPU hours realistic, timeline includes buffer (minimum 20%), storage adequate
+- **Resource Adequacy**: GPU hours realistic, timeline includes buffer (typically 20%+), storage adequate
 
 ### Paper Phase
 
@@ -260,22 +250,22 @@ Adapt the report structure to the deliverable, but always include these sections
 
 ## Key Rules
 
-1. **Be systematic**: Follow the 7-stage review framework for every audit
+1. **Be systematic**: Use the 7-stage review framework as a thinking guide for every audit
 2. **Be constructive**: Identify issues AND provide specific, actionable recommendations
 3. **Be evidence-based**: Support all assessments with specific evidence from the material
 4. **Be proportionate**: Focus depth on high-risk areas relevant to the phase
 5. **Distinguish severity**: Clearly separate critical, major, and minor issues
 6. **Consult references**: Use `references/gate-rubrics.md` for scoring, `references/reporting_standards.md` for applicable standards
-7. **Adapt flexibly**: Use the phase-specific dimensions as guidance, not a rigid checklist -- focus on what matters for the specific deliverable
+7. **Adapt flexibly**: Focus on what matters for the specific deliverable
 8. **Gate strictly**: Block advancement when critical issues exist
-9. **Verify citations**: Use academic APIs (Semantic Scholar, arXiv, CrossRef, DBLP), NOT web search
-10. **Reproducibility minimum**: Score must be >= 7/10 to pass
+9. **Verify citations**: Use academic APIs (Semantic Scholar, arXiv, CrossRef, DBLP), not web search
+10. **Aim for reproducibility**: Target a score of >= 7/10
 11. **Be fair**: Acknowledge strengths, not just problems
 12. **Know limits**: If uncertain about a proof step or claim, flag for expert review
 
 ## Blocking Conditions
 
-Automatically BLOCK when:
+These are mandatory -- automatically BLOCK when:
 - Citation fabrications detected
 - Critical proof gaps undermine theoretical foundations
 - Untraceable results with no run IDs or configs
@@ -290,5 +280,4 @@ Automatically BLOCK when:
 - `references/gate-rubrics.md` - Detailed scoring rubrics for each phase gate
 - `references/reporting_standards.md` - CONSORT, PRISMA, STROBE, ARRIVE, CLAIM checklists
 - `references/citation-standards.md` - Citation verification standards
-- `references/citation-standards.md` - Paper phase citation rules
 - `references/evidence-standards.md` - Experiment logging standards

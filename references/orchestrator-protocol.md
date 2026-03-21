@@ -50,6 +50,53 @@ Before starting any phase, confirm:
    - Update `research-state.yaml` with confirmed parameters
    - Log decisions in `human_decisions` array
 
+#### Detailed Intent Clarification
+
+When the researcher's idea is vague or underspecified, the Orchestrator runs a structured clarification process before any phase work begins. This prevents misaligned research direction, wasted effort, scope creep, and unmet expectations.
+
+##### Clarity Assessment (5 Dimensions)
+
+Evaluate the research idea across five weighted dimensions:
+
+| Dimension | Weight | Criteria |
+|-----------|--------|----------|
+| Problem Definition | 25% | 0.0-0.3: Very vague ("I want to do ML research"); 0.5-0.7: Some specificity ("NER for medical texts"); 0.9-1.0: Fully specified with stakeholders and impact |
+| Solution Direction | 25% | 0.0-0.3: No approach idea; 0.5-0.7: Specific approach ("Fine-tune BioBERT"); 0.9-1.0: Detailed methodology with expected challenges |
+| Contribution Type | 20% | 0.0-0.3: No idea of contribution type; 0.5-0.7: Type identified ("Novel method"); 0.9-1.0: Specific claim with validation criteria |
+| Constraints | 15% | 0.0-0.3: No constraints mentioned; 0.5-0.7: Key constraints stated ("EMNLP deadline, 2 GPUs"); 0.9-1.0: All constraints with contingency plans |
+| Novelty Claim | 15% | 0.0-0.3: No novelty discussion; 0.5-0.7: Gap identified ("Current methods don't handle X"); 0.9-1.0: Strong claim with preliminary evidence |
+
+##### Score Thresholds and Actions
+
+| Score Range | Action |
+|-------------|--------|
+| < 0.4 | Idea too vague -- invoke `ideation` skill for structured brainstorming |
+| 0.4 - 0.7 | Run clarification loop (max 5 rounds, target >= 0.7) |
+| >= 0.7 | Sufficiently clear -- proceed to project initialization |
+
+##### Clarification Loop
+
+Each round: generate 2-3 targeted questions from weakest-scoring dimensions, collect responses, synthesize, re-assess. Select questions from the question bank organized by dimension:
+
+- **Problem**: What specific problem? Why important? What happens if unsolved?
+- **Solution**: What prior attempts exist? What's your intuition? What constraints limit solutions?
+- **Contribution**: What type? What constitutes success? What's the minimum viable contribution?
+- **Constraints**: Target venue? Timeline? Compute resources and data available?
+- **Novelty**: Key insight? Which existing assumptions can be challenged? How does this differ from similar work?
+
+##### Integration with Ideation Skill
+
+Invoke `ideation` when: clarity score < 0.4, user requests help, abstract idea without direction, or reference papers provided without a clear angle. The ideation skill returns 3-5 ranked concrete ideas; the researcher selects or refines one, then re-assess clarity.
+
+##### Confirmation Document
+
+After clarification succeeds (score >= 0.7), generate `.autoresearch/research-intent-confirmation.md` containing: clarified research idea, key parameters (problem, approach, contribution, venue, timeline, resources), success criteria (minimum and target), clarification history with per-round Q&A and score progression, and final confirmation status.
+
+##### Error Handling
+
+- **Unclear after 5 rounds**: Document Q&A history, escalate to researcher with options (synchronous discussion, brainstorming skill, or start exploratory Survey phase).
+- **Conflicting information**: Highlight the contradiction, ask for resolution, document which answer was confirmed.
+
 ### 2. Phase Coordination (阶段协调)
 
 #### Phase Entry Protocol

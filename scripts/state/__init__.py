@@ -10,7 +10,14 @@ Provides:
 """
 
 from state.builder import build_state  # noqa: F401
-from state.io import load_json, load_state, save_state, write_json  # noqa: F401
+from state.io import (  # noqa: F401
+    append_state_log,
+    load_json,
+    load_state,
+    resolve_deliverable_path,
+    save_state,
+    write_json,
+)
 from state.validator import (  # noqa: F401
     ensure_complete_deliverables,
     is_unmodified_template,
@@ -27,6 +34,8 @@ __all__ = [
     "save_state",
     "load_json",
     "write_json",
+    "resolve_deliverable_path",
+    "append_state_log",
     "build_state",
     "validate_state_schema",
     "validate_deliverable_content",

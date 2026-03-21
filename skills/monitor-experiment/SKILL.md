@@ -1,5 +1,6 @@
 ---
 name: airesearchorchestrator:monitor-experiment
+agent: coder
 description: Monitor running experiments, check progress, collect results. Use when user says "check results", "is it done", "monitor", or wants experiment output.
 user-invocable: false
 argument-hint: [server-alias or screen-name]

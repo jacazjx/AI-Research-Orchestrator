@@ -245,24 +245,6 @@ DEFAULT_LOOP_LIMITS = {
     "reflector_curator": 2,
 }
 
-EARLY_TERMINATION_CONDITIONS = {
-    "survey": {
-        "problem_not_worth_solving": "Survey reveals the problem is not worth solving",
-        "no_novelty_found": "No novelty found after comprehensive literature review",
-        "hypothesis_untestable": "Hypothesis cannot be tested with available resources",
-    },
-    "pilot": {
-        "pilot_failed": "Pilot experiment failed to validate hypothesis",
-        "resource_insufficient": "Insufficient resources for full experiments",
-        "hypothesis_rejected": "Pilot evidence rejects the hypothesis",
-    },
-    "experiments": {
-        "negative_results": "Experiments consistently show negative results",
-        "baseline_dominated": "Proposed method is dominated by baselines",
-        "reproducibility_issues": "Serious reproducibility issues discovered",
-    },
-}
-
 # Loop requirements for each phase
 LOOP_REQUIREMENTS = {
     "survey-loop": ("survey_critic", "phase_reviews", "survey_critic"),
@@ -275,11 +257,6 @@ LOOP_REQUIREMENTS = {
     "paper-loop": ("writer_reviewer", "phase_reviews", "paper_reviewer"),
     "reflection-loop": ("reflector_curator", "phase_reviews", "reflection_curator"),
 }
-
-# Deprecated: gate validation uses reviewer agent judgment instead of structured signals.
-# Kept as empty dict for backward compatibility (code may reference this constant).
-STRUCTURED_SIGNAL_REQUIREMENTS: dict = {}
-
 
 # Helper functions for phase name conversion
 def normalize_phase_name(phase_name: str) -> str:
@@ -317,11 +294,6 @@ def get_phase_agents(phase_name: str) -> Tuple[str, str]:
     if normalized not in PHASE_AGENT_PAIRS:
         raise ValueError(f"Unknown phase: {phase_name}")
     return PHASE_AGENT_PAIRS[normalized]
-
-
-def get_early_termination_conditions(phase_name: str) -> dict[str, str]:
-    normalized = normalize_phase_name(phase_name)
-    return EARLY_TERMINATION_CONDITIONS.get(normalized, {})
 
 
 def get_phase_sequence_for_research_type(research_type: str) -> Tuple[str, ...]:

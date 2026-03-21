@@ -10,31 +10,33 @@ allowed-tools: Bash(curl), Read, Write, Edit, Grep, Glob, WebFetch, Agent, Skill
 
 ## Overview
 
-A unified literature skill that adapts its depth and approach based on context. Covers the full spectrum from quick landscape checks (minutes) to comprehensive systematic reviews (hours/days), and includes research intent clarification when the research question is unclear.
+A unified literature skill that adapts its depth and approach based on context. The agent chooses from three modes -- quick exploration, standard review, or systematic survey -- based on the research question's maturity, the project phase, and whether gate approval is needed.
 
 ## Purpose
 
 - Conduct literature exploration at the appropriate depth for the current need
 - Clarify research intent when ideas are vague before committing to a full survey
 - Map research landscapes using academic database APIs
-- Verify all citations for authenticity
+- Verify citations for authenticity
 - Produce deliverables appropriate for quality gates
 
 ## Mode Selection
 
-The agent decides which mode to use based on context:
+The agent decides which mode to use based on context. These are not sequential phases; pick one.
 
-| Mode | When to Use | Time | Gate Ready |
-|------|-------------|------|------------|
-| **Intent Clarification** | Research idea is vague (clarity < 0.4), before survey phase | 10-30 min | No |
-| **Quick Exploration** | Need a fast overview, exploring a new area informally, finding 5-10 papers | Minutes | No |
-| **Systematic Survey** | Formal research project, Gate 1 approval required, need full verification | Hours-Days | Yes |
+| Mode | When to Use | Typical Time | Gate Ready |
+|------|-------------|--------------|------------|
+| **Quick Exploration** | Fast overview, exploring a new area, finding 5-10 papers | Minutes | No |
+| **Standard Review** | Structured search with gap analysis and novelty assessment | Hours | Partial |
+| **Systematic Survey** | Formal PRISMA-compliant review, Gate 1 approval required | Hours-Days | Yes |
+
+If the research idea is too vague (clarity < 0.4), run intent clarification first before any mode.
 
 ---
 
-## Mode 1: Intent Clarification
+## Intent Clarification (Pre-Mode)
 
-Use when the research idea is vague or underspecified. This mode clarifies the researcher's intent before any literature search begins.
+Use when the research idea is vague or underspecified. Clarifies the researcher's intent before any literature search begins.
 
 ### Clarity Assessment
 
@@ -49,262 +51,120 @@ Evaluate the research idea across five dimensions:
 | Novelty Claim | 15% | Is there a hypothesis about what's new? |
 
 **Score interpretation**:
-- 0.0-0.3: Very vague, needs brainstorming (recommend invoking `ideation` skill)
-- 0.3-0.4: Unclear, recommend brainstorming
-- 0.4-0.6: Partially clear, run clarification loop
-- 0.6-0.8: Mostly clear, minor clarifications needed
-- 0.8-1.0: Clear, proceed to literature search
+- 0.0-0.3: Very vague -- recommend invoking `ideation` skill for brainstorming
+- 0.3-0.4: Unclear -- recommend brainstorming
+- 0.4-0.6: Partially clear -- run clarification loop (2-3 targeted questions per round)
+- 0.6-0.8: Mostly clear -- minor clarifications needed
+- 0.8-1.0: Clear -- proceed to literature search
 
-### First-Principles Question Bank
-
-Select 2-3 questions per round from the weakest-scoring dimensions:
-
-**Problem Dimension**:
-- What specific problem are you trying to solve?
-- Why is this problem important? What's the impact?
-- What happens if this problem isn't solved?
-
-**Solution Dimension**:
-- What attempts have been made? Why aren't they good enough?
-- What's your intuition about what might work?
-- What constraints limit possible solutions?
-
-**Contribution Dimension**:
-- What type of contribution do you want to make? (Novel method / Theoretical analysis / Application / Benchmark / Survey)
-- What would constitute a successful outcome?
-
-**Context Dimension**:
-- What's the target venue and timeline?
-- What compute resources and data are available?
-
-**Novelty Dimension**:
-- What's your key insight or idea?
-- Which assumptions in existing work can be challenged?
-
-### Clarification Loop
-
-- Maximum 5 rounds of questioning
-- Target clarity score >= 0.7 before proceeding
-- If score remains < 0.4 after 2 rounds, recommend invoking `ideation` skill for brainstorming
-- Document all Q&A in `.autoresearch/research-intent-confirmation.md`
-- Get explicit researcher confirmation before proceeding
+**Clarification loop**: Maximum 5 rounds. Target clarity >= 0.7. If score remains < 0.4 after 2 rounds, recommend `ideation` skill. Document Q&A in `.autoresearch/research-intent-confirmation.md`. Get explicit researcher confirmation before proceeding.
 
 ---
 
-## Mode 2: Quick Exploration
+## Mode 1: Quick Exploration
 
-A lightweight, rapid literature search for informal landscape mapping.
+**Goal**: Rapidly map the landscape around a topic -- identify key papers, sub-directions, and open problems.
 
-### Workflow
+**Output**: Working notes with 5-10 papers, one-sentence contribution per paper, and a landscape sketch (sub-directions, gaps, recurring limitations).
 
-#### Step 1: Multi-Source Search
+### Guidance
 
-Use these academic APIs (NOT web search):
+- Use academic APIs (see API reference below), not web search
+- Prefer papers from the last 2-3 years; include seminal papers for context
+- Note concurrent work (last 3-6 months)
+
+---
+
+## Mode 2: Standard Review
+
+**Goal**: Produce a structured literature analysis with gap identification and novelty assessment, sufficient for planning but not for gate approval.
+
+**Output**: A literature analysis document covering:
+- Structured search results organized by theme/approach
+- Gap analysis identifying underexplored areas
+- Novelty assessment: how the proposed work differs from existing approaches
+- Citation info with verification grades for key papers
+
+### Guidance
+
+- Search across multiple databases with documented queries
+- Apply inclusion/exclusion criteria (even if informal)
+- Verify key citations via DOI/API checks
+- Assess evidence hierarchy (Strong / Moderate / Limited / Insufficient)
+
+---
+
+## Mode 3: Systematic Survey
+
+**Goal**: Produce a comprehensive, PRISMA-compliant literature review that passes Gate 1.
+
+**Output**: A set of artifacts in `docs/survey/`:
+
+| Artifact | Purpose |
+|----------|---------|
+| `survey-protocol.md` | Research question (PICO framework), search strategy, selection criteria |
+| `search-log.md` | Exact queries, filters, result counts, timestamps per database |
+| `screening-record.md` | Title/abstract screening decisions with rationale |
+| `extraction-database.md` | Per-paper metadata, methodology, findings, limitations |
+| `synthesis.md` | Thematic synthesis with evidence hierarchy |
+| `citation-verification-report.md` | Verification grades for every citation |
+| `research-readiness-report.md` | Final report with executive summary, PRISMA flow, landscape analysis, gaps, novelty assessment, visualizations |
+| `figures/` | 1-2 visualizations (landscape map, citation network, PRISMA flow, or timeline) |
+
+### Key Requirements
+
+- Document inclusion/exclusion criteria explicitly
+- Verify every citation (target 80%+ Grade A/B)
+- Include 1-2 visualizations saved as PDF/PNG in `docs/survey/figures/`
+- No fabricated references (zero tolerance)
+
+---
+
+## Academic API Reference
+
+Use these APIs for all literature search and verification. Do NOT use web search for paper discovery.
 
 | API | Use Case | Endpoint |
 |-----|----------|----------|
-| Semantic Scholar | AI/ML papers | `api.semanticscholar.org/graph/v1/paper/search` |
-| arXiv | Preprints | `export.arxiv.org/api/query` |
-| DBLP | CS bibliography | `dblp.org/search/publ/api` |
-| OpenAlex | Comprehensive | `api.openalex.org/works` |
-
-#### Step 2: Build Landscape Map
-
-Organize findings into:
-- Sub-directions and approaches
-- Key papers (seminal + recent)
-- Open problems and gaps
-- Recurring limitations
-
-#### Step 3: Output Summary
-
-Save to working notes with:
-- Citation info (title, authors, year, venue)
-- One-sentence contribution per paper
-- Relevance to research direction
-
-### Quick Exploration Rules
-
-- Use academic APIs, NOT web search
-- Prefer papers from last 2-3 years
-- Include seminal papers for context
-- Note concurrent work (last 3-6 months)
-- Target 5-10 relevant papers
-
----
-
-## Mode 3: Systematic Survey (7-Phase Workflow)
-
-A comprehensive, rigorous literature survey for formal research projects. Required for Gate 1 approval.
-
-### Phase 1: Planning
-
-Define the systematic survey protocol before any searching.
-
-#### Research Question Definition
-
-Frame using PICO or similar framework:
-
-| Element | Description |
-|---------|-------------|
-| **P**opulation | What domain/field? |
-| **I**ntervention | What method/approach? |
-| **C**omparison | What alternatives? |
-| **O**utcome | What metrics/results? |
-
-#### Inclusion/Exclusion Criteria
-
-Document explicit criteria:
-- Published in peer-reviewed venues OR reputable preprint servers
-- Published within last 3 years (except seminal works)
-- Directly addresses the research question
-- Empirical or theoretical contribution
-
-#### Protocol Documentation
-
-Create `docs/survey/survey-protocol.md` with research question, search strategy, selection criteria, quality assessment plan, and data extraction fields.
-
-### Phase 2: Search
-
-Execute systematic searches across multiple academic databases.
-
-#### Database Selection
-
-| Database | Best For | API Endpoint |
-|----------|----------|--------------|
-| Semantic Scholar | AI/ML, CS | `api.semanticscholar.org/graph/v1/paper/search` |
+| Semantic Scholar | AI/ML papers, citation graphs | `api.semanticscholar.org/graph/v1/paper/search` |
 | arXiv | Preprints (CS, Physics, Math) | `export.arxiv.org/api/query` |
 | DBLP | CS bibliography | `dblp.org/search/publ/api` |
-| OpenAlex | Multi-disciplinary | `api.openalex.org/works` |
+| OpenAlex | Multi-disciplinary coverage | `api.openalex.org/works` |
 | PubMed | Biomedical | `eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi` |
 | CrossRef | DOI verification | `api.crossref.org/works` |
 
-See `references/database_search_strategies.md` for detailed API usage.
+See `references/database_search_strategies.md` for detailed API usage patterns.
 
-#### Search Logging
+## Citation Verification Grading
 
-Record all searches in `docs/survey/search-log.md` with exact queries, filters, result counts, and timestamps.
+For the full verification methodology (sources, grades, workflow), see `references/citation-standards.md` (Citation Verification Methodology section).
 
-### Phase 3: Screening
-
-Filter papers based on inclusion/exclusion criteria.
-
-- Title/abstract screening with decision rationale
-- Full-text review for papers passing initial screening
-- PRISMA-style flow documentation
-- Save screening record to `docs/survey/screening-record.md`
-
-### Phase 4: Extraction
-
-Extract key information from included papers systematically.
-
-For each paper: metadata (title, authors, year, venue, DOI, verification grade), content (research question, methodology, key findings, limitations), and relevance assessment.
-
-Save to `docs/survey/extraction-database.md`.
-
-### Phase 5: Synthesis
-
-Synthesize findings into coherent narrative.
-
-- Organize by themes/approaches
-- Apply evidence hierarchy (Strong / Moderate / Limited / Insufficient)
-- Identify research gaps with supporting evidence
-- Save to `docs/survey/synthesis.md`
-
-### Phase 6: Citation Verification
-
-Verify authenticity of every citation.
-
-- DOI verification via CrossRef
-- Source check via Semantic Scholar/DBLP
-- Metadata cross-check (title, authors, year, venue)
-- Grade assignment (A: DOI-verified, B: Trusted source, C: Preprint, D: Unverified, F: Fabrication risk)
-- Save to `docs/survey/citation-verification-report.md`
-
-### Phase 7: Document Generation
-
-Generate final survey report with mandatory visualizations.
-
-#### Report Structure
-
-Create `docs/survey/research-readiness-report.md` with:
-- Executive summary
-- Search strategy and PRISMA flow
-- Landscape analysis with mandatory visualizations (1-2)
-- Key findings by theme
-- Research gaps with evidence
-- Novelty assessment
-- References with verification grades
-
-#### Mandatory Visualizations
-
-Every systematic survey MUST include 1-2 AI-generated visualizations:
-1. Research Landscape/Concept Map (themes and relationships)
-2. Citation Relationship Diagram (paper influence network)
-3. PRISMA Flow Diagram (screening process)
-4. Timeline Visualization (research evolution)
-
-Save as PDF or PNG in `docs/survey/figures/`.
-
-#### Quality Checklist
-
-- [ ] All 7 phases completed
-- [ ] Every citation verified (80%+ Grade A/B)
-- [ ] Mandatory visualizations included (1-2)
-- [ ] Research gaps clearly identified
-- [ ] Methodology fully documented
-- [ ] No fabricated references
-
----
-
-## Output Artifacts
-
-### Intent Clarification Mode
-- `.autoresearch/research-intent-confirmation.md`
-
-### Quick Exploration Mode
-- Working notes with landscape map
-
-### Systematic Survey Mode
-
-| Artifact | Location | Phase |
-|----------|----------|-------|
-| Survey Protocol | `docs/survey/survey-protocol.md` | 1 |
-| Search Log | `docs/survey/search-log.md` | 2 |
-| Screening Record | `docs/survey/screening-record.md` | 3 |
-| Extraction Database | `docs/survey/extraction-database.md` | 4 |
-| Synthesis | `docs/survey/synthesis.md` | 5 |
-| Citation Verification | `docs/survey/citation-verification-report.md` | 6 |
-| Final Report | `docs/survey/research-readiness-report.md` | 7 |
-| Visualizations | `docs/survey/figures/` | 7 |
-
----
+| Grade | Meaning |
+|-------|---------|
+| A | DOI-verified via CrossRef |
+| B | Confirmed via trusted source (Semantic Scholar, DBLP) |
+| C | Preprint only (arXiv/bioRxiv, no formal publication) |
+| D | Metadata found but could not fully verify |
+| F | Fabrication risk -- not found in any database |
 
 ## Exception Handling
 
-### Insufficient Literature
-If search yields fewer than 10 relevant papers: expand search terms, expand date range, add related databases, document limitation in report.
-
-### High Fabrication Risk
-If citation verification reveals potential fabrications: flag immediately, do not include in final report, report to researcher, re-run search for verified alternatives.
-
-### Vague Research Intent
-If clarity score remains < 0.4 after 2 clarification rounds: recommend brainstorming via `ideation` skill, do not proceed with systematic survey until intent is clarified.
+- **Insufficient literature**: If fewer than 10 relevant papers found, expand search terms, broaden date range, add related databases, and document the limitation
+- **High fabrication risk**: Flag immediately, exclude from final report, report to researcher, search for verified alternatives
+- **Vague research intent**: If clarity < 0.4 after 2 rounds, recommend `ideation` skill; do not proceed with systematic survey
 
 ## Key Rules
 
-1. **Use academic database APIs, NOT web search** (Semantic Scholar, arXiv, DBLP, OpenAlex, CrossRef)
-2. **Every citation must be verified** in systematic survey mode
-3. **Mandatory visualizations** in systematic survey mode (1-2 per report)
+1. **Use academic database APIs, NOT web search** for paper discovery and verification
+2. **Verify citations** in standard review and systematic survey modes
+3. **Include visualizations** in systematic survey mode (1-2 per report)
 4. **Document methodology** -- all search strategies and decisions must be recorded
 5. **No fabricated references** -- zero tolerance
 6. **Never skip intent clarification** if clarity score < 0.4
-7. **Max 5 clarification rounds** -- escalate if still unclear
-8. **Confirm before proceeding** -- get explicit researcher confirmation after clarification
+7. **Confirm before proceeding** -- get explicit researcher confirmation after clarification
 
 ## References
 
 - `references/database_search_strategies.md` - Detailed API usage
-- `references/citation-standards.md` - Citation grading criteria
-- `references/citation-standards.md` - Verification standards
-- `references/intent-clarification-protocol.md` - Intent clarification details
+- `references/citation-standards.md` - Citation grading criteria and verification standards
+- `references/orchestrator-protocol.md` - Intent clarification details (Detailed Intent Clarification section)

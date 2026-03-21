@@ -42,6 +42,16 @@ DEFAULT_RUNTIME_CONFIG = {
 }
 
 
+def detect_client_init_artifacts(project_root: Path) -> list[str]:
+    """Detect client init artifacts in the project root."""
+    artifacts: list[str] = []
+    for candidate in sorted(project_root.glob("*.md")):
+        if candidate.name in {"workspace-manifest.md"}:
+            continue
+        artifacts.append(candidate.relative_to(project_root).as_posix())
+    return artifacts
+
+
 def detect_platform() -> str:
     """Detect the current running platform.
 

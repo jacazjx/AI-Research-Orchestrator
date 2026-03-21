@@ -1,5 +1,6 @@
 ---
 name: airesearchorchestrator:paper-write
+agent: writer
 description: "Plan paper structure and generate LaTeX sections following IMRAD structure. Covers outlining (Claims-Evidence Matrix, section plan) and drafting. Use when user says \"write paper\", \"写论文\", \"generate LaTeX\", \"draft manuscript\", \"paper outline\", \"论文大纲\"."
 user-invocable: false
 argument-hint: [paper-plan-path]

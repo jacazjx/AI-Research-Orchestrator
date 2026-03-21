@@ -1,5 +1,6 @@
 ---
 name: airesearchorchestrator:external-review
+agent: orchestrator
 description: "External review of any research deliverable via Codex MCP. Supports single-shot critique and multi-round review-fix loops for research ideas, experiment results, papers, or any artifact. The agent decides scope and number of rounds based on context. Use when user says \"review\", \"critique\", \"improve paper\", \"auto review\", \"反馈\", \"改论文\", \"论文润色循环\"."
 user-invocable: true
 argument-hint: [deliverable-path-or-description]

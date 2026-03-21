@@ -1,5 +1,6 @@
 ---
 name: airesearchorchestrator:analyze-results
+agent: coder
 description: Analyze ML experiment results, compute statistics, generate comparison tables and insights. Use when user says "analyze results", "compare", or needs to interpret experimental data.
 user-invocable: false
 argument-hint: [results-path-or-description]

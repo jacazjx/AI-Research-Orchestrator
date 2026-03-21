@@ -1,6 +1,6 @@
 # Skills Directory
 
-This directory contains 18 specialized skills for the AI Research Orchestrator.
+This directory contains 19 specialized skills for the AI Research Orchestrator.
 
 > **Note**: Agent role definitions (survey, critic, coder, adviser, writer, reviewer, reflector, curator) are in `agents/`, not here. Each agent discovers skills dynamically from this directory at runtime.
 

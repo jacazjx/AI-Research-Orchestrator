@@ -10,7 +10,7 @@ allowed-tools: Bash(curl, python), Read, Write, Edit, Grep, Glob, WebFetch
 
 ## Overview
 
-A unified citation management skill that covers the full lifecycle: discovering citation gaps, searching for supporting papers, verifying authenticity via academic APIs, ranking candidates by quality, generating DOI-verified BibTeX, and finalizing the citation index.
+A unified citation management skill covering the full lifecycle: discovering gaps, searching for papers, verifying authenticity, ranking candidates, generating BibTeX, and producing a finalized citation index.
 
 ## Purpose
 
@@ -25,47 +25,36 @@ A unified citation management skill that covers the full lifecycle: discovering 
 
 ## Workflow
 
-### Step 1: Locate Citation Gaps
+### 1. Detect Gaps
 
-Inspect the draft for markers:
-- `[cite]`, `[citation needed]`, `\todo{cite}`
+Scan documents for citation markers that indicate missing references:
+- LaTeX markers: `[cite]`, `[citation needed]`, `\todo{cite}`
 - Plain-language notes: "needs citation", "find reference for this"
-- Chinese prompts: "我想找一篇论文来支撑论点", "需要引用", "找文献支持"
+- Chinese prompts: "需要引用", "找文献支持"
+- Cross-reference `\cite{}` commands against `references.bib` entries to find uncited references and undefined keys
 
-Use `scripts/extract_citation_needs.py` when a local `.tex` file is available:
-```bash
-python3 scripts/extract_citation_needs.py draft.tex --json
-```
-
-### Step 2: Extract and Cross-Reference Existing Citations
-
-Parse the paper:
-- Find all `\cite{}` commands
-- Extract all `references.bib` entries
-- Cross-reference used vs. defined citations
-- Identify uncited references
-
-### Step 3: Rewrite Gaps into Search Targets
+### 2. Generate Search Targets
 
 For each citation gap:
 - Reduce the paragraph to one verifiable statement
 - Extract 3-8 search terms (task, method, population, metric, constraint)
 - Generate English keywords even if the draft is in Chinese
-- Note what kind of evidence is needed (benchmark result, survey, causal claim, system design, theory, dataset paper)
+- Note the type of evidence needed (benchmark result, survey, causal claim, system design, theory, dataset paper)
 
-### Step 4: Gather Real Candidates from Academic Sources
+### 3. Search & Gather
 
-**Source priority order**:
-1. Existing project `.bib` files and project-local verification ledger
-2. User-level persistent paper library (cache directory)
-3. Semantic Scholar API and OpenAlex for candidate discovery
-4. Crossref and DOI resolver for final DOI confirmation
-5. DBLP for computer-science bibliographic records
-6. Google Scholar only as a manual hint fallback (not for automated metadata)
+Query academic APIs in priority order:
 
-**For each candidate, collect**: title, authors, year, venue, DOI, abstract, citation count, source URL, BibTeX source URL.
+| Priority | Source | Use |
+|----------|--------|-----|
+| 1 | Existing project `.bib` files and verification ledger | Reuse already-verified citations |
+| 2 | User-level persistent paper library | Cross-project reuse |
+| 3 | Semantic Scholar, OpenAlex | Candidate discovery |
+| 4 | CrossRef, DOI resolver | DOI confirmation |
+| 5 | DBLP | CS bibliographic records |
 
 **API endpoints**:
+
 | API | Endpoint |
 |-----|----------|
 | Semantic Scholar | `api.semanticscholar.org/graph/v1/paper/search` |
@@ -74,51 +63,24 @@ For each citation gap:
 | DBLP | `dblp.org/search/publ/api` |
 | OpenAlex | `api.openalex.org/works` |
 
-**Semantic Scholar API key handling**:
-- Check `--semantic-scholar-api-key`, then `SEMANTIC_SCHOLAR_API_KEY` env var, then persisted local secret
-- If user has a key: use authenticated mode, persist after first successful run
-- If user lacks a key: continue with free shared pool, use long backoff for rate limits
-- Never write API keys into repo, `.tex`, `.bib`, or report files
-- Never block workflow solely because user lacks a key
+For each candidate, collect: title, authors, year, venue, DOI, abstract, citation count, source URL.
 
-### Step 5: Replace Preprints with Published Versions
+**Preprint handling**: Treat arXiv/bioRxiv preprints as discovery hints. If a formally published version exists, cite that instead with its DOI. Keep preprints only when no formal version exists, and label them explicitly.
 
-Treat arXiv or other preprints as discovery hints, not final citations:
-- If a preprint has a formally published version: cite the formal version with its DOI
-- If the formal version has no DOI: fetch BibTeX from DBLP and mark for manual second checking
-- If no formal version exists: say so explicitly
-- Keep preprints only as search breadcrumbs, not in the final bibliography
+**Semantic Scholar API key**: Check `--semantic-scholar-api-key`, then `SEMANTIC_SCHOLAR_API_KEY` env var, then persisted local secret. Continue with free shared pool if no key is available. Never write API keys into repo files. Never block workflow solely because a key is missing.
 
-### Step 6: Rank Candidates
+### 4. Verify & Rank
 
-Use the scoring rubric from `references/quality-scoring.md`:
+For verification sources, grades, and workflow, see `references/citation-standards.md` (Citation Verification Methodology section).
 
-**Scoring dimensions**:
-- Venue score (CCF A/B, JCR Q1/Q2, high impact factor preferred)
-- Freshness score (last 5 years preferred)
-- Citation count score
-- Impact factor score
-- Relevance score
-- Evidence score
-- Publication bonus (peer-reviewed > preprint)
+**Verification** -- for each citation (existing and new):
+- Existence: paper found in academic databases
+- Metadata accuracy: authors, year, venue, title match
+- DOI validity: DOI resolves correctly
+- Content alignment: claim accurately reflects cited content
+- Attribution: original sources cited (not just reviews)
 
-Apply a minimum relevance gate before delivery. A lower-scoring paper that directly supports the claim can beat a higher-scoring but weakly related paper.
-
-Use `scripts/score_papers.py` for consistent ranking:
-```bash
-python3 scripts/score_papers.py candidates.json --format tsv
-```
-
-### Step 7: Verify Each Citation
-
-For each citation (existing and new):
-- **Existence**: Paper exists in academic databases
-- **Metadata accuracy**: Authors, year, venue, title match
-- **DOI validity**: DOI resolves correctly
-- **Content alignment**: Claim accurately reflects cited content
-- **Attribution**: Original sources cited (not just reviews), primary sources for methods
-
-**Verification standards by citation type**:
+**Verification by type**:
 
 | Citation Type | Required Verification |
 |---------------|----------------------|
@@ -138,9 +100,16 @@ For each citation (existing and new):
 | Preprint without version number | MEDIUM |
 | Incomplete bibliographic info | LOW |
 
-### Step 8: Generate Verified BibTeX
+**Ranking** -- score candidates using the rubric from `references/quality-scoring.md`:
+- Venue score (CCF A/B, JCR Q1/Q2, high impact factor preferred)
+- Freshness score (last 5 years preferred)
+- Citation count, impact factor, relevance, evidence type
+- Publication bonus (peer-reviewed > preprint)
+- Apply a minimum relevance gate. A lower-scoring paper that directly supports the claim can beat a higher-scoring but weakly related paper.
 
-For each accepted citation, produce BibTeX with provenance fields:
+### 5. Output
+
+**BibTeX with provenance fields** -- for each accepted citation:
 
 ```bibtex
 @article{author2024method,
@@ -161,95 +130,27 @@ For each accepted citation, produce BibTeX with provenance fields:
 
 Do not fabricate missing BibTeX fields. If the source record is incomplete, note what is missing.
 
-### Step 9: Check Citation Quality and Context
+**Citation index** -- save to `paper/citation-index.md` with:
+- Summary: total citations, verified count/percentage, needs-attention count, fabrication flags
+- Verified citations table (key, title, year, venue, DOI, verified-by, quality score)
+- Needs-verification table (key, issue, action needed)
+- Fabrication flags table (key, issue, severity) -- HIGH PRIORITY
+- Claim-citation mapping (well-supported claims and claims needing support)
+- Timestamped verification log
 
-For each citation:
-- Is the claim supported by the cited paper?
-- Is the context appropriate?
-- Is the citation necessary (avoid padding)?
-- Is the attribution to the original source (not a secondary review)?
-
-### Step 10: Produce Citation Index
-
-Save finalized index to `paper/citation-index.md`:
-
-```markdown
-# Citation Index
-
-## Summary
-- Total citations: X
-- Verified: Y (Z%)
-- Needs attention: N
-- Fabrication flags: M
-
-## Verified Citations
-
-| Key | Title | Year | Venue | DOI | Verified By | Quality Score |
-|-----|-------|------|-------|-----|-------------|---------------|
-| author2024 | "Title" | 2024 | NeurIPS | 10.xxx | Semantic Scholar, CrossRef | 85 |
-
-## Needs Verification
-
-| Key | Issue | Action Needed |
-|-----|-------|---------------|
-| unknown2022 | Not found in databases | Verify source or remove |
-
-## Fabrication Flags (HIGH PRIORITY)
-
-| Key | Issue | Severity |
-|-----|-------|----------|
-| suspicious2021 | Not in any database | CRITICAL |
-
-## Citation Quality Report
-
-### Well-Supported Claims
-- [Claim]: Cited by [key1, key2]
-
-### Claims Needing Support
-- [Claim]: Currently uncited, suggest adding [author2020]
-
-## Verification Log
-[Timestamped log of all verification actions]
-```
-
-### Step 11: Sync and Persist
-
-After every run:
-- Sync accepted citations into `.citation-curator/verification-ledger.json`
-- Sync into user-level paper library for cross-project reuse
-- If a target `.bib` file was provided, sync the ledger with that file
-- Keep user-edited BibTeX entries intact; store extra verification state in the ledger
+**Sync and persist**: After every run, sync accepted citations into `.citation-curator/verification-ledger.json` and the user-level paper library. If a target `.bib` file was provided, sync the ledger with it. Keep user-edited BibTeX entries intact.
 
 ---
 
-## Local Helper Scripts
+## Helper Scripts
 
-| Script | Purpose | Example |
-|--------|---------|---------|
-| `scripts/extract_citation_needs.py` | Find citation gaps in `.tex` files | `python3 scripts/extract_citation_needs.py draft.tex --json` |
-| `scripts/score_papers.py` | Rank candidates by quality | `python3 scripts/score_papers.py candidates.json --format tsv` |
-| `scripts/fetch_verified_bibtex.py` | End-to-end verified citation workflow | See below |
+See `scripts/` for implementation utilities:
 
-### fetch_verified_bibtex.py Usage
-
-```bash
-# Basic usage
-python3 scripts/fetch_verified_bibtex.py \
-  --query "claim to support" \
-  --existing-bib refs.bib \
-  --write-json report.json \
-  --write-bib verified.bib
-
-# Batch mode from extracted claims
-python3 scripts/extract_citation_needs.py draft.tex --json > claims.json
-python3 scripts/fetch_verified_bibtex.py \
-  --claims-json claims.json \
-  --existing-bib refs.bib \
-  --no-key-prompt \
-  --append-bib refs.bib
-```
-
----
+| Script | Purpose |
+|--------|---------|
+| `scripts/extract_citation_needs.py` | Find citation gaps in `.tex` files |
+| `scripts/score_papers.py` | Rank candidates by quality score |
+| `scripts/fetch_verified_bibtex.py` | End-to-end verified citation workflow |
 
 ## Exception Handling
 
@@ -261,8 +162,8 @@ python3 scripts/fetch_verified_bibtex.py \
 ## Key Rules
 
 1. **Do not invent papers, DOIs, venues, citation counts, or impact factors**
-2. **Use ONLY academic database APIs** (NOT web search) for verification
-3. **Every citation must be verified** -- flag any potential fabrications as CRITICAL
+2. **Use ONLY academic database APIs** (not web search) for verification
+3. **Every citation should be verified** -- flag any potential fabrications as CRITICAL
 4. **Do not keep preprints** when a verified formal publication exists
 5. **Do not claim authenticated verification** when no valid API key was used
 6. **Do not overwrite user-authored `.bib` entries** -- store extra state in the ledger
@@ -274,5 +175,4 @@ python3 scripts/fetch_verified_bibtex.py \
 
 - `references/quality-scoring.md` - Scoring formula and tie-break rules
 - `references/source-verification.md` - DOI checks, preprint replacement, BibTeX provenance
-- `references/citation-standards.md` - Paper phase citation rules
-- `references/citation-standards.md` - Citation grading criteria
+- `references/citation-standards.md` - Citation grading criteria and paper phase citation rules

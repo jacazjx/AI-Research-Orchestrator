@@ -56,25 +56,8 @@ Each `COMMAND.md` file contains the following frontmatter fields:
 ```yaml
 ---
 name: <command-name>
-description: "<描述>"
-script: scripts/<script-name>.py
-triggers:
-  - "trigger1"
-  - "trigger2"
-phase: <phase-name>
-agents:
-  - <agent1>
-  - <agent2>
-arguments:
-  required:
-    - name: <arg-name>
-      description: "<描述>"
-      type: <path|string|integer|enum>
-  optional:
-    - name: <arg-name>
-      description: "<描述>"
-      type: <path|string|integer|enum>
-      default: <default-value>
+description: "<description>"
+allowed-tools: "Read, Write, Edit, ..."
 ---
 ```
 
@@ -82,22 +65,9 @@ arguments:
 
 | Field | Required | Description |
 |-------|----------|-------------|
-| `name` | Yes | Command identifier (e.g., `init-research`) |
+| `name` | Yes | Namespaced command identifier (e.g., `airesearchorchestrator:run-survey`) |
 | `description` | Yes | Brief description of the command |
-| `script` | Yes | Python script that implements the command |
-| `triggers` | Yes | List of phrases that activate this command |
-| `phase` | Yes | Research phase this command belongs to |
-| `agents` | Yes | List of agents involved (can be empty) |
-| `arguments` | Yes | Command arguments definition |
-
-### Argument Types
-
-| Type | Description |
-|------|-------------|
-| `path` | File system path |
-| `string` | Text string |
-| `integer` | Integer number |
-| `enum` | Enumeration with predefined values |
+| `allowed-tools` | Yes | Comma-separated list of tools the command can use |
 
 ## Quick Start
 

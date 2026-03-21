@@ -12,7 +12,6 @@ from constants import (
     EXPECTED_DELIVERABLE_PREFIXES,
     LEGACY_TO_SEMANTIC_PHASE,
     PHASE_SEQUENCE,
-    STRUCTURED_SIGNAL_REQUIREMENTS,
 )
 
 from utils import build_template_variables, render_template_string
@@ -89,34 +88,19 @@ def validate_structured_signals(
 ) -> list[str]:
     """Validate structured signals for gate validation.
 
+    Note: Structured signal requirements were removed (gate validation now uses
+    reviewer agent judgment). This function is retained for backward compatibility
+    but always returns an empty list.
+
     Args:
         project_root: Project root directory.
         state: Project state dictionary.
         phase_name: Phase name to validate.
 
     Returns:
-        List of validation error messages.
+        Empty list (no structured signal requirements are defined).
     """
-    errors: list[str] = []
-    requirements = STRUCTURED_SIGNAL_REQUIREMENTS.get(phase_name, {})
-    for deliverable_key, field_requirements in requirements.items():
-        relative_path = state["deliverables"][deliverable_key]
-        candidate = project_root / relative_path
-        if not candidate.exists():
-            errors.append(
-                f"{relative_path} is missing; cannot read structured gate signals."
-            )
-            continue
-        fields = parse_markdown_fields(candidate)
-        for field_name, expected_values in field_requirements.items():
-            actual = fields.get(field_name)
-            normalized = normalize_signal_value(actual)
-            if normalized not in expected_values:
-                errors.append(
-                    f"{relative_path} must set '{field_name}' to one of "
-                    f"{sorted(expected_values)}, got {actual!r}."
-                )
-    return errors
+    return []
 
 
 def validate_deliverable_location(
