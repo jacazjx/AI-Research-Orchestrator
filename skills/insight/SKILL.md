@@ -1,9 +1,8 @@
 ---
 name: airesearchorchestrator:insight
 agent: orchestrator
-description: "Interactive intent clarification — helps users sharpen their research idea before initialization. Use when user says 'insight', '澄清意图', '明确想法', 'clarify intent', '研究想法'. Run this BEFORE /init-research for vague ideas."
-argument-hint: [--idea "research idea"] [--project-root /path/to/project] [--interactive true|false] [--max-rounds N] [--json]
-allowed-tools: Read, Write, Bash, Glob, Grep, AskUserQuestion
+description: "Interactive intent clarification -- helps users sharpen their research idea before initialization. Use when user says 'insight', '澄清意图', '明确想法', 'clarify intent', '研究想法'. Run this BEFORE /init-research for vague ideas."
+allowed-tools: Read, Write, Bash, Glob, Grep
 ---
 
 # Interactive Intent Clarification
@@ -16,55 +15,14 @@ Engages the user in a focused Q&A loop to surface and sharpen the true research 
 - Validate feasibility before initializing a full project
 - Identify constraints (deadline, venue, resources) early
 - Surface novelty gaps before the literature survey
-- Before running Survey phase on uncertain ideas
 
 ## Workflow
 
-```
-/insight
-    │
-    ├─→ 1. Detect existing project
-    │       ├─→ Found: continue clarifying the existing idea
-    │       └─→ Not found: collect idea from scratch
-    │
-    ├─→ 2. Clarity assessment (five dimensions)
-    │       ├── Problem (25%)
-    │       ├── Solution (25%)
-    │       ├── Contribution (20%)
-    │       ├── Constraints (15%)
-    │       └── Novelty (15%)
-    │
-    ├─→ 3. Generate targeted questions
-    │       └─→ Focus on lowest-scoring dimensions
-    │
-    ├─→ 4. Interactive Q&A loop
-    │       └─→ Until clarity >= 0.7 or max rounds reached
-    │
-    ├─→ 5. Recommend next step
-    │       └─→ clarity < 0.4: suggest /idea-discovery
-    │
-    └─→ 6. Output clarification result
-            ├── Sharpened idea statement
-            ├── Clarity score
-            ├── Per-dimension scores
-            └── Recommended next action
-```
-
-## Usage
-
-```bash
-# Interactive clarification (default)
-python3 scripts/run_insight.py
-
-# Provide an initial idea
-python3 scripts/run_insight.py --idea "I want to study time-series forecasting"
-
-# Point at an existing project
-python3 scripts/run_insight.py --project-root /abs/path/to/project
-
-# Non-interactive assessment only (outputs JSON)
-python3 scripts/run_insight.py --idea "research idea" --interactive false --json
-```
+1. **Detect context** -- Check if an existing project has a topic to refine, or start from scratch
+2. **Assess clarity** across five dimensions (see below)
+3. **Ask targeted questions** focused on the lowest-scoring dimensions
+4. **Iterate** until clarity >= 0.7 or max rounds reached
+5. **Output** the sharpened idea statement with scores and recommended next step
 
 ## Five-Dimension Assessment
 
@@ -76,62 +34,47 @@ python3 scripts/run_insight.py --idea "research idea" --interactive false --json
 | **Constraints** | 15% | What time, resource, or venue constraints apply? |
 | **Novelty** | 15% | How is this different from existing work? What is the key insight? |
 
+Compute overall clarity as the weighted sum of per-dimension scores (each 0.0-1.0).
+
 ## Clarity Thresholds
 
 | Score | Status | Recommendation |
 |-------|--------|----------------|
 | >= 0.7 | Clear | Proceed to `/init-research` |
-| 0.4–0.7 | Needs work | Continue Q&A rounds |
-| < 0.4 | Too vague | Use `/idea-discovery` to brainstorm |
+| 0.4-0.7 | Needs work | Continue Q&A rounds |
+| < 0.4 | Too vague | Browse `${CLAUDE_PLUGIN_ROOT}/skills/` for ideation tools (e.g., the `ideation` skill) to help brainstorm |
 
-## Output Example
+## Conducting Each Round
 
-```
-💡 Intent Clarification
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+In each Q&A round:
 
-Current idea:
-"I want to study optimization methods for time-series forecasting"
+1. Score all five dimensions based on what is known so far (0.0-1.0 each)
+2. Compute the weighted clarity score
+3. Identify the 1-2 lowest-scoring dimensions
+4. Ask 1-2 focused questions targeting those dimensions
+5. After the user responds, re-score and check thresholds
 
-Clarity: 0.35/1.0 (needs further clarification)
+Keep questions concrete and specific. Avoid abstract meta-questions. Good: "What specific metric would you use to measure success?" Bad: "Can you tell me more about your idea?"
 
-Dimension scores:
-  Problem:      0.3 ████████░░░░░░░░░░░░
-  Solution:     0.2 ██████░░░░░░░░░░░░░░
-  Contribution: 0.4 ████████████░░░░░░░░
-  Constraints:  0.3 ████████░░░░░░░░░░░░
-  Novelty:      0.5 ███████████████░░░░░
+## Output
 
-Question 1: What specific failure mode are you targeting?
-  (e.g. accuracy degrades on long horizons? high compute cost? poor generalization?)
+After clarification completes, provide:
 
-> Accuracy degrades badly when the forecast horizon exceeds 100 steps
-
-...
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Sharpened idea:
-"Improve long-horizon time-series forecasting (>100 steps) accuracy by
-proposing an enhanced attention mechanism that better captures long-range
-dependencies. Target venue: ICML 2026 (deadline: May 2026)."
-
-Clarity: 0.78/1.0 ✅
-
-Recommended next step:
-  Run /init-research to initialize the project with this idea.
-```
+- Sharpened idea statement (1-3 sentences)
+- Overall clarity score
+- Per-dimension scores with brief justification
+- Recommended next action (proceed to `/init-research`, continue clarifying, or brainstorm with `ideation`)
+- Summary of key decisions made during clarification
 
 ## Hard Rules
 
-1. **Never skip for low clarity** - If score < 0.4, MUST recommend brainstorming
-2. **Max 5 rounds** - Don't endless loop; escalate if unclear after 5 rounds
-3. **Document everything** - All Q&A must be recorded
-4. **Confirm before proceeding** - Get explicit confirmation on sharpened idea
-5. **Use first-principles** - Start from fundamentals, not assumptions
+1. **Never skip for low clarity** -- if score < 0.4, recommend brainstorming with the `ideation` skill
+2. **Max 5 rounds** -- do not loop endlessly; escalate if still unclear after 5 rounds
+3. **Document everything** -- all Q&A exchanges must be recorded for the project record
+4. **Confirm before proceeding** -- get explicit user confirmation on the sharpened idea
+5. **Use first-principles thinking** -- start from fundamentals, not assumptions
 
 ## Related Skills
 
-- [init-research](../orchestrator/SKILL.md) — Initialize project after clarification
-- [idea-discovery](../idea-discovery/SKILL.md) — Full idea discovery pipeline
-- [research-intent-clarification](../research-intent-clarification/SKILL.md) — Detailed clarification protocol
+- `orchestrator` -- Initialize and run the full project after clarification
+- `ideation` -- Brainstorm and develop research ideas when the direction is too vague
