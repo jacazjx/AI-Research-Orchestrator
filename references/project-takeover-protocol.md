@@ -1,6 +1,6 @@
 # Project Takeover Protocol
 
-Edge-case guidance for adopting existing projects into the orchestrator. Standard project initialization and state reload are handled by `init_research_project.py`, `migrate_project.py`, and the `reload` skill. This document covers scenarios those tools do not fully automate.
+Edge-case guidance for adopting existing projects into the orchestrator. Standard project initialization and state reload are handled by `init_research_project.py` and the `reload` skill. This document covers scenarios those tools do not fully automate.
 
 ---
 
@@ -24,23 +24,21 @@ Edge-case guidance for adopting existing projects into the orchestrator. Standar
 
 ## Starting Phase
 
-When migrating, specify the starting phase to skip completed work:
+When taking over a project, specify the starting phase to skip completed work:
 
 ```bash
-python3 scripts/migrate_project.py \
+python3 scripts/init_research_project.py \
   --project-root /path/to/project \
   --topic "Topic" \
   --starting-phase experiments
 ```
-
-Always use `--dry-run` first to preview changes.
 
 ## Edge Cases
 
 ### Scattered Artifacts, No Clear Structure
 
 1. Have the orchestrator analyze the directory structure
-2. Run `migrate_project.py` to create the standard structure
+2. Run `init_research_project.py` to create the standard structure
 3. Manually map existing files to target locations:
 
 | Source Pattern | Target Location |

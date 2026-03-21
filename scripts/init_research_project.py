@@ -29,10 +29,7 @@ from orchestrator_common import (
     write_yaml,
 )
 
-from legacy_handler import analyze_directory_contents, handle_non_empty_directory
 from user_config import load_user_config
-
-_LEGACY_HANDLER_AVAILABLE = True
 
 try:
     from preflight import format_preflight_warnings, run_preflight_checks
@@ -123,15 +120,13 @@ def initialize_research_project(
     normalized_phase = normalize_phase_name(starting_phase)
 
     # Handle non-empty directory (only if directory exists and is non-empty)
-    if _LEGACY_HANDLER_AVAILABLE and project_root.exists():
-        analysis = analyze_directory_contents(project_root)
-        if not analysis.is_empty:
-            mode = existing_resources_mode or "preserve"
-            if mode == "cancel":
-                return {"status": "cancelled", "message": "Initialization cancelled by user"}
-            migration_result = handle_non_empty_directory(project_root, mode=mode)
-            if migration_result.legacy_path:
-                print(f"Handled existing files ({mode}): {migration_result.legacy_path}")
+    if project_root.exists() and any(project_root.iterdir()):
+        mode = existing_resources_mode or "preserve"
+        if mode == "cancel":
+            return {"status": "cancelled", "message": "Initialization cancelled by user"}
+        logging.warning(
+            "Directory '%s' is not empty. Existing files will be preserved.", project_root
+        )
 
     # Ensure project structure using new directory layout
     ensure_project_structure(project_root, create_if_missing=True)
@@ -171,16 +166,15 @@ def initialize_research_project(
 
     # Load and merge user config
     user_config_inherited: dict[str, Any] = {}
-    if _LEGACY_HANDLER_AVAILABLE:
-        try:
-            user_cfg = load_user_config()
-            if user_cfg:
-                user_config_inherited = {
-                    "author": user_cfg.get("author", {}),
-                    "preferences": user_cfg.get("preferences", {}),
-                }
-        except Exception as e:
-            logging.warning(f"Could not load user config: {e}")
+    try:
+        user_cfg = load_user_config()
+        if user_cfg:
+            user_config_inherited = {
+                "author": user_cfg.get("author", {}),
+                "preferences": user_cfg.get("preferences", {}),
+            }
+    except Exception as e:
+        logging.warning(f"Could not load user config: {e}")
 
     state = build_state(
         project_id=project_identifier,

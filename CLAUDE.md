@@ -73,9 +73,6 @@ python3 scripts/validate_handoff.py --project-root /abs/path --target survey-to-
 
 # Materialize templates
 python3 scripts/materialize_templates.py --project-root /abs/path
-
-# Migrate project
-python3 scripts/migrate_project.py --project-root /path/to/project --topic "Topic"
 ```
 
 ## Script Module Structure
