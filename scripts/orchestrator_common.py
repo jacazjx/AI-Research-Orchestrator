@@ -525,6 +525,12 @@ def _build_default_substep_status() -> dict[str, Any]:
             },
         },
         "pilot": {
+            "problem_validation": {
+                "status": "pending",
+                "review_result": "pending",
+                "attempts": 0,
+                "last_agent": None,
+            },
             "problem_analysis": {
                 "status": "pending",
                 "review_result": "pending",

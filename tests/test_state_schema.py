@@ -106,5 +106,32 @@ class StateSchemaValidationTest(unittest.TestCase):
                 COMMON.load_state(project_root)
 
 
+class TestSubstepStatus(unittest.TestCase):
+    """Test substep status structure matches phase-execution-details.md."""
+
+    def test_pilot_phase_has_problem_validation_substep(self):
+        """Pilot phase should include problem_validation substep."""
+        from orchestrator_common import _build_default_substep_status
+
+        substep_status = _build_default_substep_status()
+
+        assert "pilot" in substep_status, "Missing pilot phase in substep_status"
+        assert (
+            "problem_validation" in substep_status["pilot"]
+        ), "Missing problem_validation substep in pilot phase"
+
+    def test_all_substeps_have_required_fields(self):
+        """Each substep should have status, review_result, attempts, last_agent."""
+        from orchestrator_common import _build_default_substep_status
+
+        substep_status = _build_default_substep_status()
+        required_fields = {"status", "review_result", "attempts", "last_agent"}
+
+        for phase, substeps in substep_status.items():
+            for substep_name, substep_data in substeps.items():
+                missing = required_fields - set(substep_data.keys())
+                assert not missing, f"Substep {phase}/{substep_name} missing fields: {missing}"
+
+
 if __name__ == "__main__":
     unittest.main()
