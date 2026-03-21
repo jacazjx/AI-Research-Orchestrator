@@ -43,21 +43,6 @@ import prompts  # noqa: E402
 import user_config  # noqa: E402
 from exceptions import ValidationError  # noqa: E402
 
-# Import intent clarification module
-try:
-    from intent_clarification import (
-        MAX_CLARIFICATION_ROUNDS,
-        MIN_CONFIRMATION_SCORE,
-        assess_intent_clarity,
-        format_assessment_summary,
-        generate_clarification_questions,
-        should_trigger_brainstorming,
-    )
-
-    INTENT_CLARIFICATION_AVAILABLE = True
-except ImportError:
-    INTENT_CLARIFICATION_AVAILABLE = False
-
 # Configure module logger
 logger = logging.getLogger(__name__)
 
@@ -222,12 +207,8 @@ class InitWizard:
 
         self.step_welcome()
         self.step_research_idea()
-
-        # New: Intent clarity assessment and clarification
-        if INTENT_CLARIFICATION_AVAILABLE:
-            self.step_intent_clarity_assessment()
-            self.step_intent_clarification_loop()
-
+        self.step_intent_clarity_assessment()
+        self.step_intent_clarification_loop()
         self.step_research_type()
         self.step_existing_resources()
         self.step_compute_resources()
@@ -284,7 +265,9 @@ class InitWizard:
         print()
 
         # Simplified input - single line first
-        print("Enter your research idea (one line is fine, or type 'more' for detailed input):")
+        print(
+            "Enter your research idea (one line is fine, or type 'more' for detailed input):"
+        )
 
         idea = prompts.prompt_text(
             "",
@@ -333,146 +316,62 @@ class InitWizard:
                 )
 
     def step_intent_clarity_assessment(self) -> None:
-        """Step: Assess intent clarity and potentially trigger brainstorming.
-
-        Evaluates the clarity of the research idea and determines if
-        brainstorming is needed.
-        """
-        if not INTENT_CLARIFICATION_AVAILABLE:
-            logger.warning("Intent clarification module not available, skipping assessment")
-            self.responses.clarity_score = 0.8  # Default to high if unavailable
-            self.responses.clarified_idea = self.responses.research_idea
-            return
-
         prompts.set_step_context(2, TOTAL_WIZARD_STEPS)
         prompts.print_section("Intent Clarity")
 
-        # Assess the research idea
-        print("🔍 Analyzing your research idea for clarity...")
-        assessment = assess_intent_clarity(self.responses.research_idea)
-        self.responses.clarity_score = assessment.score
+        print("🔍 Analyzing your research idea...")
+        idea_length = len(self.responses.research_idea.split())
+        self.responses.clarity_score = min(1.0, idea_length / 20.0)
 
-        # Display assessment
-        print("\n" + format_assessment_summary(assessment))
-
-        if should_trigger_brainstorming(assessment):
-            print("\n📊 Your research idea needs more development.")
-            print("   The research-ideation skill can help you explore directions.")
-
+        if idea_length < 10:
+            print("\n📊 Your research idea is brief.")
+            print("   Consider using /insight command to develop it further.")
             if self.interactive:
                 if prompts.prompt_yes_no(
-                    "\nWould you like to brainstorm research directions?",
+                    "\nWould you like to continue with this idea?",
                     default=True,
                 ):
                     self._trigger_brainstorming()
                 else:
-                    print("\nProceeding with current idea. You can run clarification later.")
-        elif assessment.score < MIN_CONFIRMATION_SCORE:
-            print(f"\n📈 Your idea is partially clear (score: {assessment.score:.2f}).")
-            print("   Let's clarify some details to ensure alignment.")
+                    print("\nTip: Use /insight before initializing your project.")
+        elif idea_length < 20:
+            print(f"\n📈 Your idea has some detail ({idea_length} words).")
+            print("   You can clarify more during the research process.")
         else:
-            print(f"\n✅ Your research idea is clear (score: {assessment.score:.2f}).")
+            print(f"\n✅ Your research idea has good detail ({idea_length} words).")
             self.responses.clarified_idea = self.responses.research_idea
 
     def _trigger_brainstorming(self) -> None:
-        """Trigger brainstorming skill for research ideation."""
-        print("\n🧠 Launching research ideation skill...")
-        print("   This will help you develop and refine your research idea.")
-        print("\n   Note: In the current implementation, you should use:")
-        print("   /research-ideation to run the ideation skill")
-        print("\n   For now, we'll proceed with clarification questions.")
-        # The actual skill invocation would be done by the orchestrator
-        # Here we just set the flag for the orchestrator to handle
+        print("\n💡 Your research idea needs more development.")
+        print("   Tip: Use /insight command before initializing your project.")
+        print("   This will help you clarify and refine your research idea.")
 
     def step_intent_clarification_loop(self) -> None:
-        """Step: Run clarification loop if needed.
-
-        Asks targeted questions to improve clarity until threshold
-        is reached or max rounds exhausted.
-        """
-        if not INTENT_CLARIFICATION_AVAILABLE:
-            return
-
-        # Skip if already clear enough
-        if self.responses.clarity_score >= MIN_CONFIRMATION_SCORE:
-            if not self.responses.clarified_idea:
-                self.responses.clarified_idea = self.responses.research_idea
-            return
-
         if not self.interactive:
-            # In non-interactive mode, just record the current state
             self.responses.clarified_idea = self.responses.research_idea
             return
 
-        prompts.print_section("Step 3: Intent Clarification")
+        idea_length = len(self.responses.research_idea.split())
+        if idea_length >= 20:
+            self.responses.clarified_idea = self.responses.research_idea
+            return
 
-        print(f"Current clarity score: {self.responses.clarity_score:.2f}")
-        print(f"Target score: {MIN_CONFIRMATION_SCORE:.2f}")
-        print(f"Maximum rounds: {MAX_CLARIFICATION_ROUNDS}")
-        print()
+        prompts.print_section("Quick Clarification")
 
-        current_idea = self.responses.research_idea
-        current_score = self.responses.clarity_score
+        questions = [
+            "What specific problem are you trying to solve?",
+            "What's your intuition about what might work?",
+        ]
 
-        while (
-            self.responses.clarification_rounds < MAX_CLARIFICATION_ROUNDS
-            and current_score < MIN_CONFIRMATION_SCORE
-        ):
+        for i, question in enumerate(questions, 1):
+            print(f"\nQ{i}: {question}")
+            response = prompts.prompt_text("Your answer", required=False, default="")
+            if response.strip():
+                self.responses.research_idea += (
+                    f"\n\n[Clarification] {question}\n{response}"
+                )
 
-            self.responses.clarification_rounds += 1
-            round_num = self.responses.clarification_rounds
-
-            print(f"\n--- Clarification Round {round_num} ---")
-
-            # Generate questions
-            assessment = assess_intent_clarity(current_idea)
-            questions = generate_clarification_questions(
-                current_idea,
-                assessment.gaps,
-                assessment.dimension_scores,
-                language="en",  # Could be made configurable
-            )
-
-            # Ask questions and collect responses
-            responses = []
-            for i, question in enumerate(questions, 1):
-                print(f"\nQ{i}: {question}")
-                response = prompts.prompt_text("Your answer", required=False, default="")
-                responses.append(response)
-
-            # Synthesize responses into updated idea
-            if any(responses):  # If any response was provided
-                synthesis = current_idea
-                for q, r in zip(questions, responses):
-                    if r.strip():
-                        synthesis += f"\n\n[Clarification] Q: {q}\nA: {r}"
-                current_idea = synthesis
-
-            # Re-assess
-            new_assessment = assess_intent_clarity(current_idea)
-            current_score = new_assessment.score
-
-            print(f"\nClarity score: {self.responses.clarity_score:.2f} → {current_score:.2f}")
-
-            # Update state
-            self.responses.clarity_score = current_score
-            self.responses.clarified_idea = current_idea
-
-            if current_score >= MIN_CONFIRMATION_SCORE:
-                print("\n✅ Clarity threshold reached!")
-                break
-
-            if self.responses.clarification_rounds < MAX_CLARIFICATION_ROUNDS:
-                if not prompts.prompt_yes_no("\nContinue clarifying?", default=True):
-                    break
-
-        # Final state
-        self.responses.clarified_idea = current_idea
-        self.responses.clarity_score = current_score
-
-        if current_score < MIN_CONFIRMATION_SCORE:
-            print(f"\n⚠️ Maximum rounds reached. Final score: {current_score:.2f}")
-            print("   Consider using /research-ideation for structured brainstorming.")
+        self.responses.clarified_idea = self.responses.research_idea
 
     def step_research_type(self) -> None:
         """Step: Select research type."""
@@ -496,7 +395,8 @@ class InitWizard:
 
         # Build choices dict
         choices = {
-            key: f"{info['label']} - {info['description']}" for key, info in RESEARCH_TYPES.items()
+            key: f"{info['label']} - {info['description']}"
+            for key, info in RESEARCH_TYPES.items()
         }
 
         selected = prompts.prompt_choice(
@@ -521,7 +421,8 @@ class InitWizard:
             self.responses.starting_phase = "survey"
         else:
             phase_choices = {
-                phase: phase.replace("_", " ").title() for phase in VALID_STARTING_PHASES
+                phase: phase.replace("_", " ").title()
+                for phase in VALID_STARTING_PHASES
             }
             self.responses.starting_phase = prompts.prompt_choice(
                 "Select starting phase",
@@ -530,258 +431,84 @@ class InitWizard:
             )
 
     def step_existing_resources(self) -> None:
-        """Step 5: Detect and handle existing resources."""
         prompts.set_step_context(4, TOTAL_WIZARD_STEPS)
         prompts.print_section("Existing Resources")
 
-        # Analyze directory
-        try:
-            analysis = legacy_handler.analyze_directory_contents(self.project_root)
-            self.responses.legacy_analysis = {
-                "is_empty": analysis.is_empty,
-                "total_files": analysis.total_files,
-                "recognized_patterns": analysis.recognized_patterns,
-                "orphan_files_count": len(analysis.orphan_files),
-                "orphan_files": analysis.orphan_files[:10],  # First 10
-            }
-        except legacy_handler.LegacyHandlerError as e:
-            logger.warning("Failed to analyze directory: %s", e)
-            self.responses.legacy_analysis = {"error": str(e)}
-            return
-
-        if analysis.is_empty:
-            print("✅ The project directory is empty. Ready for initialization.")
+        if not self.project_root.exists():
             self.responses.existing_resources_mode = "preserve"
             return
 
-        if not self.interactive:
-            # Default to preserve in non-interactive mode
+        existing_files = list(self.project_root.glob("*"))
+        if not existing_files:
             self.responses.existing_resources_mode = "preserve"
             return
 
-        # Show analysis
-        print(legacy_handler.format_analysis_summary(analysis))
-
-        if analysis.orphan_files:
-            print("\nHow would you like to handle these files?")
-
-            choices = {
-                "preserve": "✅ Preserve - Keep files in place (recommended)",
-                "migrate": "📦 Migrate - Move non-standard files to legacy backup",
-                "cancel": "❌ Cancel - Abort initialization",
-            }
-
-            selected = prompts.prompt_choice(
-                "Select handling mode",
-                choices=choices,
-                default="preserve",
-            )
-
-            self.responses.existing_resources_mode = selected
-
-            if selected == "migrate":
-                print("\nNon-standard files will be moved to .autoresearch/legacy/")
-                prompts.prompt_yes_no("Proceed with migration?", default=True)
+        if self.interactive:
+            print(f"Found {len(existing_files)} items in project directory.")
+            if prompts.prompt_yes_no("Preserve existing files?", default=True):
+                self.responses.existing_resources_mode = "preserve"
+            else:
+                self.responses.existing_resources_mode = "migrate"
         else:
-            print("\n✅ All files match recognized patterns. No action needed.")
             self.responses.existing_resources_mode = "preserve"
 
     def step_compute_resources(self) -> None:
-        """Step 6: Configure compute resources (GPU)."""
         prompts.set_step_context(5, TOTAL_WIZARD_STEPS)
         prompts.print_section("Compute Resources")
 
-        # Check if GPU is needed
         research_info = RESEARCH_TYPES.get(self.responses.research_type, {})
         needs_gpu = research_info.get("requires_gpu", False)
 
         if not needs_gpu:
-            print("📝 This research type does not typically require GPU resources.")
             self.responses.compute_config = {
                 "requires_gpu": False,
                 "gpu_preference": "none",
-                "selected_gpu": None,
             }
             return
 
-        print("This research type typically benefits from GPU acceleration.")
-
-        if not self.interactive:
-            # Auto-configure in non-interactive mode
-            self.responses.compute_config = {
-                "requires_gpu": True,
-                "gpu_preference": "auto",
-                "selected_gpu": None,
-            }
-            return
-
-        # Get user's GPU preference
-        print("\nGPU Preference:")
-
-        choices = {
-            "auto": "Auto - Let the system select the best available GPU",
-            "local": "Local - Use only local GPUs",
-            "remote": "Remote - Use only remote/cloud GPUs",
-            "none": "None - No GPU required for this project",
-        }
-
-        preference = prompts.prompt_choice(
-            "Select GPU preference",
-            choices=choices,
-            default="auto",
-        )
+        if self.interactive:
+            preference = prompts.prompt_choice(
+                "GPU preference",
+                choices={
+                    "auto": "Auto",
+                    "local": "Local only",
+                    "remote": "Remote only",
+                    "none": "None",
+                },
+                default="auto",
+            )
+        else:
+            preference = "auto"
 
         self.responses.compute_config = {
             "requires_gpu": True,
             "gpu_preference": preference,
-            "selected_gpu": None,
         }
 
-        # Discover available GPUs
-        if preference in ("auto", "local"):
-            print("\nDiscovering local GPUs...")
-            local_gpus = gpu_manager.discover_local_gpus()
-
-            if local_gpus:
-                print(f"Found {len(local_gpus)} local GPU(s):")
-                for gpu in local_gpus:
-                    print(f"  - {gpu['name']} ({gpu['memory_gb']:.1f} GB)")
-            else:
-                print("No local GPUs detected.")
-
-        # Ask about registering remote GPU
-        if preference in ("auto", "remote"):
-            if prompts.prompt_yes_no(
-                "\nWould you like to register a remote GPU?",
-                default=False,
-            ):
-                self._prompt_remote_gpu_registration()
-
-    def _prompt_remote_gpu_registration(self) -> None:
-        """Prompt user to register a remote GPU."""
-        print("\nRegister Remote GPU:")
-        print("Enter SSH connection details for the remote server with GPU.")
-
-        host = prompts.prompt_text("SSH Host", required=True)
-        user = prompts.prompt_text("SSH User", required=True)
-        port = int(prompts.prompt_text("SSH Port", default="22"))
-
-        print(f"\nProbing GPU at {user}@{host}...")
-
-        gpu_info = gpu_manager.probe_remote_gpu(host, user, port)
-
-        if gpu_info:
-            print(f"Found: {gpu_info['name']} ({gpu_info['memory_gb']:.1f} GB)")
-
-            if prompts.prompt_yes_no("Register this GPU?", default=True):
-                device = gpu_manager.GPUDevice(
-                    id=gpu_info["id"],
-                    name=gpu_info["name"],
-                    type="ssh",
-                    status="available",
-                    memory_gb=gpu_info["memory_gb"],
-                    host=host,
-                    user=user,
-                    port=port,
-                )
-                gpu_manager.register_gpu(device)
-                print(f"Registered GPU: {device.id}")
-        else:
-            print("Could not detect GPU on remote server.")
-            if prompts.prompt_yes_no("Register anyway?", default=False):
-                safe_host = host.replace(".", "-").replace(":", "-")
-                device = gpu_manager.GPUDevice(
-                    id=f"remote-{safe_host}-0",
-                    name="Unknown Remote GPU",
-                    type="ssh",
-                    status="available",
-                    host=host,
-                    user=user,
-                    port=port,
-                )
-                gpu_manager.register_gpu(device)
-                print(f"Registered GPU: {device.id}")
-
     def step_user_profile(self) -> None:
-        """Step 7: Confirm or update user profile."""
         prompts.set_step_context(6, TOTAL_WIZARD_STEPS)
         prompts.print_section("User Profile")
 
-        # Load existing user config
         config = user_config.load_user_config()
         author = config.get("author", {})
 
         self.responses.user_profile = {
             "name": author.get("name", ""),
             "email": author.get("email", ""),
-            "institution": author.get("institution", ""),
-            "orcid": author.get("orcid", ""),
         }
 
         if not self.interactive:
             return
 
-        # Show current profile
-        if any(author.values()):
-            print("👤 Current user profile:")
-            prompts.print_summary(
-                "Profile",
-                {
-                    "Name": author.get("name", ""),
-                    "Email": author.get("email", ""),
-                    "Institution": author.get("institution", ""),
-                    "ORCID": author.get("orcid", ""),
-                },
+        if prompts.prompt_yes_no("Update user profile?", default=False):
+            name = prompts.prompt_text(
+                "Name", default=author.get("name", ""), required=False
             )
-
-            if prompts.prompt_yes_no("\n✅ Is this information correct?", default=True):
-                return
-        else:
-            print("No user profile found. Please provide your information.")
-
-        # Collect/update profile
-        print("\nEnter your information (press Enter to keep current value):")
-
-        name = prompts.prompt_text(
-            "Name",
-            default=author.get("name", ""),
-            required=True,
-        )
-        email = prompts.prompt_text(
-            "Email",
-            default=author.get("email", ""),
-            required=True,
-            validator=prompts.validate_email,
-            error_message="Invalid email format. Please enter a valid email.",
-        )
-        institution = prompts.prompt_text(
-            "Institution",
-            default=author.get("institution", ""),
-        )
-        orcid = prompts.prompt_text(
-            "ORCID (optional)",
-            default=author.get("orcid", ""),
-            validator=prompts.validate_orcid,
-            error_message="Invalid ORCID format. Expected: 0000-0000-0000-000X",
-        )
-
-        # Update profile
-        self.responses.user_profile = {
-            "name": name,
-            "email": email,
-            "institution": institution,
-            "orcid": orcid,
-        }
-
-        # Save to user config
-        author_info = user_config.AuthorInfo(
-            name=name,
-            email=email,
-            institution=institution,
-            orcid=orcid,
-        )
-        user_config.set_author_info(author_info)
-        print("\nProfile saved to user configuration.")
+            email = prompts.prompt_text(
+                "Email", default=author.get("email", ""), required=False
+            )
+            if name or email:
+                self.responses.user_profile = {"name": name, "email": email}
 
     def step_confirmation(self) -> None:
         """Step 8: Review and confirm all settings."""
@@ -810,7 +537,9 @@ class InitWizard:
 
         # Display clarity score if available
         if self.responses.clarity_score > 0:
-            clarity_status = "✅ Clear" if self.responses.clarity_score >= 0.7 else "⚠️ Needs work"
+            clarity_status = (
+                "✅ Clear" if self.responses.clarity_score >= 0.7 else "⚠️ Needs work"
+            )
             clarity_line = (
                 f"│  🎯 Intent Clarity: {self.responses.clarity_score:.2f} "
                 f"({clarity_status}){' ' * 20}│"

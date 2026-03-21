@@ -139,10 +139,9 @@ project/
 
 ```
 AI-Research-Orchestrator/
-├── SKILL.md                 # Main skill definition
 ├── commands/                # User-facing commands (9)
-├── skills/                  # Sub-skills (52+)
-├── scripts/                 # Python scripts (38)
+├── skills/                  # Sub-skills (64)
+├── scripts/                 # Python scripts (40+)
 ├── agents/                  # Agent configurations
 ├── assets/templates/        # Project templates
 ├── assets/prompts/          # Agent prompt templates
@@ -188,15 +187,21 @@ When Agent Teams is enabled, the following tools become available:
 5. **Save handoff summaries** when dismissing agents; read them when resuming.
 6. **Orchestrator is the only agent** that talks directly to the researcher.
 
-## Gate Score Thresholds
+## Gate Decision Logic
 
-| Score | Decision | Action |
-|-------|----------|--------|
-| 4.5-5.0 | Approve | Proceed immediately |
-| 3.5-4.4 | Advance | Minor fixes, then proceed |
-| 2.5-3.4 | Revise | Significant revision required |
-| 1.5-2.4 | Major Revise | Return to earlier phase |
-| 0.0-1.4 | Pivot | Consider alternative or termination |
+The quality gate evaluates three conditions:
+
+| Condition | Status | Result |
+|-----------|--------|--------|
+| All deliverables exist and non-empty | ✅ | Ready to advance |
+| Phase review approved | ✅ | Review complete |
+| Human gate approved | ✅ | User approved |
+
+**Decision outcomes:**
+- `advance` — All conditions met, ready for next phase
+- `revise` — Missing deliverables or pending review
+- `pivot` — Research direction should change
+- `escalate_to_user` — Loop limit reached, human decision required
 
 ## Orchestrator Communication
 
@@ -246,7 +251,6 @@ User preferences stored in `~/.autoresearch/`:
 | `references/gate-rubrics.md` | Detailed scoring rubrics |
 | `references/orchestrator-protocol.md` | Orchestrator interaction protocols |
 | `references/literature-verification.md` | Citation verification standards |
-| `references/phase-execution-details.md` | Substeps within each phase |
 | `references/citation-authenticity.md` | Paper phase citation rules |
 | `references/experiment-integrity.md` | Experiment logging standards |
 

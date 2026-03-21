@@ -60,12 +60,19 @@ def schedule_job(
     registry = _load_job_registry(project_root)
     devices = _load_gpu_registry(project_root)
     backends = _load_backend_registry(project_root)
-    if config["runtime"].get("auto_discover_gpu") and gpu_id == "auto" and not devices["devices"]:
+    if (
+        config["runtime"].get("auto_discover_gpu")
+        and gpu_id == "auto"
+        and not devices["devices"]
+    ):
         devices["devices"] = _discover_gpus()
 
     job_id = f"job-{len(registry['jobs']) + 1}"
     assigned_gpu = _assign_gpu(devices, gpu_id, job_id)
-    backends["backends"][backend] = {"status": "enabled", "remote_host": remote_host or "local"}
+    backends["backends"][backend] = {
+        "status": "enabled",
+        "remote_host": remote_host or "local",
+    }
     registry["jobs"][job_id] = {
         "command": command,
         "backend": backend,
@@ -73,7 +80,9 @@ def schedule_job(
         "cwd": (
             cwd
             if backend == "ssh"
-            else str((project_root / cwd).resolve()) if not Path(cwd).is_absolute() else cwd
+            else str((project_root / cwd).resolve())
+            if not Path(cwd).is_absolute()
+            else cwd
         ),
         "gpu": assigned_gpu,
         "remote_host": remote_host,
@@ -136,6 +145,29 @@ def _load_job_registry(project_root: Path) -> dict[str, object]:
 
 
 def _load_gpu_registry(project_root: Path) -> dict[str, object]:
+    """Load GPU registry from user-level or project-level file."""
+    try:
+        from gpu_manager import load_user_gpu_registry
+
+        user_registry = load_user_gpu_registry()
+        if user_registry.get("devices"):
+            devices = {}
+            for device in user_registry["devices"]:
+                device_id = device.get("id", "")
+                if device_id:
+                    devices[device_id] = {
+                        "status": device.get("status", "idle"),
+                        "name": device.get("name", "Unknown GPU"),
+                        "allocated_to": device.get("allocated_to", ""),
+                        "memory_gb": device.get("memory_gb", 0),
+                        "type": device.get("type", "local"),
+                        "host": device.get("host"),
+                        "user": device.get("user"),
+                    }
+            if devices:
+                return {"devices": devices}
+    except (ImportError, Exception):
+        pass
     path = project_root / DEFAULT_DELIVERABLES["gpu_registry"]
     if not path.exists():
         return {"devices": {}}
@@ -157,7 +189,9 @@ def _load_backend_registry(project_root: Path) -> dict[str, object]:
         for item in backends:
             normalized[str(item)] = {"status": "enabled", "remote_host": str(item)}
         backends = normalized
-    return {"backends": backends or {"local": {"status": "enabled", "remote_host": "local"}}}
+    return {
+        "backends": backends or {"local": {"status": "enabled", "remote_host": "local"}}
+    }
 
 
 def _discover_gpus() -> dict[str, dict[str, str]]:

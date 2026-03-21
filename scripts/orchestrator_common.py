@@ -200,7 +200,9 @@ def write_json(path: Path, payload: Any) -> None:
     content = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
 
     # Atomic write: write to temp file, then replace
-    fd, temp_path = tempfile.mkstemp(dir=path.parent, prefix=path.name + ".", suffix=".tmp")
+    fd, temp_path = tempfile.mkstemp(
+        dir=path.parent, prefix=path.name + ".", suffix=".tmp"
+    )
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as f:
             f.write(content)
@@ -248,7 +250,9 @@ def select_client_template(platform: str, template_root: Path) -> Path | None:
     Returns:
         Path to the appropriate template file, or None if not found.
     """
-    template_name = "CLAUDE.md.tmpl" if platform in ("claude-code", "claude") else "AGENTS.md.tmpl"
+    template_name = (
+        "CLAUDE.md.tmpl" if platform in ("claude-code", "claude") else "AGENTS.md.tmpl"
+    )
     template_path = template_root / "project-root" / template_name
 
     # Fall back to default if template doesn't exist
@@ -259,7 +263,9 @@ def select_client_template(platform: str, template_root: Path) -> Path | None:
     return template_path
 
 
-def detect_client_profile(project_root: Path, init_paths: list[str], client_type: str) -> str:
+def detect_client_profile(
+    project_root: Path, init_paths: list[str], client_type: str
+) -> str:
     """Detect the client profile based on existing files or explicit type.
 
     Args:
@@ -622,7 +628,9 @@ def build_list_section(items: list[str], empty_message: str) -> str:
     return "\n".join(f"- {item}" for item in items)
 
 
-def resolve_deliverable_path(project_root: Path, state: dict[str, Any], key: str) -> Path:
+def resolve_deliverable_path(
+    project_root: Path, state: dict[str, Any], key: str
+) -> Path:
     """Resolve a deliverable path from state.
 
     Args:
@@ -637,7 +645,9 @@ def resolve_deliverable_path(project_root: Path, state: dict[str, Any], key: str
     return (project_root / relative_value).resolve()
 
 
-def validate_deliverable_location(project_root: Path, relative_path: str, key: str) -> list[str]:
+def validate_deliverable_location(
+    project_root: Path, relative_path: str, key: str
+) -> list[str]:
     """Validate a deliverable path location.
 
     Args:
@@ -652,7 +662,9 @@ def validate_deliverable_location(project_root: Path, relative_path: str, key: s
     relative = Path(relative_path)
     expected_prefix = EXPECTED_DELIVERABLE_PREFIXES[key]
     if relative.is_absolute():
-        errors.append(f"{key} must be project-relative, got absolute path: {relative_path}")
+        errors.append(
+            f"{key} must be project-relative, got absolute path: {relative_path}"
+        )
         return errors
     if ".." in relative.parts:
         errors.append(f"{key} must stay inside the project root, got: {relative_path}")
@@ -759,7 +771,9 @@ def _append_gate_audit_events(
     old_approvals = old_state.get("approval_status", {})
     new_approvals = new_state.get("approval_status", {})
     changed = {
-        gate: status for gate, status in new_approvals.items() if status != old_approvals.get(gate)
+        gate: status
+        for gate, status in new_approvals.items()
+        if status != old_approvals.get(gate)
     }
     if not changed:
         return
@@ -769,7 +783,12 @@ def _append_gate_audit_events(
     with open(sentinel_path, "a", encoding="utf-8") as f:
         for gate, status in changed.items():
             event = json.dumps(
-                {"type": "gate_decision", "gate": gate, "status": status, "timestamp": now},
+                {
+                    "type": "gate_decision",
+                    "gate": gate,
+                    "status": status,
+                    "timestamp": now,
+                },
                 ensure_ascii=False,
             )
             f.write(event + "\n")
@@ -828,7 +847,9 @@ def validate_state_schema(state: dict[str, Any]) -> list[str]:
     if "current_phase" in state:
         phase = state["current_phase"]
         valid_phases = (
-            set(PHASE_SEQUENCE) | set(LEGACY_TO_SEMANTIC_PHASE) | {"archive", "06-archive"}
+            set(PHASE_SEQUENCE)
+            | set(LEGACY_TO_SEMANTIC_PHASE)
+            | {"archive", "06-archive"}
         )
         if phase not in valid_phases:
             errors.append(
@@ -861,7 +882,9 @@ def load_project_config(project_root: Path) -> dict[str, Any]:
     return merged
 
 
-def append_state_log(state: dict[str, Any], key: str, entry: dict[str, Any] | str) -> None:
+def append_state_log(
+    state: dict[str, Any], key: str, entry: dict[str, Any] | str
+) -> None:
     """Append an entry to a state log list.
 
     Args:
@@ -878,294 +901,13 @@ def append_state_log(state: dict[str, Any], key: str, entry: dict[str, Any] | st
 
 
 # ============================================================================
-# ARIS Integration: Review State Management
-# ============================================================================
-
-
-def build_review_state(
-    phase: str,
-    round_num: int = 1,
-    thread_id: str | None = None,
-    status: str = "in_progress",
-    last_score: float = 0.0,
-    last_verdict: str = "not_started",
-    pending_experiments: list[str] | None = None,
-) -> dict[str, Any]:
-    """Build a new REVIEW_STATE structure for ARIS auto-review-loop.
-
-    Args:
-        phase: Current phase name (e.g., "02-pilot-analysis").
-        round_num: Current round number (1-based).
-        thread_id: Codex MCP conversation thread ID for context continuity.
-        status: Loop status ("in_progress", "completed", "stale").
-        last_score: Last review score (1-10).
-        last_verdict: Last verdict ("ready", "almost", "not_ready").
-        pending_experiments: List of experiment IDs still running.
-
-    Returns:
-        REVIEW_STATE dictionary.
-    """
-    return {
-        "phase": phase,
-        "round": round_num,
-        "max_rounds": MAX_REVIEW_ROUNDS,
-        "threadId": thread_id,
-        "status": status,
-        "last_score": last_score,
-        "last_verdict": last_verdict,
-        "pending_experiments": pending_experiments or [],
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-    }
-
-
-def save_review_state(project_root: Path, review_state: dict[str, Any]) -> None:
-    """Save REVIEW_STATE.json to project root.
-
-    This file persists loop state across context compaction,
-    allowing long-running auto-review-loops to resume.
-
-    Args:
-        project_root: Project root directory.
-        review_state: Review state dictionary.
-    """
-    # Update timestamp on every save
-    review_state["timestamp"] = datetime.now(timezone.utc).isoformat()
-    path = project_root / REVIEW_STATE_FILENAME
-    write_json(path, review_state)
-    logger.info(
-        f"Saved review state: round {review_state['round']}, status {review_state['status']}"
-    )
-
-
-def load_review_state(project_root: Path) -> dict[str, Any] | None:
-    """Load REVIEW_STATE.json from project root.
-
-    Args:
-        project_root: Project root directory.
-
-    Returns:
-        Review state dictionary if file exists and is valid, None otherwise.
-    """
-    path = project_root / REVIEW_STATE_FILENAME
-    if not path.exists():
-        return None
-
-    try:
-        state = load_json(path, None)
-        if state is None:
-            return None
-
-        # Check for stale state (older than 24 hours with in_progress status)
-        if state.get("status") == "in_progress":
-            timestamp_str = state.get("timestamp", "")
-            if timestamp_str:
-                try:
-                    timestamp = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
-                    age_hours = (datetime.now(timezone.utc) - timestamp).total_seconds() / 3600
-                    if age_hours > 24:
-                        logger.warning(
-                            f"Review state is stale ({age_hours:.1f} hours old), starting fresh"
-                        )
-                        return None
-                except Exception as e:
-                    logger.warning(f"Failed to parse timestamp: {e}")
-
-        return state
-    except Exception as e:
-        logger.warning(f"Failed to load review state: {e}")
-        return None
-
-
-def clear_review_state(project_root: Path) -> None:
-    """Remove REVIEW_STATE.json (call on completion).
-
-    Args:
-        project_root: Project root directory.
-    """
-    path = project_root / REVIEW_STATE_FILENAME
-    if path.exists():
-        path.unlink()
-        logger.info("Cleared review state file")
-
-
-def is_positive_assessment(score: float, verdict: str) -> bool:
-    """Check if review result meets positive assessment threshold.
-
-    Args:
-        score: Review score (1-10).
-        verdict: Review verdict string.
-
-    Returns:
-        True if assessment is positive (loop can stop).
-    """
-    if score >= POSITIVE_SCORE_THRESHOLD:
-        verdict_lower = verdict.lower()
-        if any(kw in verdict_lower for kw in POSITIVE_VERDICT_KEYWORDS):
-            return True
-    return False
-
-
-def get_reviewer_config(project_root: Path) -> dict[str, Any]:
-    """Get reviewer configuration from project config.
-
-    Args:
-        project_root: Project root directory.
-
-    Returns:
-        Reviewer configuration dictionary.
-    """
-    config = load_project_config(project_root)
-    return config.get("reviewer", DEFAULT_REVIEWER_CONFIG)
-
-
-def is_cross_model_review_enabled(project_root: Path) -> bool:
-    """Check if cross-model review via Codex MCP is enabled.
-
-    Args:
-        project_root: Project root directory.
-
-    Returns:
-        True if cross-model review is enabled.
-    """
-    reviewer_config = get_reviewer_config(project_root)
-    return reviewer_config.get("enabled", False)
-
-
-# ============================================================================
-# ARIS Integration: Idea State Management
-# ============================================================================
-
-
-def build_idea_state(
-    direction: str,
-    phase: str = "literature-survey",
-    ideas_generated: int = 0,
-    ideas_filtered: int = 0,
-    pilots_run: int = 0,
-    pilots_positive: int = 0,
-    top_idea_id: str | None = None,
-) -> dict[str, Any]:
-    """Build a new IDEA_STATE structure for idea-discovery pipeline.
-
-    Args:
-        direction: Research direction string.
-        phase: Current phase (literature-survey, idea-generation, novelty-check, pilot, review).
-        ideas_generated: Total ideas generated.
-        ideas_filtered: Ideas that passed filtering.
-        pilots_run: Number of pilot experiments run.
-        pilots_positive: Pilots with positive signal.
-        top_idea_id: ID of the top-ranked idea.
-
-    Returns:
-        IDEA_STATE dictionary.
-    """
-    return {
-        "direction": direction,
-        "phase": phase,
-        "ideas_generated": ideas_generated,
-        "ideas_filtered": ideas_filtered,
-        "pilots_run": pilots_run,
-        "pilots_positive": pilots_positive,
-        "top_idea_id": top_idea_id,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-    }
-
-
-def save_idea_state(project_root: Path, idea_state: dict[str, Any]) -> None:
-    """Save IDEA_STATE.json to project root.
-
-    Args:
-        project_root: Project root directory.
-        idea_state: Idea state dictionary.
-    """
-    idea_state["timestamp"] = datetime.now(timezone.utc).isoformat()
-    path = project_root / IDEA_STATE_FILENAME
-    write_json(path, idea_state)
-    logger.info(
-        f"Saved idea state: phase {idea_state['phase']}, ideas {idea_state['ideas_generated']}"
-    )
-
-
-def load_idea_state(project_root: Path) -> dict[str, Any] | None:
-    """Load IDEA_STATE.json from project root.
-
-    Args:
-        project_root: Project root directory.
-
-    Returns:
-        Idea state dictionary if file exists and is valid, None otherwise.
-    """
-    path = project_root / IDEA_STATE_FILENAME
-    if not path.exists():
-        return None
-
-    try:
-        state = load_json(path, None)
-        if state is None:
-            return None
-
-        # Check for stale state (older than 7 days)
-        timestamp_str = state.get("timestamp", "")
-        if timestamp_str:
-            try:
-                timestamp = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
-                age_days = (datetime.now(timezone.utc) - timestamp).total_seconds() / 86400
-                if age_days > 7:
-                    logger.warning(f"Idea state is stale ({age_days:.1f} days old), starting fresh")
-                    return None
-            except Exception as e:
-                logger.warning(f"Failed to parse timestamp: {e}")
-
-        return state
-    except Exception as e:
-        logger.warning(f"Failed to load idea state: {e}")
-        return None
-
-
-def clear_idea_state(project_root: Path) -> None:
-    """Remove IDEA_STATE.json (call on completion).
-
-    Args:
-        project_root: Project root directory.
-    """
-    path = project_root / IDEA_STATE_FILENAME
-    if path.exists():
-        path.unlink()
-        logger.info("Cleared idea state file")
-
-
-def load_aris_config(project_root: Path) -> dict[str, Any]:
-    """Load ARIS configuration from project config.
-
-    Args:
-        project_root: Project root directory.
-
-    Returns:
-        ARIS configuration dictionary.
-    """
-    config = load_project_config(project_root)
-    return config.get("aris", DEFAULT_ARIS_CONFIG)
-
-
-def is_auto_proceed(project_root: Path) -> bool:
-    """Check if auto-proceed mode is enabled.
-
-    Args:
-        project_root: Project root directory.
-
-    Returns:
-        True if auto-proceed is enabled.
-    """
-    aris_config = load_aris_config(project_root)
-    return aris_config.get("auto_proceed", False)
-
-
-# ============================================================================
 # Deliverable validation
 # ============================================================================
 
 
-def is_unmodified_template(project_root: Path, state: dict[str, Any], relative_path: str) -> bool:
+def is_unmodified_template(
+    project_root: Path, state: dict[str, Any], relative_path: str
+) -> bool:
     """Check if a file is still an unmodified template.
 
     Args:
@@ -1183,12 +925,16 @@ def is_unmodified_template(project_root: Path, state: dict[str, Any], relative_p
     if not template_path.exists():
         return False
     variables = build_template_variables(project_root, state)
-    expected = render_template_string(template_path.read_text(encoding="utf-8"), variables).strip()
+    expected = render_template_string(
+        template_path.read_text(encoding="utf-8"), variables
+    ).strip()
     actual = target_path.read_text(encoding="utf-8").strip()
     return actual == expected
 
 
-def validate_deliverable_content(project_root: Path, state: dict[str, Any], key: str) -> list[str]:
+def validate_deliverable_content(
+    project_root: Path, state: dict[str, Any], key: str
+) -> list[str]:
     """Validate that a deliverable has been modified from template.
 
     Args:
@@ -1201,7 +947,9 @@ def validate_deliverable_content(project_root: Path, state: dict[str, Any], key:
     """
     relative_path = state["deliverables"][key]
     if is_unmodified_template(project_root, state, relative_path):
-        return [f"{relative_path} is still the unedited template and does not satisfy the gate."]
+        return [
+            f"{relative_path} is still the unedited template and does not satisfy the gate."
+        ]
     if not (project_root / relative_path).read_text(encoding="utf-8").strip():
         return [f"{relative_path} is empty and does not satisfy the gate."]
     return []
@@ -1244,7 +992,9 @@ def validate_structured_signals(
         relative_path = state["deliverables"][deliverable_key]
         candidate = project_root / relative_path
         if not candidate.exists():
-            errors.append(f"{relative_path} is missing; cannot read structured gate signals.")
+            errors.append(
+                f"{relative_path} is missing; cannot read structured gate signals."
+            )
             continue
         fields = parse_markdown_fields(candidate)
         for field_name, expected_values in field_requirements.items():
@@ -1386,7 +1136,9 @@ def setup_logging(level: int = logging.INFO, log_file: Path | None = None) -> No
 # ============================================================================
 
 
-def ensure_project_structure(project_root: Path, create_if_missing: bool = True) -> bool:
+def ensure_project_structure(
+    project_root: Path, create_if_missing: bool = True
+) -> bool:
     """Ensure project directory structure is valid.
 
     This function checks and optionally creates the required directory structure.
@@ -1555,7 +1307,9 @@ Use the gitmem_* functions in orchestrator_common.py to interact with this repos
                 encoding="utf-8",
             )
     else:
-        main_gitignore.write_text(f"# GitMem version tracking\n{GITMEM_DIR}/\n", encoding="utf-8")
+        main_gitignore.write_text(
+            f"# GitMem version tracking\n{GITMEM_DIR}/\n", encoding="utf-8"
+        )
 
     logger.info(f"Initialized GitMem at {gitmem_path}")
 
@@ -1597,7 +1351,9 @@ def gitmem_commit(project_root: Path, file_path: str, message: str) -> str:
     gitmem_file_path.parent.mkdir(parents=True, exist_ok=True)
 
     # Copy file content
-    gitmem_file_path.write_text(source_path.read_text(encoding="utf-8"), encoding="utf-8")
+    gitmem_file_path.write_text(
+        source_path.read_text(encoding="utf-8"), encoding="utf-8"
+    )
 
     # Stage the file in .gitmem repo
     _run_git_command(project_root, ["add", file_path])
@@ -1733,13 +1489,16 @@ def gitmem_get_loop_info(project_root: Path, file_path: str) -> dict[str, Any]:
 
     # Determine if in loop
     result["in_loop"] = (
-        result["change_count"] >= GITMEM_LOOP_THRESHOLD and result["last_checkpoint"] is None
+        result["change_count"] >= GITMEM_LOOP_THRESHOLD
+        and result["last_checkpoint"] is None
     )
 
     return result
 
 
-def gitmem_history(project_root: Path, file_path: str, limit: int = 20) -> list[dict[str, str]]:
+def gitmem_history(
+    project_root: Path, file_path: str, limit: int = 20
+) -> list[dict[str, str]]:
     """Get commit history for a file.
 
     Args:
@@ -1948,21 +1707,6 @@ __all__ = [
     "validate_state_schema",
     "load_project_config",
     "append_state_log",
-    # ARIS Review State
-    "build_review_state",
-    "save_review_state",
-    "load_review_state",
-    "clear_review_state",
-    "is_positive_assessment",
-    "get_reviewer_config",
-    "is_cross_model_review_enabled",
-    # ARIS Idea State
-    "build_idea_state",
-    "save_idea_state",
-    "load_idea_state",
-    "clear_idea_state",
-    "load_aris_config",
-    "is_auto_proceed",
     # Deliverable validation
     "is_unmodified_template",
     "validate_deliverable_content",

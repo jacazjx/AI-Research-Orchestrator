@@ -17,11 +17,12 @@ from orchestrator_common import (
 )
 
 
-def evaluate_quality_gate(project_root: Path, phase: str | None = None) -> dict[str, object]:
+def evaluate_quality_gate(
+    project_root: Path, phase: str | None = None
+) -> dict[str, object]:
     project_root = project_root.resolve()
     state = load_state(project_root)
     phase_name = phase or state["current_phase"]
-
     required_deliverables = PHASE_REQUIRED_DELIVERABLES[phase_name]
     review_key = PHASE_TO_REVIEW[phase_name]
     gate_key = PHASE_TO_GATE[phase_name]
@@ -71,17 +72,18 @@ def evaluate_quality_gate(project_root: Path, phase: str | None = None) -> dict[
 
     blockers: list[str] = []
     if missing:
-        blockers.append("required_deliverables_missing")
+        blockers.append(f"Missing: {', '.join(missing)}")
     if placeholder:
-        blockers.append("deliverables_still_template")
+        blockers.append(f"Placeholders: {', '.join(placeholder)}")
     if signal_errors:
-        blockers.append("structured_gate_signals_invalid")
+        for error in signal_errors:
+            blockers.append(f"Signal: {error}")
     if review_status not in {"approved", "pivot"}:
-        blockers.append(f"phase_review_{review_status}")
+        blockers.append(f"Review: {review_status}")
     if gate_status != "approved":
-        blockers.append(f"user_gate_{gate_status}")
+        blockers.append(f"Gate: {gate_status}")
     if loop_count >= loop_limit and decision == "escalate_to_user":
-        blockers.append("loop_limit_reached")
+        blockers.append(f"Loop limit ({loop_count}/{loop_limit})")
 
     return {
         "project_root": str(project_root),
@@ -108,7 +110,7 @@ def evaluate_quality_gate(project_root: Path, phase: str | None = None) -> dict[
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Evaluate the scored quality gate for a project phase."
+        description="Evaluate quality gate for a project phase."
     )
     parser.add_argument("--project-root", required=True)
     parser.add_argument("--phase", choices=sorted(PHASE_REQUIRED_DELIVERABLES))
@@ -128,17 +130,12 @@ def main() -> int:
         print(f"Phase: {result['phase']}")
         print(f"Decision: {result['decision']}")
         print(f"Gate: {result['gate']} ({result['gate_status']})")
-        print(f"Phase review: {result['review_status']}")
-        print(
-            "Scores: "
-            f"evidence={result['scores']['evidence_completeness']}, "
-            f"review={result['scores']['review_readiness']}, "
-            f"gate={result['scores']['human_gate']}"
-        )
+        print(f"Review: {result['review_status']}")
+        print(f"Completeness: {result['scores']['evidence_completeness']}%")
         if result["blockers"]:
-            print("Blockers:")
+            print("\nBlockers:")
             for blocker in result["blockers"]:
-                print(f"- {blocker}")
+                print(f"  - {blocker}")
     return 0 if result["decision"] == "advance" else 1
 
 

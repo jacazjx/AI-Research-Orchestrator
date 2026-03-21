@@ -11,6 +11,34 @@ PHASE_SEQUENCE = (
     "reflection",
 )
 
+RESEARCH_TYPE_PHASE_SEQUENCE: Dict[str, Tuple[str, ...]] = {
+    "ml_experiment": (
+        "survey",
+        "pilot",
+        "experiments",
+        "paper",
+        "reflection",
+    ),
+    "theory": (
+        "survey",
+        "pilot",
+        "paper",
+        "reflection",
+    ),
+    "survey": (
+        "survey",
+        "paper",
+        "reflection",
+    ),
+    "applied": (
+        "survey",
+        "pilot",
+        "experiments",
+        "paper",
+        "reflection",
+    ),
+}
+
 # Agent pairs for each phase (primary, reviewer)
 PHASE_AGENT_PAIRS: Dict[str, Tuple[str, str]] = {
     # Semantic names only (legacy names are normalized)
@@ -123,7 +151,12 @@ HANDOFF_REQUIREMENTS = {
 # Required deliverables for each phase
 PHASE_REQUIRED_DELIVERABLES = {
     # Legacy phase names (kept for backward compatibility)
-    "01-survey": ("survey_round_log", "critic_round_log", "readiness_report", "survey_scorecard"),
+    "01-survey": (
+        "survey_round_log",
+        "critic_round_log",
+        "readiness_report",
+        "survey_scorecard",
+    ),
     "02-pilot-analysis": (
         "problem_validation_report",
         "problem_analysis",
@@ -171,8 +204,17 @@ PHASE_REQUIRED_DELIVERABLES = {
         "evidence_package_index",
         "experiment_scorecard",
     ),
-    "paper": ("paper_draft", "citation_audit_report", "final_acceptance_report", "paper_scorecard"),
-    "reflection": ("lessons_learned", "runtime_improvement_report", "reflection_scorecard"),
+    "paper": (
+        "paper_draft",
+        "citation_audit_report",
+        "final_acceptance_report",
+        "paper_scorecard",
+    ),
+    "reflection": (
+        "lessons_learned",
+        "runtime_improvement_report",
+        "reflection_scorecard",
+    ),
 }
 
 # Default deliverables with their paths
@@ -312,11 +354,33 @@ DEFAULT_LOOP_LIMITS = {
     "reflector_curator": 2,
 }
 
+EARLY_TERMINATION_CONDITIONS = {
+    "survey": {
+        "problem_not_worth_solving": "Survey reveals the problem is not worth solving",
+        "no_novelty_found": "No novelty found after comprehensive literature review",
+        "hypothesis_untestable": "Hypothesis cannot be tested with available resources",
+    },
+    "pilot": {
+        "pilot_failed": "Pilot experiment failed to validate hypothesis",
+        "resource_insufficient": "Insufficient resources for full experiments",
+        "hypothesis_rejected": "Pilot evidence rejects the hypothesis",
+    },
+    "experiments": {
+        "negative_results": "Experiments consistently show negative results",
+        "baseline_dominated": "Proposed method is dominated by baselines",
+        "reproducibility_issues": "Serious reproducibility issues discovered",
+    },
+}
+
 # Loop requirements for each phase
 LOOP_REQUIREMENTS = {
     "survey-loop": ("survey_critic", "phase_reviews", "survey_critic"),
     "pilot-loop": ("pilot_code_adviser", "phase_reviews", "pilot_adviser"),
-    "experiment-loop": ("experiment_code_adviser", "phase_reviews", "experiment_adviser"),
+    "experiment-loop": (
+        "experiment_code_adviser",
+        "phase_reviews",
+        "experiment_adviser",
+    ),
     "paper-loop": ("writer_reviewer", "phase_reviews", "paper_reviewer"),
     "reflection-loop": ("reflector_curator", "phase_reviews", "reflection_curator"),
 }
@@ -329,8 +393,13 @@ STRUCTURED_SIGNAL_REQUIREMENTS = {
     },
     "pilot": {
         "pilot_scorecard": {"Gate readiness": {"approve", "advance"}},
-        "pilot_adviser_review": {"Status": {"approved"}, "Recommendation": {"approve", "advance"}},
-        "pilot_validation_report": {"Continue to full experiments": {"yes", "approved", "true"}},
+        "pilot_adviser_review": {
+            "Status": {"approved"},
+            "Recommendation": {"approve", "advance"},
+        },
+        "pilot_validation_report": {
+            "Continue to full experiments": {"yes", "approved", "true"}
+        },
         "problem_validation_report": {"Validation verdict": {"validated"}},
     },
     "experiments": {
@@ -343,7 +412,9 @@ STRUCTURED_SIGNAL_REQUIREMENTS = {
     },
     "paper": {
         "paper_scorecard": {"Gate readiness": {"approve", "advance"}},
-        "citation_audit_report": {"Citation authenticity status": {"approved", "verified"}},
+        "citation_audit_report": {
+            "Citation authenticity status": {"approved", "verified"}
+        },
         "reviewer_report": {
             "Submission bar": {"top-tier journal/conference ready"},
             "Verdict": {"accept", "minor revision"},
@@ -355,7 +426,9 @@ STRUCTURED_SIGNAL_REQUIREMENTS = {
     },
     "reflection": {
         "reflection_scorecard": {"Gate readiness": {"approve", "advance"}},
-        "runtime_improvement_report": {"Recommendation": {"approve", "approved-for-consideration"}},
+        "runtime_improvement_report": {
+            "Recommendation": {"approve", "approved-for-consideration"}
+        },
     },
 }
 
@@ -396,3 +469,13 @@ def get_phase_agents(phase_name: str) -> Tuple[str, str]:
     if normalized not in PHASE_AGENT_PAIRS:
         raise ValueError(f"Unknown phase: {phase_name}")
     return PHASE_AGENT_PAIRS[normalized]
+
+
+def get_early_termination_conditions(phase_name: str) -> dict[str, str]:
+    normalized = normalize_phase_name(phase_name)
+    return EARLY_TERMINATION_CONDITIONS.get(normalized, {})
+
+
+def get_phase_sequence_for_research_type(research_type: str) -> Tuple[str, ...]:
+    """Get phase sequence for a research type."""
+    return RESEARCH_TYPE_PHASE_SEQUENCE.get(research_type, PHASE_SEQUENCE)

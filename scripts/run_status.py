@@ -32,10 +32,12 @@ _DECISION_LABELS: dict[str, str] = {
 
 # Maps blocker key → human explanation
 _BLOCKER_MESSAGES: dict[str, str] = {
-    "required_deliverables_missing": "Required deliverables are missing",
-    "deliverables_still_template": "Some files still contain placeholder text",
-    "structured_gate_signals_invalid": "Structured gate signals are invalid",
-    "loop_limit_reached": "Phase loop limit reached",
+    "Missing": "Missing deliverables",
+    "Placeholders": "Files still contain placeholder text",
+    "Signal": "Structured gate signals invalid",
+    "Review": "Phase review status",
+    "Gate": "Human gate status",
+    "Loop limit": "Phase loop limit reached",
 }
 
 
@@ -72,17 +74,7 @@ def format_blockers(blockers: list[str]) -> str:
         return ""
     lines = []
     for b in blockers:
-        # Handle dynamic blocker keys like "phase_review_pending"
-        if b in _BLOCKER_MESSAGES:
-            lines.append(f"  • {_BLOCKER_MESSAGES[b]}")
-        elif b.startswith("phase_review_"):
-            status = b.replace("phase_review_", "")
-            lines.append(f"  • Phase review status: {status}")
-        elif b.startswith("user_gate_"):
-            status = b.replace("user_gate_", "")
-            lines.append(f"  • Human gate status: {status}")
-        else:
-            lines.append(f"  • {b}")
+        lines.append(f"  • {b}")
     return "\n".join(lines)
 
 
@@ -169,7 +161,9 @@ def format_status_report(result: dict[str, Any]) -> str:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Show research project status snapshot")
+    parser = argparse.ArgumentParser(
+        description="Show research project status snapshot"
+    )
     parser.add_argument(
         "--project-root",
         type=Path,
@@ -177,7 +171,9 @@ def build_parser() -> argparse.ArgumentParser:
         help="Path to the project root. Defaults to the nearest parent containing .autoresearch/.",
     )
     parser.add_argument("--verbose", action="store_true", default=False)
-    parser.add_argument("--json", dest="json_output", action="store_true", default=False)
+    parser.add_argument(
+        "--json", dest="json_output", action="store_true", default=False
+    )
     return parser
 
 
@@ -199,11 +195,16 @@ def main() -> int:
             "Error: no AI Research project found in the current directory or its parents.",
             file=sys.stderr,
         )
-        print("Hint: run /init-research first, or pass --project-root explicitly.", file=sys.stderr)
+        print(
+            "Hint: run /init-research first, or pass --project-root explicitly.",
+            file=sys.stderr,
+        )
         return 1
 
     try:
-        result = run_status(project_root, verbose=args.verbose, json_output=args.json_output)
+        result = run_status(
+            project_root, verbose=args.verbose, json_output=args.json_output
+        )
         if args.json_output:
             print(json.dumps(result, indent=2))
         else:
@@ -211,7 +212,9 @@ def main() -> int:
         return 0
     except FileNotFoundError as e:
         print(f"ERROR: {e}", file=sys.stderr)
-        print("Hint: run /init-research first, or check --project-root", file=sys.stderr)
+        print(
+            "Hint: run /init-research first, or check --project-root", file=sys.stderr
+        )
         return 1
 
 
