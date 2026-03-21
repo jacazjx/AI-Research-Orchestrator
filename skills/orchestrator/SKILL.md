@@ -401,7 +401,7 @@ When searching for literature, use these APIs:
 | DBLP | Computer Science | `dblp.org/search/publ/api?q=transformer&format=json` |
 | OpenAlex | Comprehensive | `api.openalex.org/works?search=vision+transformer` |
 
-See [references/literature-verification.md](references/literature-verification.md) for detailed API usage.
+See [references/citation-standards.md](references/citation-standards.md) for detailed API usage.
 
 ## Skills Registry
 
@@ -1553,26 +1553,26 @@ Each gate is scored on these dimensions (see `references/gate-rubrics.md` for de
 
 ## Resource Map
 
-- Read [references/workflow-protocol.md](references/workflow-protocol.md) for the end-to-end phase order.
+- Read [references/workflow.md](references/workflow.md) for the end-to-end phase order.
 - Read [references/system-architecture.md](references/system-architecture.md) for the inner-loop and outer-loop design.
 - Read [references/orchestrator-protocol.md](references/orchestrator-protocol.md) for the Orchestrator's interaction protocols with researchers.
 - Read [references/project-takeover-protocol.md](references/project-takeover-protocol.md) before taking over an existing project.
-- Read [references/pivot-policy.md](references/pivot-policy.md) before proposing pivots.
+- Read [references/recovery-and-evolution.md](references/recovery-and-evolution.md) before proposing pivots.
 - Read [references/progress-visualization.md](references/progress-visualization.md) before generating dashboards or runtime summaries.
 - Read [references/remote-execution.md](references/remote-execution.md) before scheduling or running backend jobs.
-- Read [references/self-healing.md](references/self-healing.md) before using sentinel or recovery actions.
-- Read [references/self-evolution.md](references/self-evolution.md) before activating overlays.
-- Read [references/phase-execution-details.md](references/phase-execution-details.md) for detailed substeps inside each phase.
-- Read [references/citation-authenticity.md](references/citation-authenticity.md) before approving or revising paper-phase citations.
-- Read [references/literature-verification.md](references/literature-verification.md) for survey-phase citation verification standards.
-- Read [references/experiment-integrity.md](references/experiment-integrity.md) for experiment-phase integrity and logging standards.
-- Read [references/paper-quality-assurance.md](references/paper-quality-assurance.md) for paper-phase quality and authenticity standards.
-- Read [references/ai-researcher-agent-mapping.md](references/ai-researcher-agent-mapping.md) before assigning responsibilities to local roles.
+- Read [references/recovery-and-evolution.md](references/recovery-and-evolution.md) before using sentinel or recovery actions.
+- Read [references/recovery-and-evolution.md](references/recovery-and-evolution.md) before activating overlays.
+- Read [references/workflow.md](references/workflow.md) for detailed substeps inside each phase.
+- Read [references/citation-standards.md](references/citation-standards.md) before approving or revising paper-phase citations.
+- Read [references/citation-standards.md](references/citation-standards.md) for survey-phase citation verification standards.
+- Read [references/evidence-standards.md](references/evidence-standards.md) for experiment-phase integrity and logging standards.
+- Read [references/writing-standards.md](references/writing-standards.md) for paper-phase quality and authenticity standards.
+- Read [references/agent-roles.md](references/agent-roles.md) before assigning responsibilities to local roles.
 - Read [references/prompt-customization.md](references/prompt-customization.md) before rendering or adjusting role prompts.
-- Read [references/role-protocols.md](references/role-protocols.md) when role behavior needs to be strict.
+- Read [references/agent-roles.md](references/agent-roles.md) when role behavior needs to be strict.
 - Read [references/gate-rubrics.md](references/gate-rubrics.md) before approving or rejecting a phase.
 - Read [references/deliverable-contracts.md](references/deliverable-contracts.md) when deciding what each file must contain.
-- Read [references/evidence-rules.md](references/evidence-rules.md) before using citations, codebases, datasets, logs, or figures as evidence.
+- Read [references/evidence-standards.md](references/evidence-standards.md) before using citations, codebases, datasets, logs, or figures as evidence.
 - Use `assets/templates/` as the canonical source of workspace document skeletons.
 - Use `agents/<role>/AGENT.md` as the canonical source of agent role definitions.
 

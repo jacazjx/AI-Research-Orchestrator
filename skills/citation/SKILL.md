@@ -274,5 +274,5 @@ python3 scripts/fetch_verified_bibtex.py \
 
 - `references/quality-scoring.md` - Scoring formula and tie-break rules
 - `references/source-verification.md` - DOI checks, preprint replacement, BibTeX provenance
-- `references/citation-authenticity.md` - Paper phase citation rules
-- `references/citation_standards.md` - Citation grading criteria
+- `references/citation-standards.md` - Paper phase citation rules
+- `references/citation-standards.md` - Citation grading criteria

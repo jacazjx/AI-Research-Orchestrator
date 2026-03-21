@@ -469,11 +469,9 @@ New scripts should be added to support the runtime:
 New references should document the runtime contract:
 
 - `references/system-architecture.md`
-- `references/pivot-policy.md`
+- `references/recovery-and-evolution.md` (includes pivot policy, self-healing, self-evolution)
 - `references/progress-visualization.md`
 - `references/remote-execution.md`
-- `references/self-healing.md`
-- `references/self-evolution.md`
 
 ## Implementation Milestones
 

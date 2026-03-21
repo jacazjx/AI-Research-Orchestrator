@@ -305,6 +305,6 @@ If clarity score remains < 0.4 after 2 clarification rounds: recommend brainstor
 ## References
 
 - `references/database_search_strategies.md` - Detailed API usage
-- `references/citation_standards.md` - Citation grading criteria
-- `references/literature-verification.md` - Verification standards
+- `references/citation-standards.md` - Citation grading criteria
+- `references/citation-standards.md` - Verification standards
 - `references/intent-clarification-protocol.md` - Intent clarification details

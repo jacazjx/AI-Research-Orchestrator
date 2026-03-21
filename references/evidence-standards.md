@@ -1,10 +1,43 @@
-# Experiment Integrity Protocol
+# Evidence Standards
 
-This document defines the standards and procedures for ensuring experimental integrity, proper logging, and result authenticity.
+This document defines evidence handling rules, experiment integrity requirements, evidence hierarchy, and frameworks for evaluating evidence quality in AI/ML research.
 
-## Core Principles
+---
 
-### 1. Traceability
+## Evidence Rules
+
+### Literature
+
+- Prefer the last five years for the field snapshot.
+- Add older work only when it is seminal or needed for fair comparison.
+- Record retrieval dates and source links when available.
+- Mark uncertainty when a source could not be verified.
+
+### Code and Datasets
+
+- Treat public repositories and datasets as evidence only after recording their exact URL, branch, commit, tag, or version when available.
+- Do not claim compatibility until the implementation or data format has been inspected.
+- Keep the user-supplied reference directory intact; add derived notes next to it instead of overwriting raw source files.
+
+### Experimental Results
+
+- Link every result table, figure, or claim to the run log or notebook that produced it.
+- Keep failed runs and negative results visible unless the user explicitly archives them.
+- Never promote pilot numbers into final evidence without labeling them clearly.
+
+### Writing
+
+- Separate evidence from interpretation.
+- Do not cite unsupported claims in the manuscript just because they appear in brainstorm notes.
+- Do not state that formal proofs are verified unless an external proof tool actually checked them.
+
+---
+
+## Experiment Integrity Protocol
+
+### Core Principles
+
+#### 1. Traceability
 
 Every result must be traceable to:
 - **Source code** (git commit hash)
@@ -12,21 +45,19 @@ Every result must be traceable to:
 - **Execution logs** (timestamped records)
 - **Checkpoints** (model states)
 
-### 2. Reproducibility
+#### 2. Reproducibility
 
 All experiments must be reproducible:
 - Same code + same config + same seed = same result
 - Environment must be documented
 - Dependencies must be specified
 
-### 3. Transparency
+#### 3. Transparency
 
 All outcomes must be reported:
 - Failed runs are documented, not hidden
 - Negative results are reported
 - Anomalies are explained
-
-## Logging Standards
 
 ### Directory Structure
 
@@ -42,11 +73,9 @@ code/experiments/
 │   └── checkpoint-index.md      # Checkpoint manifest
 ├── logs/
 │   ├── run_001.log
-│   ├── run_002.log
 │   └── ...
 └── configs/
     ├── config_001.yaml
-    ├── config_002.yaml
     └── ...
 ```
 
@@ -109,90 +138,13 @@ The `run-registry.md` must contain:
 - **Config**: `configs/config_001.yaml`
 - **Seed**: 42
 - **GPU**: cuda:0 (RTX 4090)
-- **Primary Metric**: accuracy = 95.2% ± 0.3%
+- **Primary Metric**: accuracy = 95.2% +/- 0.3%
 - **Checkpoint**: `checkpoints/run_001_best.pt`
 - **Log**: `logs/run_001.log`
 - **Notes**: Standard training run
-
-### Run 002
-...
 ```
 
-## Result Verification
-
-### Automatic Verification Checks
-
-1. **Log Existence Check**
-   ```bash
-   # Verify log file exists for each run
-   for run_id in $(grep -oP 'Run \K\d+' run-registry.md); do
-     test -f logs/run_${run_id}.log || echo "Missing log: run_${run_id}"
-   done
-   ```
-
-2. **Checkpoint Integrity Check**
-   ```python
-   # Verify checkpoint loads correctly
-   import torch
-   checkpoint = torch.load('checkpoints/run_001_best.pt')
-   assert 'model_state_dict' in checkpoint
-   assert 'optimizer_state_dict' in checkpoint
-   ```
-
-3. **Metric Extraction Check**
-   ```bash
-   # Extract final metrics from log
-   grep "Final Metrics:" logs/run_001.log
-   ```
-
-### Manual Verification Checklist
-
-- [ ] Run IDs in registry match log file names
-- [ ] Timestamps are reasonable (no time travel)
-- [ ] Durations match experiment complexity
-- [ ] Metrics match between logs and summary
-- [ ] Seeds are documented for all runs
-
-## Fabrication Detection
-
-### Red Flags
-
-| Red Flag | What to Check |
-|----------|---------------|
-| Perfect results | Unusually high/consistent scores |
-| Round numbers | Metrics like exactly 95.0% or 99.0% |
-| No failures | All runs completed successfully |
-| Instant results | Training time too short for model size |
-| Missing logs | Results claimed without logs |
-| Inconsistent seeds | Same seed produces different results |
-
-### Verification Steps
-
-1. **Cross-Check Metrics**
-   ```
-   Log file metric: 95.23%
-   Summary metric: 95.2%
-   Registry metric: 95.23%
-   → Consistent ✓
-   ```
-
-2. **Verify Timing**
-   ```
-   Model parameters: 10M
-   Dataset size: 100K samples
-   Epochs: 100
-   Expected time: ~4-8 hours on RTX 4090
-   Claimed time: 4.5 hours
-   → Plausible ✓
-   ```
-
-3. **Check Reproducibility**
-   ```
-   Run with same config and seed
-   Compare results
-   Variance within expected range
-   → Reproducible ✓
-   ```
+---
 
 ## Statistical Validity
 
@@ -200,17 +152,9 @@ The `run-registry.md` must contain:
 
 For primary metrics, report:
 
-1. **Central Tendency**
-   - Mean (average across runs)
-   - Median (if outliers exist)
-
-2. **Variability**
-   - Standard deviation
-   - Confidence interval (95%)
-
-3. **Significance**
-   - p-values for comparisons
-   - Effect sizes
+1. **Central Tendency**: Mean (average across runs), Median (if outliers exist)
+2. **Variability**: Standard deviation, Confidence interval (95%)
+3. **Significance**: p-values for comparisons, Effect sizes
 
 ### Sample Size Guidelines
 
@@ -228,35 +172,25 @@ For primary metrics, report:
 
 | Method | Accuracy (%) | F1 Score |
 |--------|--------------|----------|
-| Ours | 95.2 ± 0.3 | 0.943 ± 0.005 |
-| Baseline A | 91.5 ± 0.4 | 0.901 ± 0.008 |
-| Baseline B | 89.8 ± 0.5 | 0.885 ± 0.010 |
+| Ours | 95.2 +/- 0.3 | 0.943 +/- 0.005 |
+| Baseline A | 91.5 +/- 0.4 | 0.901 +/- 0.008 |
 
 **Statistical Significance:**
 - Ours vs Baseline A: p < 0.001 (paired t-test)
-- Ours vs Baseline B: p < 0.001 (paired t-test)
 
 **Confidence Intervals (95%):**
 - Ours Accuracy: [94.8%, 95.6%]
 ```
 
+---
+
 ## Baseline Fairness
 
 ### Fair Comparison Requirements
 
-1. **Same Data**
-   - All methods use identical train/val/test splits
-   - Same preprocessing applied
-
-2. **Same Conditions**
-   - Same compute budget
-   - Same number of parameters (or controlled)
-   - Same training duration or convergence criteria
-
-3. **Honest Reporting**
-   - Report best baseline results (not worst)
-   - Include baseline hyperparameter tuning effort
-   - Acknowledge any baseline advantages
+1. **Same Data**: All methods use identical train/val/test splits, same preprocessing
+2. **Same Conditions**: Same compute budget, same number of parameters (or controlled), same training duration or convergence criteria
+3. **Honest Reporting**: Report best baseline results (not worst), include baseline hyperparameter tuning effort, acknowledge any baseline advantages
 
 ### Baseline Implementation Checklist
 
@@ -265,6 +199,8 @@ For primary metrics, report:
 - [ ] Same evaluation protocol
 - [ ] Multiple runs for variance
 - [ ] Results match published baselines (within variance)
+
+---
 
 ## Negative Result Handling
 
@@ -285,7 +221,6 @@ For primary metrics, report:
    - **Hypothesis**: Attention is critical for performance
    - **Result**: Removing attention reduced accuracy by only 0.5%
    - **Conclusion**: Attention provides minor improvement
-   - **Impact**: May not be essential component
    ```
 
 3. **Anomalies**
@@ -297,12 +232,42 @@ For primary metrics, report:
    - **Resolution**: Fixed config, re-ran as Run 009
    ```
 
+---
+
+## Result Verification
+
+### Automatic Verification Checks
+
+1. **Log Existence Check** - Verify log file exists for each run
+2. **Checkpoint Integrity Check** - Verify checkpoint loads correctly
+3. **Metric Extraction Check** - Extract final metrics from log
+
+### Manual Verification Checklist
+
+- [ ] Run IDs in registry match log file names
+- [ ] Timestamps are reasonable (no time travel)
+- [ ] Durations match experiment complexity
+- [ ] Metrics match between logs and summary
+- [ ] Seeds are documented for all runs
+
+### Fabrication Detection Red Flags
+
+| Red Flag | What to Check |
+|----------|---------------|
+| Perfect results | Unusually high/consistent scores |
+| Round numbers | Metrics like exactly 95.0% or 99.0% |
+| No failures | All runs completed successfully |
+| Instant results | Training time too short for model size |
+| Missing logs | Results claimed without logs |
+| Inconsistent seeds | Same seed produces different results |
+
+---
+
 ## Provenance Records
 
 ### Git Integration
 
 ```bash
-# Record git state
 git rev-parse HEAD > .git-commit
 git diff > .git-diff
 git status > .git-status
@@ -311,13 +276,8 @@ git status > .git-status
 ### Environment Recording
 
 ```bash
-# Python environment
 pip freeze > requirements.txt
-
-# CUDA version
 nvidia-smi > gpu-info.txt
-
-# System info
 uname -a > system-info.txt
 ```
 
@@ -334,6 +294,44 @@ dataset:
   val_samples: 50000
   test_samples: 100000
 ```
+
+---
+
+## Evidence Hierarchy for AI/ML Research
+
+### ML-Specific Hierarchy
+
+| Level | Evidence Type | Example |
+|-------|---------------|---------|
+| 1 | Reproducible benchmarks with code | Papers with code, multiple datasets |
+| 2 | Ablation studies | Component contribution analysis |
+| 3 | Cross-validation results | k-fold CV with proper splits |
+| 4 | Single train/test split | Hold-out validation |
+| 5 | Theoretical analysis | Complexity bounds, convergence proofs |
+| 6 | Expert intuition | "We believe this should work" |
+
+### Red Flags in ML Evidence
+
+- [ ] No statistical significance testing
+- [ ] Single random seed
+- [ ] Cherry-picked examples
+- [ ] Unfair comparison (different compute, data)
+- [ ] No baselines or weak baselines
+- [ ] Test data leaked into training
+- [ ] Hyperparameter tuning on test set
+
+### Best Practices for ML Evidence
+
+1. Multiple random seeds (report mean +/- std)
+2. Statistical significance testing
+3. Proper train/validation/test splits
+4. Ablation studies
+5. Comparison to strong baselines
+6. Released code and data
+7. Compute budget reported
+8. Hyperparameter search details
+
+---
 
 ## Audit Protocol
 

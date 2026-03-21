@@ -1,12 +1,32 @@
-# Rollback Policy
+# Recovery and Evolution
 
-This document defines how deliverables are handled when a Gate rejection causes a rollback to an earlier phase.
+This document defines pivot policy, rollback procedures, self-healing/recovery mechanisms, and the controlled overlay/evolution activation protocol.
 
-## Overview
+---
 
-When a Gate is rejected and the researcher chooses to roll back to an earlier phase, the system must handle the deliverables created during the current and intermediate phases.
+## Pivot Policy
 
-## Default Policy
+### Allowed Pivot Types
+
+- Narrow the research question
+- Replace the theoretical framing
+- Change datasets or baselines
+- Downgrade from full experiments back to pilot validation
+- Archive the current direction and branch a new one
+
+### Pivot Rules
+
+- Pivots may be proposed by the runtime, but never executed silently.
+- Every pivot must record rationale, affected artifacts, and the cheapest viable alternative.
+- Every pivot requires explicit human approval.
+
+---
+
+## Rollback Policy
+
+This section defines how deliverables are handled when a Gate rejection causes a rollback to an earlier phase.
+
+### Default Policy
 
 | Action | Behavior |
 |--------|----------|
@@ -14,16 +34,16 @@ When a Gate is rejected and the researcher chooses to roll back to an earlier ph
 | Delete | Original files are preserved (not deleted) |
 | State Reset | `research-state.yaml` is reset by `reset_state_for_phase()` |
 
-## Rollback Scenarios
+### Rollback Scenarios
 
-### Scenario 1: Same-Phase Revision (REVISE)
+#### Scenario 1: Same-Phase Revision (REVISE)
 
 When Gate rejects with "revise" decision:
 - No phase change
 - No file archival needed
 - Continue iterating with feedback
 
-### Scenario 2: Rollback to Earlier Phase (ROLLBACK)
+#### Scenario 2: Rollback to Earlier Phase (ROLLBACK)
 
 When rolling back from phase N to phase M (M < N):
 
@@ -39,14 +59,14 @@ When rolling back from phase N to phase M (M < N):
    - Original files remain in place
    - Researchers can reference or restore from archive
 
-### Scenario 3: Pivot (PIVOT)
+#### Scenario 3: Pivot (PIVOT)
 
 When choosing a fundamentally different direction:
 - Archive all current phase deliverables
 - Reset to survey phase for new direction
 - Previous work remains in archive for reference
 
-## Archive Structure
+### Archive Structure
 
 ```
 .autoresearch/archive/
@@ -60,7 +80,7 @@ When choosing a fundamentally different direction:
 └── archive-index.md
 ```
 
-## Archive Metadata Format
+### Archive Metadata Format
 
 ```json
 {
@@ -76,10 +96,7 @@ When choosing a fundamentally different direction:
 }
 ```
 
-## Integration with reset_state_for_phase()
-
-The `reset_state_for_phase()` function handles state reset.
-The `archive_phase_deliverables()` function handles file archival.
+### Integration with State Management
 
 Call sequence on rollback:
 
@@ -95,7 +112,7 @@ for phase in phases_to_archive:
 reset_state_for_phase(state, target_phase)
 ```
 
-## Configuration
+### Rollback Configuration
 
 Rollback policy can be customized in `orchestrator-config.yaml`:
 
@@ -109,3 +126,48 @@ rollback:
       archive: true
       delete: false  # Never auto-delete paper drafts
 ```
+
+---
+
+## Self-Healing
+
+The runtime uses a bounded, inspectable recovery model.
+
+### Core Scripts
+
+- `scripts/sentinel.py`
+- `scripts/recover_stage.py`
+
+### Detection Targets
+
+- Stale running jobs
+- Missing current-phase deliverables
+- Missing registry entries for active jobs
+
+### Allowed Recovery Actions
+
+- Retry a failed or stale job
+- Resume a paused job
+- Regenerate dashboard artifacts
+
+The runtime must never silently skip failed work.
+
+---
+
+## Self-Evolution
+
+The runtime supports controlled evolution through approved overlays and reflection outputs.
+
+### Core Scripts
+
+- `scripts/apply_overlay.py`
+- `scripts/render_agent_prompt.py`
+
+### Rules
+
+- Reflection outputs remain drafts until approved by Gate 5
+- Overlays are opt-in and stored in `research-state.yaml`
+- Approved overlays are appended during prompt rendering
+- Base prompts are never rewritten automatically
+
+This preserves a system-level feedback loop without turning the Skill into an uncontrolled self-modifying system.

@@ -245,13 +245,13 @@ User preferences stored in `~/.autoresearch/`:
 
 | Document | Purpose |
 |----------|---------|
-| `references/workflow-protocol.md` | Phase order and gate requirements |
+| `references/workflow.md` | Phase order, gate requirements, and execution details |
 | `references/system-architecture.md` | Inner/outer loop design |
 | `references/gate-rubrics.md` | Detailed scoring rubrics |
 | `references/orchestrator-protocol.md` | Orchestrator interaction protocols |
-| `references/literature-verification.md` | Citation verification standards |
-| `references/citation-authenticity.md` | Paper phase citation rules |
-| `references/experiment-integrity.md` | Experiment logging standards |
+| `references/citation-standards.md` | Citation verification, authenticity, and formatting |
+| `references/evidence-standards.md` | Evidence rules and experiment logging standards |
+| `references/agent-roles.md` | Agent roles, pairings, and communication protocols |
 
 ## Python Requirements
 

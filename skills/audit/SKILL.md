@@ -289,6 +289,6 @@ Automatically BLOCK when:
 
 - `references/gate-rubrics.md` - Detailed scoring rubrics for each phase gate
 - `references/reporting_standards.md` - CONSORT, PRISMA, STROBE, ARRIVE, CLAIM checklists
-- `references/literature-verification.md` - Citation verification standards
-- `references/citation-authenticity.md` - Paper phase citation rules
-- `references/experiment-integrity.md` - Experiment logging standards
+- `references/citation-standards.md` - Citation verification standards
+- `references/citation-standards.md` - Paper phase citation rules
+- `references/evidence-standards.md` - Experiment logging standards

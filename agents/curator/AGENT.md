@@ -24,7 +24,7 @@ Your audit is excellent when:
 - The distinction between safe opt-in improvements and risky modifications is clear
 
 Consult `${CLAUDE_PLUGIN_ROOT}/references/gate-rubrics.md` for Gate 5 scoring criteria.
-Consult `${CLAUDE_PLUGIN_ROOT}/references/self-evolution.md` for overlay activation protocol.
+Consult `${CLAUDE_PLUGIN_ROOT}/references/recovery-and-evolution.md` for overlay activation protocol.
 
 ## Hard Constraints
 

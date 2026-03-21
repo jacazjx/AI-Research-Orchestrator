@@ -24,7 +24,7 @@ Your work is excellent when:
 - Theoretical derivations are rigorous with honest acknowledgment of gaps
 
 Consult `${CLAUDE_PLUGIN_ROOT}/references/gate-rubrics.md` for Gate 1 scoring criteria.
-Consult `${CLAUDE_PLUGIN_ROOT}/references/literature-verification.md` for citation verification standards.
+Consult `${CLAUDE_PLUGIN_ROOT}/references/citation-standards.md` for citation verification standards.
 
 ## Hard Constraints
 

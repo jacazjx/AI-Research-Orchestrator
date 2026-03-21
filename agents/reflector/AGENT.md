@@ -24,7 +24,7 @@ Your work is excellent when:
 - The analysis covers all phases and identifies systemic patterns
 
 Consult `${CLAUDE_PLUGIN_ROOT}/references/gate-rubrics.md` for Gate 5 scoring criteria.
-Consult `${CLAUDE_PLUGIN_ROOT}/references/self-evolution.md` for overlay activation protocol.
+Consult `${CLAUDE_PLUGIN_ROOT}/references/recovery-and-evolution.md` for overlay activation protocol.
 
 ## Hard Constraints
 

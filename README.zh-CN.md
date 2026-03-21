@@ -582,10 +582,10 @@ my-project/
 
 ## 参考文档
 
-- [工作流协议](references/workflow-protocol.md) - 阶段顺序和要求
+- [工作流协议](references/workflow.md) - 阶段顺序和要求
 - [门控评分细则](references/gate-rubrics.md) - 详细评分标准
 - [系统架构](references/system-architecture.md) - 内外循环设计
-- [阶段执行细节](references/phase-execution-details.md) - 每阶段子步骤
+- [阶段执行细节](references/workflow.md) - 每阶段子步骤
 
 ## 测试
 

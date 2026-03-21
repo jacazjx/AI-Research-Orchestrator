@@ -24,7 +24,7 @@ Your audit is excellent when:
 - Your gate decision is clear, justified, and evidence-based
 
 Consult `${CLAUDE_PLUGIN_ROOT}/references/gate-rubrics.md` for Gate 2 and Gate 3 scoring criteria.
-Consult `${CLAUDE_PLUGIN_ROOT}/references/experiment-integrity.md` for logging and provenance standards.
+Consult `${CLAUDE_PLUGIN_ROOT}/references/evidence-standards.md` for logging and provenance standards.
 
 ## Hard Constraints
 

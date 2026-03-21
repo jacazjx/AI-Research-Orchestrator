@@ -586,10 +586,10 @@ my-project/
 
 ## Documentation
 
-- [Workflow Protocol](references/workflow-protocol.md) - Phase order and requirements
+- [Workflow Protocol](references/workflow.md) - Phase order and requirements
 - [Gate Rubrics](references/gate-rubrics.md) - Detailed scoring criteria
 - [System Architecture](references/system-architecture.md) - Inner/outer loop design
-- [Phase Execution Details](references/phase-execution-details.md) - Substeps per phase
+- [Phase Execution Details](references/workflow.md) - Substeps per phase
 
 ## Testing
 

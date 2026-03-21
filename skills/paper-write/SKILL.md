@@ -291,7 +291,7 @@ See `references/academic_writing_style.md` for comprehensive guidelines on:
 ## Key Rules
 
 1. **IMRAD Structure**: Follow Introduction, Methods, Results, Discussion structure
-2. **Citation Authenticity**: All citations must be verified (see `references/citation-authenticity.md`)
+2. **Citation Authenticity**: All citations must be verified (see `references/citation-standards.md`)
 3. **Evidence Traceability**: All claims mapped to evidence package
 4. **Statistical Rigor**: Report means, standard deviations, and significance
 5. **Reproducibility**: Methods must be detailed enough for replication
@@ -322,5 +322,5 @@ This skill integrates with:
 - `references/imrad_structure.md` - Detailed IMRAD section guidelines
 - `references/academic_writing_style.md` - Writing style guidelines
 - `references/figure_table_guidelines.md` - Visualization standards
-- `/home/jacazjx/Workspaces/AI-Research-Develop/AI-Research-Orchestrator/references/paper-quality-assurance.md` - Quality standards
-- `/home/jacazjx/Workspaces/AI-Research-Develop/AI-Research-Orchestrator/references/citation-authenticity.md` - Citation verification
+- `/home/jacazjx/Workspaces/AI-Research-Develop/AI-Research-Orchestrator/references/writing-standards.md` - Quality standards
+- `/home/jacazjx/Workspaces/AI-Research-Develop/AI-Research-Orchestrator/references/citation-standards.md` - Citation verification

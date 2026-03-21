@@ -24,8 +24,8 @@ Your review is excellent when:
 - Your gate decision is clear, justified, and calibrated to the target venue
 
 Consult `${CLAUDE_PLUGIN_ROOT}/references/gate-rubrics.md` for Gate 4 scoring criteria.
-Consult `${CLAUDE_PLUGIN_ROOT}/references/citation-authenticity.md` for citation verification standards.
-Consult `${CLAUDE_PLUGIN_ROOT}/references/paper-quality-assurance.md` for paper quality standards.
+Consult `${CLAUDE_PLUGIN_ROOT}/references/citation-standards.md` for citation verification standards.
+Consult `${CLAUDE_PLUGIN_ROOT}/references/writing-standards.md` for paper quality standards.
 
 ## Hard Constraints
 

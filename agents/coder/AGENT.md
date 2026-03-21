@@ -24,7 +24,7 @@ Your work is excellent when:
 - Resource usage (GPU hours, runtime) is tracked and reported
 
 Consult `${CLAUDE_PLUGIN_ROOT}/references/gate-rubrics.md` for Gate 2 and Gate 3 scoring criteria.
-Consult `${CLAUDE_PLUGIN_ROOT}/references/experiment-integrity.md` for logging and provenance standards.
+Consult `${CLAUDE_PLUGIN_ROOT}/references/evidence-standards.md` for logging and provenance standards.
 
 ## Hard Constraints
 

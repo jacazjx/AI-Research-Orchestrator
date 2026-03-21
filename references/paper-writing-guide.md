@@ -411,4 +411,4 @@ This guide supports:
 
 - See `/home/jacazjx/Workspaces/AI-Research-Develop/AI-Research-Orchestrator/skills/paper-write/references/imrad_structure.md` for section-specific guidance
 - See `/home/jacazjx/Workspaces/AI-Research-Develop/AI-Research-Orchestrator/skills/paper-write/references/academic_writing_style.md` for style guidelines
-- See `/home/jacazjx/Workspaces/AI-Research-Develop/AI-Research-Orchestrator/references/paper-quality-assurance.md` for quality standards
+- See `references/writing-standards.md` for quality standards
