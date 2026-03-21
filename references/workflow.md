@@ -118,7 +118,7 @@ Before committing resources to problem analysis, validate that:
 - identify what would be lost if this problem is not addressed
 - produce validation verdict: Validated/Reformulate/Defer/Pivot
 
-`Adviser` substeps (audit-validation):
+`Adviser` substeps (audit — validation scope):
 
 - verify evidence quality and source credibility
 - challenge significance assessment
@@ -133,7 +133,7 @@ Before committing resources to problem analysis, validate that:
 - identify technical challenges and solution approaches
 - summarize feasibility assessment
 
-`Adviser` substeps (audit-analysis):
+`Adviser` substeps (audit — analysis scope):
 
 - verify the problem decomposition is complete
 - challenge solution approach assumptions

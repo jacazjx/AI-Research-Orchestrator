@@ -140,7 +140,7 @@ Derived from `paper_agent/writing.py` and `paper_agent/section_composer.py` in A
 - Keep citations, equations, and technical content stable during section fusion and cleanup.
 - Use hierarchical composition and maintain revision traces.
 - Separate facts, interpretations, and limitations.
-- Use `latex-citation-curator` whenever the draft introduces a claim that needs external support.
+- Use `citation` whenever the draft introduces a claim that needs external support.
 - Maintain `paper/citation-audit-report.md` together with the draft.
 
 ### Reviewer & Editor

@@ -457,12 +457,12 @@ New scripts should be added to support the runtime:
 - `scripts/run_stage_loop.py`
 - `scripts/quality_gate.py`
 - `scripts/pivot_manager.py`
-- `scripts/schedule_jobs.py`
-- `scripts/run_remote_job.py`
-- `scripts/sentinel.py`
+- (planned: job scheduling)
+- (planned: remote execution)
+- (planned: event monitoring)
 - `scripts/recover_stage.py`
-- `scripts/generate_dashboard.py`
-- `scripts/apply_overlay.py`
+- (planned: dashboard generation)
+- (planned: overlay application)
 
 ## Planned Reference Additions
 

@@ -132,15 +132,13 @@ def load_user_config() -> dict[str, Any]:
     Returns:
         User configuration dictionary, or empty dict if not found.
     """
-    user_config_dir = Path.home() / ".autoresearch"
-    user_config_path = user_config_dir / "user-config.yaml"
+    try:
+        from user_config import load_user_config as _load
 
-    if not user_config_path.exists():
-        logger.debug("User config not found: %s", user_config_path)
+        return _load()
+    except Exception:
+        logger.debug("Could not load user config, returning empty dict")
         return {}
-
-    config = read_yaml(user_config_path)
-    return config if config else {}
 
 
 def load_gpu_registry() -> dict[str, Any]:

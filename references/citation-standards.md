@@ -97,7 +97,7 @@ curl "https://api.openalex.org/works?search=vision+transformer&filter=publicatio
 ### Gate 4 Requirements
 
 - Citation audit must pass before Gate 4
-- `Paper Writer` should use the local `latex-citation-curator` tool whenever a claim needs external support
+- `Paper Writer` should use the local `citation` tool whenever a claim needs external support
 - Verified formal publications should replace preprints whenever possible
 - `Reviewer & Editor` must audit citation realism, support quality, and whether the citation audit report matches the manuscript
 
@@ -322,9 +322,9 @@ python3 scripts/verify_citations.py --project-root /path/to/project --check-arxi
 python3 scripts/verify_citations.py --project-root /path/to/project --full-report
 ```
 
-### Integration with latex-citation-curator
+### Integration with citation
 
-For Paper phase, use the `latex-citation-curator` skill for:
+For Paper phase, use the `citation` skill for:
 - Finding verified BibTeX entries
 - Checking DOI authenticity
 - Semantic Scholar integration

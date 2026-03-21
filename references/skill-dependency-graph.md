@@ -7,19 +7,19 @@ This document defines the recommended skill invocation order for each agent in t
 ### Workflow 1: Full Ideation to Survey
 
 ```
-research-intent-clarification → define-idea → theoretical-derivation → literature-survey → novelty-check
+insight → problem-analysis → theoretical-derivation → literature → ideation
 ```
 
 ### Workflow 2: Quick Survey (Well-defined Idea)
 
 ```
-define-idea → research-lit → novelty-check
+problem-analysis → literature → ideation
 ```
 
 ### Workflow 3: Theory-First Survey
 
 ```
-define-idea → theoretical-derivation → literature-survey → novelty-check
+problem-analysis → theoretical-derivation → literature → ideation
 ```
 
 ## Critic Agent
@@ -27,7 +27,7 @@ define-idea → theoretical-derivation → literature-survey → novelty-check
 ### Audit Workflow
 
 ```
-audit-survey → audit-derivation → audit-citation
+audit (survey scope) → audit (derivation scope) → audit (citation scope)
 ```
 
 ## Code Agent (Pilot)
@@ -35,13 +35,13 @@ audit-survey → audit-derivation → audit-citation
 ### Workflow 1: Pilot Validation
 
 ```
-validate-problem → analyze-problem → design-pilot → run-pilot → analyze-results
+problem-analysis → experiment-design → run-pilot → analyze-results
 ```
 
 ### Workflow 2: Quick Pilot
 
 ```
-design-pilot → run-pilot
+experiment-design → run-pilot
 ```
 
 ## Code Agent (Experiments)
@@ -49,13 +49,13 @@ design-pilot → run-pilot
 ### Workflow 1: Full Experiments
 
 ```
-design-exp → run-experiment → monitor-experiment → analyze-results
+experiment-design → run-experiment → monitor-experiment → analyze-results
 ```
 
 ### Workflow 2: Extended Experiments
 
 ```
-design-exp → run-experiment → monitor-experiment → run-experiment → analyze-results
+experiment-design → run-experiment → monitor-experiment → run-experiment → analyze-results
 ```
 
 ## Adviser Agent (Pilot/Experiments)
@@ -63,7 +63,7 @@ design-exp → run-experiment → monitor-experiment → run-experiment → anal
 ### Audit Workflow
 
 ```
-audit-design → audit-pilot → audit-exp-design → audit-results
+audit (design scope) → audit (pilot scope) → audit (experiment-design scope) → audit (results scope)
 ```
 
 ## Writer Agent
@@ -71,7 +71,7 @@ audit-design → audit-pilot → audit-exp-design → audit-results
 ### Workflow 1: Full Paper Writing
 
 ```
-paper-plan → paper-write → paper-figure → curate-citation → paper-compile
+paper-plan → paper-write → paper-figure → citation → paper-compile
 ```
 
 ### Workflow 2: Quick Paper Draft
@@ -85,7 +85,7 @@ paper-plan → paper-write → paper-compile
 ### Audit Workflow
 
 ```
-audit-paper → audit-citation → audit-paper-plan
+audit (paper scope) → audit (citation scope) → audit (paper-plan scope)
 ```
 
 ## Reflector Agent
@@ -101,7 +101,7 @@ extract-lessons → propose-overlay
 ### Audit Workflow
 
 ```
-audit-lessons → audit-overlay
+audit (lessons scope) → audit (overlay scope)
 ```
 
 ## Dependencies Between Skills
@@ -110,13 +110,12 @@ audit-lessons → audit-overlay
 
 | From | To | Reason |
 |------|----|--------|
-| `define-idea` | `theoretical-derivation` | Need formalized idea before derivation |
-| `theoretical-derivation` | `literature-survey` | Need theory scope to search literature |
-| `literature-survey` | `novelty-check` | Need literature to verify novelty |
-| `validate-problem` | `analyze-problem` | Need problem validation before analysis |
-| `analyze-problem` | `design-pilot` | Need problem analysis to design pilot |
-| `design-pilot` | `run-pilot` | Need design before execution |
-| `design-exp` | `run-experiment` | Need experiment design before running |
+| `problem-analysis` | `theoretical-derivation` | Need formalized idea before derivation |
+| `theoretical-derivation` | `literature` | Need theory scope to search literature |
+| `literature` | `ideation` | Need literature to verify novelty |
+| `problem-analysis` | `experiment-design` | Need problem analysis to design experiments |
+| `experiment-design` | `run-pilot` | Need design before execution |
+| `experiment-design` | `run-experiment` | Need experiment design before running |
 | `run-experiment` | `monitor-experiment` | Need running experiments to monitor |
 | `paper-plan` | `paper-write` | Need outline before writing |
 | `paper-write` | `paper-figure` | Need text to know what figures to create |
@@ -126,7 +125,7 @@ audit-lessons → audit-overlay
 
 | From | To | Condition |
 |------|----|-----------|
-| `research-intent-clarification` | `define-idea` | Skip if idea is already clear |
-| `theoretical-derivation` | `literature-survey` | Skip for applied research |
+| `insight` | `problem-analysis` | Skip if idea is already clear |
+| `theoretical-derivation` | `literature` | Skip for applied research |
 | `run-pilot` | `analyze-results` | Skip if pilot is simple |
 | `paper-figure` | `paper-compile` | Skip if no figures needed |

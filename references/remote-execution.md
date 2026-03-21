@@ -7,10 +7,7 @@ Supported backends in the current implementation:
 - `local`
 - `ssh`
 
-Core scripts:
-
-- `scripts/schedule_jobs.py`
-- `scripts/run_remote_job.py`
+Remote execution is handled by the `run-experiment` skill. Job scheduling and remote job dispatch are integrated into the experiment execution workflow.
 
 Current behavior:
 

@@ -54,7 +54,6 @@ ai-research-init = "scripts.init_research_project:main"
 ai-research-gate = "scripts.quality_gate:main"
 ai-research-handoff = "scripts.validate_handoff:main"
 ai-research-loop = "scripts.run_stage_loop:main"
-ai-research-dashboard = "scripts.generate_dashboard:main"
 ai-research-citation = "scripts.run_citation_audit:main"
 
 [project.urls]

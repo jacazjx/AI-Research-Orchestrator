@@ -49,7 +49,7 @@ The intent clarification process serves as a "Gate 0" before the formal research
 │ Step 1a: Brainstorm │          │ Step 2: Clarification Loop  │
 │                     │          │                              │
 │ Trigger:            │          │ Max rounds: 5               │
-│ research-ideation   │          │ Target score: 0.7+          │
+│ ideation   │          │ Target score: 0.7+          │
 │ skill               │          │                              │
 └─────────────────────┘          │ Each round:                 │
               │                   │   1. Generate questions     │
@@ -216,11 +216,11 @@ The intent clarification process serves as a "Gate 0" before the formal research
 
 ---
 
-## Integration with research-ideation
+## Integration with ideation
 
 ### Trigger Conditions
 
-Invoke `research-ideation` skill when:
+Invoke `ideation` skill when:
 
 1. **Clarity score < 0.4** - Idea too vague to guide research
 2. **User explicitly requests help** - "I need help developing my idea"
@@ -232,7 +232,7 @@ Invoke `research-ideation` skill when:
 When triggering brainstorming:
 
 ```python
-invoke_skill("research-ideation", {
+invoke_skill("ideation", {
     "initial_idea": idea,
     "domain": context.get("domain"),
     "reference_papers": context.get("reference_papers", []),
@@ -246,7 +246,7 @@ invoke_skill("research-ideation", {
 
 ### Return from Brainstorming
 
-The `research-ideation` skill returns:
+The `ideation` skill returns:
 - Ranked list of 3-5 concrete ideas
 - Each with: hypothesis, approach, novelty, feasibility, validation path
 
@@ -378,6 +378,6 @@ If responses contradict each other:
 
 ## References
 
-- [research-intent-clarification SKILL.md](../skills/research-intent-clarification/SKILL.md)
+- [insight SKILL.md](../skills/insight/SKILL.md)
 - [intent_clarification.py](../scripts/intent_clarification.py)
 - [orchestrator SKILL.md](../skills/orchestrator/SKILL.md)

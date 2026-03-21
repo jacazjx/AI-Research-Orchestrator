@@ -404,7 +404,7 @@ Before submission, check:
 
 This guide supports:
 - **paper-write**: Reference during section writing
-- **audit-paper**: Quality criteria for review
+- **audit**: Quality criteria for review
 - **auto-review-loop**: Self-improvement criteria
 
 ## References

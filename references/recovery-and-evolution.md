@@ -133,10 +133,9 @@ rollback:
 
 The runtime uses a bounded, inspectable recovery model.
 
-### Core Scripts
+### Core Mechanism
 
-- `scripts/sentinel.py`
-- `scripts/recover_stage.py`
+Event monitoring is handled by the orchestrator. Recovery logic is in `scripts/recover_stage.py`.
 
 ### Detection Targets
 
@@ -158,10 +157,9 @@ The runtime must never silently skip failed work.
 
 The runtime supports controlled evolution through approved overlays and reflection outputs.
 
-### Core Scripts
+### Core Mechanism
 
-- `scripts/apply_overlay.py`
-- `scripts/render_agent_prompt.py`
+Overlays are applied by the reflector agent. Agent prompts are defined in `agents/<role>/AGENT.md` files.
 
 ### Rules
 

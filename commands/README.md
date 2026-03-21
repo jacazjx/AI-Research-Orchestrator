@@ -132,10 +132,10 @@ Each phase transition requires:
 
 The commands delegate to these skills:
 
-- `skills/idea-discovery/` - Idea discovery workflow
-- `skills/research-lit/` - Literature search
+- `skills/ideation/` - Research ideation and idea development
+- `skills/literature/` - Literature search and survey
 - `skills/run-experiment/` - Experiment execution
-- `skills/paper-pipeline/` - Paper writing workflow
+- `skills/paper-write/` - Paper writing
 - `skills/auto-review-loop/` - Autonomous review
 
 ## Configuration

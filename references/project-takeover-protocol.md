@@ -54,11 +54,7 @@ Use project takeover when:
 
 #### Step 1: Run Analysis
 
-```bash
-python3 scripts/analyze_project.py --project-root /path/to/project
-```
-
-This produces:
+The orchestrator agent can analyze an existing project by reading its directory structure and state files. It checks:
 - Directory structure analysis
 - File pattern detection
 - Existing deliverable inventory
@@ -138,9 +134,7 @@ This creates:
 For projects with some artifacts:
 
 1. **Analyze first**
-   ```bash
-   python3 scripts/analyze_project.py --project-root /path/to/project --json
-   ```
+   Have the orchestrator agent analyze the project by reading its directory structure and state files.
 
 2. **Create missing directories**
    ```bash
@@ -167,9 +161,7 @@ python3 scripts/migrate_project.py \
 After migration, verify:
 
 1. **State Consistency**
-   ```bash
-   python3 scripts/verify_system.py --project-root /path/to/project
-   ```
+   System verification is handled by the orchestrator at session start.
 
 2. **Phase Artifacts**
    - Check each phase directory
@@ -184,13 +176,7 @@ After migration, verify:
 
 Once verified:
 
-1. **Render appropriate agent prompt**
-   ```bash
-   python3 scripts/render_agent_prompt.py \
-     --project-root /path/to/project \
-     --role [role] \
-     --task-summary "Continue [phase] work"
-   ```
+1. **Agent prompts** are defined in `agents/<role>/AGENT.md` files. The orchestrator renders appropriate prompts for each phase.
 
 2. **Begin phase work**
    - Continue from current phase
@@ -275,8 +261,7 @@ python3 scripts/init_research_project.py \
 ### Verification Commands
 
 ```bash
-# Check system integrity
-python3 scripts/verify_system.py --project-root /path/to/project
+# System verification is handled by the orchestrator at session start
 
 # Audit citations (paper phase)
 python3 scripts/run_citation_audit.py --project-root /path/to/project
@@ -329,7 +314,7 @@ python3 scripts/quality_gate.py --project-root /path/to/project --phase [phase]
 ## Checklist
 
 ### Pre-Takeover
-- [ ] Run analyze_project.py
+- [ ] Have the orchestrator analyze the project directory
 - [ ] Review analysis report
 - [ ] Interview researcher
 - [ ] Decide migration approach
@@ -341,7 +326,6 @@ python3 scripts/quality_gate.py --project-root /path/to/project --phase [phase]
 - [ ] Initialize state
 
 ### Post-Takeover
-- [ ] Run verify_system.py
+- [ ] Verify system integrity via orchestrator session start
 - [ ] Review with researcher
-- [ ] Render agent prompt
-- [ ] Begin phase work
+- [ ] Begin phase work (agent prompts are in `agents/<role>/AGENT.md`)

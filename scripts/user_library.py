@@ -39,9 +39,9 @@ def get_user_config_dir() -> Path:
     Returns:
         Path to the user configuration directory.
     """
-    config_dir = Path.home() / ".autoresearch"
-    config_dir.mkdir(parents=True, exist_ok=True)
-    return config_dir
+    from user_config import get_user_config_dir as _get
+
+    return _get()
 
 
 def get_lessons_library_dir() -> Path:
