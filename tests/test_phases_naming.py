@@ -3,8 +3,6 @@
 import sys
 from pathlib import Path
 
-import pytest
-
 # Add scripts directory to path so constants package is importable
 _SCRIPTS_DIR = Path(__file__).resolve().parent.parent / "scripts"
 sys.path.insert(0, str(_SCRIPTS_DIR))
@@ -45,13 +43,21 @@ class TestPhaseAgentNaming:
             primary_skill = skill_dir / primary_skill_name / "SKILL.md"
             reviewer_skill = skill_dir / reviewer_skill_name / "SKILL.md"
 
-            assert primary_skill.exists(), f"Missing skill for primary agent '{primary}' (looked in '{primary_skill_name}') in phase '{phase}'"
-            assert reviewer_skill.exists(), f"Missing skill for reviewer agent '{reviewer}' (looked in '{reviewer_skill_name}') in phase '{phase}'"
+            assert (
+                primary_skill.exists()
+            ), f"Missing skill for primary agent '{primary}' (looked in '{primary_skill_name}') in phase '{phase}'"
+            assert (
+                reviewer_skill.exists()
+            ), f"Missing skill for reviewer agent '{reviewer}' (looked in '{reviewer_skill_name}') in phase '{phase}'"
 
     def test_agent_names_no_hyphens(self):
         """Agent names should not contain hyphens for consistency."""
         from constants.phases import PHASE_AGENT_PAIRS
 
         for phase, (primary, reviewer) in PHASE_AGENT_PAIRS.items():
-            assert "-" not in primary, f"Primary agent '{primary}' in phase '{phase}' contains hyphen"
-            assert "-" not in reviewer, f"Reviewer agent '{reviewer}' in phase '{phase}' contains hyphen"
+            assert (
+                "-" not in primary
+            ), f"Primary agent '{primary}' in phase '{phase}' contains hyphen"
+            assert (
+                "-" not in reviewer
+            ), f"Reviewer agent '{reviewer}' in phase '{phase}' contains hyphen"

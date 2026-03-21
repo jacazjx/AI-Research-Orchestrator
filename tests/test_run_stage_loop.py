@@ -216,8 +216,8 @@ class RunStageLoopTest(unittest.TestCase):
             self.assertEqual("revise", result["decision"])
             self.assertEqual(1, result["loop_count"])
             state = COMMON.read_yaml(project_root / ".autoresearch/state/research-state.yaml")
-            self.assertEqual("paper-writer", state["progress"]["current_agent"])
-            self.assertEqual("run-paper-writer", state["progress"]["next_action"])
+            self.assertEqual("writer", state["progress"]["current_agent"])
+            self.assertEqual("run-writer", state["progress"]["next_action"])
             self.assertEqual("iteration-1", state["subphase"])
 
     def test_auto_transition_after_approved_gate(self) -> None:

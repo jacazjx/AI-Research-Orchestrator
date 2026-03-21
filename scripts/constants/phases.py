@@ -17,7 +17,7 @@ PHASE_AGENT_PAIRS: Dict[str, Tuple[str, str]] = {
     "survey": ("survey", "critic"),
     "pilot": ("code", "adviser"),
     "experiments": ("code", "adviser"),
-    "paper": ("paper-writer", "reviewer-editor"),
+    "paper": ("writer", "reviewer"),
     "reflection": ("reflector", "curator"),
 }
 

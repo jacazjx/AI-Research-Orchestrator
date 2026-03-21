@@ -56,7 +56,7 @@ class ApplyOverlayTest(unittest.TestCase):
 
             writer_prompt = RENDER.render_agent_prompt(
                 project_root=project_root,
-                role="paper-writer",
+                role="writer",
                 task_summary="Draft the paper",
             )
             self.assertNotIn("Prioritize explicit failure analysis.", writer_prompt["prompt"])

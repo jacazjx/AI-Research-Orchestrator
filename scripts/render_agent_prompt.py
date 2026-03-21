@@ -33,12 +33,15 @@ ROLE_TEMPLATE_MAP = {
     "critic": "critic.md.tmpl",
     "code": "code.md.tmpl",
     "adviser": "adviser.md.tmpl",
-    "paper-writer": "paper-writer.md.tmpl",
-    "reviewer-editor": "reviewer-editor.md.tmpl",
+    "writer": "paper-writer.md.tmpl",
+    "reviewer": "reviewer-editor.md.tmpl",
     "reflector": "reflector.md.tmpl",
     "curator": "curator.md.tmpl",
     "system-auditor": "system-auditor.md.tmpl",
     "project-takeover": "project-takeover.md.tmpl",
+    # Legacy aliases (kept for backward compatibility)
+    "paper-writer": "paper-writer.md.tmpl",
+    "reviewer-editor": "reviewer-editor.md.tmpl",
 }
 
 # Maps role name to the phase it primarily operates in (semantic phase names).
@@ -51,12 +54,15 @@ ROLE_TO_PHASE = {
     "critic": "survey",
     "code": "pilot",
     "adviser": "pilot",
-    "paper-writer": "paper",
-    "reviewer-editor": "paper",
+    "writer": "paper",
+    "reviewer": "paper",
     "reflector": "reflection",
     "curator": "reflection",
     "system-auditor": None,
     "project-takeover": None,
+    # Legacy aliases (kept for backward compatibility)
+    "paper-writer": "paper",
+    "reviewer-editor": "paper",
 }
 
 # Previous phase for each semantic phase (used to locate handoff files).
@@ -95,6 +101,21 @@ DEFAULT_MUST_READ = {
         "03-full-experiments/results-summary.md",
         "03-full-experiments/evidence-package-index.md",
     ],
+    "writer": [
+        "01-survey/research-readiness-report.md",
+        "02-pilot-analysis/pilot-validation-report.md",
+        "03-full-experiments/evidence-package-index.md",
+        "04-paper/citation-audit-report.md",
+        "04-paper/paper-draft.md",
+    ],
+    "reviewer": [
+        "03-full-experiments/evidence-package-index.md",
+        "04-paper/paper-draft.md",
+        "04-paper/citation-audit-report.md",
+        "04-paper/reviewer-report.md",
+        "04-paper/rebuttal-log.md",
+    ],
+    # Legacy aliases (kept for backward compatibility)
     "paper-writer": [
         "01-survey/research-readiness-report.md",
         "02-pilot-analysis/pilot-validation-report.md",
