@@ -189,7 +189,9 @@ PHASE_REQUIRED_DELIVERABLES = {
         "runtime_improvement_report",
         "reflection_scorecard",
     ),
-    # New semantic phase names (simplified to core deliverables only)
+    # Semantic phase names: only CORE gate deliverables listed here.
+    # Agents decide what additional artifacts to produce.
+    # HANDOFF_REQUIREMENTS may check additional files for phase transitions.
     "survey": ("readiness_report",),
     "pilot": ("pilot_results",),
     "experiments": ("evidence_package_index",),

@@ -29,13 +29,10 @@ from orchestrator_common import (
     write_yaml,
 )
 
-try:
-    from legacy_handler import analyze_directory_contents, handle_non_empty_directory
-    from user_config import load_user_config
+from legacy_handler import analyze_directory_contents, handle_non_empty_directory
+from user_config import load_user_config
 
-    _LEGACY_HANDLER_AVAILABLE = True
-except ImportError:
-    _LEGACY_HANDLER_AVAILABLE = False
+_LEGACY_HANDLER_AVAILABLE = True
 
 try:
     from preflight import format_preflight_warnings, run_preflight_checks
@@ -242,7 +239,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--project-root", required=True, help="Path to the target research project root."
     )
     parser.add_argument(
-        "--topic", default="TODO: replace with the research idea or problem statement"
+        "--topic", required=True, help="Research idea or problem statement."
     )
     parser.add_argument(
         "--project-id", help="Optional stable project id. Defaults to the project directory slug."

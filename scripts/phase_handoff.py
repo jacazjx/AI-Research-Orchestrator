@@ -27,7 +27,7 @@ from orchestrator_common import (  # noqa: E402
 
 def get_handoff_dir(project_root: Path) -> Path:
     """Get the handoff summaries directory."""
-    return project_root / "00-admin" / "runtime" / "handoff-summaries"
+    return project_root / ".autoresearch" / "runtime" / "handoff-summaries"
 
 
 def save_handoff_summary(
