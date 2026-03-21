@@ -56,35 +56,14 @@ Commands are defined in `commands/<name>.md`. Trigger flow: User Input → COMMA
 ## Key Scripts
 
 ```bash
-# Initialize project (non-interactive)
+# Initialize project
 python3 scripts/init_research_project.py --project-root /abs/path --topic "Idea" --client-type auto
 
-# Initialize with interactive wizard
-python3 scripts/init_research_project.py --project-root /abs/path --interactive
-
-# Show live project status (gate scores, phase progress, blockers)
+# Show live project status (returns JSON data)
 python3 scripts/run_status.py --project-root /abs/path
 
 # Configure project settings
-python3 scripts/configure_project.py --project-root /abs/path
-
-# Interactive configuration
-python3 scripts/configure_project.py --project-root /abs/path --action interactive
-
-# Set specific configuration
-python3 scripts/configure_project.py --project-root /abs/path --action set --key max-loops --value 5
-
-# Clarify research intent
-python3 scripts/run_insight.py --idea "Your research idea"
-
-# Non-interactive intent assessment
-python3 scripts/run_insight.py --idea "Your idea" --interactive false --json
-
-# Materialize templates
-python3 scripts/materialize_templates.py --project-root /abs/path
-
-# Generate dashboard
-python3 scripts/generate_dashboard.py --project-root /abs/path
+python3 scripts/config_io.py --project-root /abs/path --action set --key max-loops --value 5
 
 # Run quality gate
 python3 scripts/quality_gate.py --project-root /abs/path --phase survey
@@ -92,14 +71,33 @@ python3 scripts/quality_gate.py --project-root /abs/path --phase survey
 # Validate phase handoff
 python3 scripts/validate_handoff.py --project-root /abs/path --target survey-to-pilot
 
-# Render agent prompt
-python3 scripts/render_agent_prompt.py --project-root /abs/path --role survey --task-summary "..." --current-objective "..."
-
-# Analyze existing project (for takeover)
-python3 scripts/analyze_project.py --project-root /path/to/existing-project
+# Materialize templates
+python3 scripts/materialize_templates.py --project-root /abs/path
 
 # Migrate project
 python3 scripts/migrate_project.py --project-root /path/to/project --topic "Topic"
+```
+
+## Script Module Structure
+
+```
+scripts/
+├── state/                   # State management (extracted from orchestrator_common.py)
+│   ├── io.py                # load_state, save_state, load_json, write_json
+│   ├── builder.py           # build_state
+│   └── validator.py         # validate_state_schema, validate_deliverable_content, etc.
+├── project/                 # Project operations
+│   ├── structure.py         # ensure_project_structure
+│   ├── phase_ops.py         # reset_state_for_phase, allowed_return_phases
+│   └── client.py            # detect_platform, detect_client_profile
+├── gitmem/                  # Version tracking
+│   └── tracker.py           # gitmem_init, gitmem_commit, gitmem_checkpoint
+├── constants/               # Phase definitions, paths, version
+├── utils/                   # YAML I/O, path validation, templates
+├── orchestrator_common.py   # Backward-compatible re-export hub (no logic)
+├── quality_gate.py          # Gate evaluation
+├── validate_handoff.py      # Phase transition validation
+└── init_research_project.py # Project initialization
 ```
 
 ## Architecture
@@ -140,11 +138,11 @@ project/
 ```
 AI-Research-Orchestrator/
 ├── commands/                # User-facing commands (9)
-├── skills/                  # Sub-skills (64)
-├── scripts/                 # Python scripts (40+)
-├── agents/                  # Agent configurations
+├── skills/                  # Skills (~37, consolidated from 64)
+├── scripts/                 # Python scripts (modular structure)
+├── agents/                  # Agent configurations (principles-based, ~60 lines each)
 ├── assets/templates/        # Project templates
-└── references/              # Protocol documentation
+└── references/              # Protocol documentation (~26 files, consolidated from 45+)
 ```
 
 ## Agent Teams Architecture

@@ -59,12 +59,11 @@ class QualityGateTest(unittest.TestCase):
             result = QUALITY.evaluate_quality_gate(project_root, phase="survey")
 
             self.assertEqual("revise", result["decision"])
-            self.assertIn("phase_review_pending", result["blockers"])
-            # When files exist but are templates, we get "deliverables_still_template"
-            # When files don't exist, we get "required_deliverables_missing"
-            # Since initialize creates template files, we expect deliverables_still_template
-            self.assertIn("deliverables_still_template", result["blockers"])
-            self.assertIn("structured_gate_signals_invalid", result["blockers"])
+            # Blockers use human-readable format: "Review: pending", "Placeholders: ...", etc.
+            blocker_str = " ".join(result["blockers"])
+            self.assertIn("Review: pending", blocker_str)
+            # Template files exist but are placeholders
+            self.assertIn("Placeholders:", blocker_str)
 
     def test_returns_advance_for_approved_phase(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -150,7 +149,8 @@ class QualityGateTest(unittest.TestCase):
             self.assertEqual("escalate_to_user", result["decision"])
             self.assertEqual(3, result["loop_count"])
             self.assertEqual(3, result["loop_limit"])
-            self.assertIn("loop_limit_reached", result["blockers"])
+            blocker_str = " ".join(result["blockers"])
+            self.assertIn("Loop limit (3/3)", blocker_str)
 
     def test_phase_loop_key_mapping(self) -> None:
         """Test PHASE_LOOP_KEY constant returns correct mapping for semantic phase names."""

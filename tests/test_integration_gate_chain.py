@@ -48,12 +48,9 @@ class IntegrationGateChainTest(unittest.TestCase):
                 f"Fresh project should need revisions.\nDecision: {result['decision']}\n"
                 f"Blockers: {result['blockers']}",
             )
-            # A fresh project materializes template files; they exist but contain placeholders.
-            # The gate therefore reports deliverables_still_template (not missing).
-            blocker_set = set(result["blockers"])
-            has_deliverable_blocker = bool(
-                blocker_set & {"required_deliverables_missing", "deliverables_still_template"}
-            )
+            # Blockers use human-readable format: "Placeholders: ..." or "Missing: ..."
+            blocker_str = " ".join(result["blockers"])
+            has_deliverable_blocker = "Placeholders:" in blocker_str or "Missing:" in blocker_str
             self.assertTrue(
                 has_deliverable_blocker,
                 f"Expected a deliverable blocker but got: {result['blockers']}",
@@ -77,18 +74,20 @@ class IntegrationGateChainTest(unittest.TestCase):
         """Setting gate_status=approved should remove user_gate blocker."""
         with tempfile.TemporaryDirectory() as tmp:
             project_root = self._init_project(tmp)
-            # Check initial state has gate blocker
+            # Check initial state has gate blocker (human-readable format)
             result_before = QUALITY.evaluate_quality_gate(project_root, phase="survey")
-            self.assertIn("user_gate_pending", result_before["blockers"])
+            blocker_str_before = " ".join(result_before["blockers"])
+            self.assertIn("Gate: pending", blocker_str_before)
             # Approve the gate
             state = COMMON.load_state(project_root)
             state["approval_status"]["gate_1"] = "approved"
             COMMON.save_state(project_root, state)
             # Gate blocker should be gone
             result_after = QUALITY.evaluate_quality_gate(project_root, phase="survey")
+            blocker_str_after = " ".join(result_after["blockers"])
             self.assertNotIn(
-                "user_gate_pending",
-                result_after["blockers"],
+                "Gate: pending",
+                blocker_str_after,
                 f"Gate blocker should be removed after approval. "
                 f"Remaining blockers: {result_after['blockers']}",
             )
