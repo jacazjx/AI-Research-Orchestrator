@@ -14,7 +14,7 @@ Use fixed prompt templates for each role, but never launch a role with the raw t
 
 ## Rendering path
 
-- Fixed templates live in `assets/prompts/`.
+- Agent role definitions live in `agents/<role>/AGENT.md`.
 - Use `scripts/render_agent_prompt.py` to render the current prompt draft.
 - The orchestrator may further edit or append to the rendered prompt before using it.
 

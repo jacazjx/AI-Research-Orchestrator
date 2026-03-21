@@ -1574,7 +1574,7 @@ Each gate is scored on these dimensions (see `references/gate-rubrics.md` for de
 - Read [references/deliverable-contracts.md](references/deliverable-contracts.md) when deciding what each file must contain.
 - Read [references/evidence-rules.md](references/evidence-rules.md) before using citations, codebases, datasets, logs, or figures as evidence.
 - Use `assets/templates/` as the canonical source of workspace document skeletons.
-- Use `assets/prompts/` as the canonical source of fixed role prompt templates.
+- Use `agents/<role>/AGENT.md` as the canonical source of agent role definitions.
 
 ## Cross-Session Feedback Channel
 

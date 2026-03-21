@@ -1,4 +1,0 @@
-interface:
-  display_name: "AI Research Orchestrator"
-  short_description: "Run gated AI research projects from idea to paper"
-  default_prompt: "Use $ai-research-orchestrator to initialize a gated AI research project and drive survey, critique, experiments, and paper writing with explicit user approval gates."

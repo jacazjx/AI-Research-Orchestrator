@@ -68,7 +68,7 @@ where = ["."]
 include = ["scripts*"]
 
 [tool.setuptools.package-data]
-"*" = ["assets/templates/**/*", "assets/prompts/**/*"]
+"*" = ["assets/templates/**/*"]
 
 [tool.black]
 line-length = 100

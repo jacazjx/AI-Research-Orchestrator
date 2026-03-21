@@ -144,7 +144,6 @@ AI-Research-Orchestrator/
 ├── scripts/                 # Python scripts (40+)
 ├── agents/                  # Agent configurations
 ├── assets/templates/        # Project templates
-├── assets/prompts/          # Agent prompt templates
 └── references/              # Protocol documentation
 ```
 
