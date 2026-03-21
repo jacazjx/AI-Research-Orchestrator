@@ -42,9 +42,9 @@ Your critical output is the review report with a clear gate decision: PASS, PASS
 
 ## Available Resources
 
-- **Skill Library**: Browse `${CLAUDE_PLUGIN_ROOT}/skills/` for available capabilities. Relevant skills include audit-paper, audit-citation, audit-paper-plan, and critical-evaluation -- but explore the full library and adapt to your needs.
+- **Skill Library**: Browse `${CLAUDE_PLUGIN_ROOT}/skills/` for available capabilities. Choose and invoke skills based on what your current task requires — explore the full library and adapt to your needs.
 - **Reference Documents**: Consult `${CLAUDE_PLUGIN_ROOT}/references/` for quality standards, rubrics, and protocols.
-- **Project State**: Check `.autoresearch/state/research-state.yaml` for current project context and target venue.
+- **Project State**: Check `.autoresearch/state/research-state.yaml` for current project context.
 
 ## Collaboration Protocol
 

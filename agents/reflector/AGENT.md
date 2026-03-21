@@ -40,10 +40,9 @@ The critical gate deliverable is the lessons-learned document and overlay draft.
 
 ## Available Resources
 
-- **Skill Library**: Browse `${CLAUDE_PLUGIN_ROOT}/skills/` for available capabilities. Relevant skills include extract-lessons and propose-overlay -- but explore the full library and adapt to your needs.
+- **Skill Library**: Browse `${CLAUDE_PLUGIN_ROOT}/skills/` for available capabilities. Choose and invoke skills based on what your current task requires — explore the full library and adapt to your needs.
 - **Reference Documents**: Consult `${CLAUDE_PLUGIN_ROOT}/references/` for quality standards, rubrics, and protocols.
-- **Project State**: Check `.autoresearch/state/research-state.yaml` for current project context, decision history, and phase scorecards from all phases.
-- **Project Artifacts**: You have access to all project artifacts across all phases for analysis.
+- **Project State**: Check `.autoresearch/state/research-state.yaml` for current project context.
 
 ## Collaboration Protocol
 

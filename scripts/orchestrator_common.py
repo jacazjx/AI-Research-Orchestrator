@@ -25,15 +25,17 @@ from typing import Any
 
 from constants import (  # noqa: F401
     AGENT_DIRECTORIES,
+    DEFAULT_ARIS_CONFIG,
     DEFAULT_DELIVERABLES,
     DEFAULT_LOOP_LIMITS,
     EXPECTED_DELIVERABLE_PREFIXES,
     HANDOFF_REQUIREMENTS,
+    IDEA_STATE_FILENAME,
     LEGACY_TO_SEMANTIC_PHASE,
     LOOP_REQUIREMENTS,
     MAIN_DIRECTORIES,
+    MAX_REVIEW_ROUNDS,
     NEXT_PHASE,
-    NEXT_PHASE_LEGACY,
     OLD_TO_NEW_PATH_MAPPING,
     PHASE_AGENT_PAIRS,
     PHASE_COMPLETION,
@@ -42,9 +44,11 @@ from constants import (  # noqa: F401
     PHASE_REQUIRED_DELIVERABLES,
     PHASE_SEQUENCE,
     PHASE_TO_GATE,
-    PHASE_TO_GATE_LEGACY,
     PHASE_TO_REVIEW,
+    POSITIVE_SCORE_THRESHOLD,
+    POSITIVE_VERDICT_KEYWORDS,
     REQUIRED_DIRECTORIES,
+    REVIEW_STATE_FILENAME,
     SCRIPT_DIR,
     SEMANTIC_TO_LEGACY_PHASE,
     SKILL_DIR,
@@ -146,41 +150,8 @@ logger = logging.getLogger(__name__)
 
 
 # ============================================================================
-# Remaining local constants (ARIS integration, not yet modularized)
+# Remaining local constants
 # ============================================================================
-
-# ARIS Integration: Review state for long-running loops
-REVIEW_STATE_FILENAME = "REVIEW_STATE.json"
-
-# ARIS Integration: Maximum rounds for auto-review-loop
-MAX_REVIEW_ROUNDS = 4
-
-# ARIS Integration: Positive assessment threshold
-POSITIVE_SCORE_THRESHOLD = 6.0
-POSITIVE_VERDICT_KEYWORDS = ("accept", "sufficient", "ready for submission", "almost")
-
-# ARIS Integration: Complete configuration
-DEFAULT_ARIS_CONFIG = {
-    "auto_proceed": False,
-    "pilot_max_hours": 2,
-    "pilot_timeout_hours": 3,
-    "max_pilot_ideas": 3,
-    "max_total_gpu_hours": 8,
-    "reviewer": {
-        "enabled": False,
-        "model": "gpt-5.4",
-        "reasoning_effort": "xhigh",
-    },
-    "max_review_rounds": 4,
-    "positive_score_threshold": 6.0,
-    "feishu": {
-        "enabled": False,
-        "mode": "off",
-    },
-}
-
-# ARIS Integration: Idea state filename for idea-discovery pipeline
-IDEA_STATE_FILENAME = "IDEA_STATE.json"
 
 # Markdown field parsing regex (re-exported from state.validator)
 MARKDOWN_FIELD_RE = re.compile(r"^- ([^:\n]+):\s*(.+)$", re.MULTILINE)
@@ -263,8 +234,8 @@ __all__ = [
     # Phase constants
     "PHASE_SEQUENCE", "PHASE_AGENT_PAIRS",
     "LEGACY_TO_SEMANTIC_PHASE", "SEMANTIC_TO_LEGACY_PHASE",
-    "PHASE_TO_GATE", "PHASE_TO_GATE_LEGACY",
-    "NEXT_PHASE", "NEXT_PHASE_LEGACY",
+    "PHASE_TO_GATE",
+    "NEXT_PHASE",
     "HANDOFF_REQUIREMENTS", "LOOP_REQUIREMENTS",
     "PHASE_REQUIRED_DELIVERABLES", "PHASE_TO_REVIEW",
     "PHASE_LOOP_KEY", "PHASE_COMPLETION",

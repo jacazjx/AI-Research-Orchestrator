@@ -162,12 +162,12 @@ class QualityGateTest(unittest.TestCase):
         self.assertEqual("writer_reviewer", PHASE_LOOP_KEY["paper"])
         self.assertEqual("reflector_curator", PHASE_LOOP_KEY["reflection"])
 
-    def test_phase_loop_key_legacy_names(self) -> None:
-        """Test PHASE_LOOP_KEY constant covers legacy phase names."""
+    def test_phase_loop_key_only_semantic_names(self) -> None:
+        """Test PHASE_LOOP_KEY constant only contains semantic phase names."""
         from constants.phases import PHASE_LOOP_KEY
 
-        self.assertEqual("survey_critic", PHASE_LOOP_KEY["01-survey"])
-        self.assertEqual("pilot_code_adviser", PHASE_LOOP_KEY["02-pilot-analysis"])
+        for key in PHASE_LOOP_KEY:
+            self.assertNotIn("-", key, f"Legacy key '{key}' should not be in PHASE_LOOP_KEY")
 
     def test_build_parser(self) -> None:
         """Test build_parser creates correct parser."""

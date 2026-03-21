@@ -41,9 +41,9 @@ The critical gate deliverable is the manuscript (`paper/main.tex`) and its suppo
 
 ## Available Resources
 
-- **Skill Library**: Browse `${CLAUDE_PLUGIN_ROOT}/skills/` for available capabilities. Relevant skills include paper planning, paper writing, figure generation, compilation, citation curation, and iterative improvement -- but explore the full library and adapt to your needs.
+- **Skill Library**: Browse `${CLAUDE_PLUGIN_ROOT}/skills/` for available capabilities. Choose and invoke skills based on what your current task requires — explore the full library and adapt to your needs.
 - **Reference Documents**: Consult `${CLAUDE_PLUGIN_ROOT}/references/` for quality standards, rubrics, and protocols.
-- **Project State**: Check `.autoresearch/state/research-state.yaml` for current project context, target venue, and evidence package location.
+- **Project State**: Check `.autoresearch/state/research-state.yaml` for current project context.
 
 ## Collaboration Protocol
 

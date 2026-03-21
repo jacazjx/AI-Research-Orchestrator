@@ -8,9 +8,11 @@ allowed-tools: "Read, Write, Edit, Grep, Glob, Bash(${CLAUDE_PLUGIN_ROOT}/script
 
 Execute the **Code ↔ Adviser** loop for pilot validation. No arguments needed.
 
+> **Note**: Pilot execution uses the unified `run-experiment` skill, which adapts its scope to the pilot phase context (minimal validation, < 24 hours).
+
 ## Steps
 
-1. **Read project state** — load `.autoresearch/state/research-state.yaml`. Confirm Gate 1 was approved.
+1. **Read project state** -- load `.autoresearch/state/research-state.yaml`. Confirm Gate 1 was approved.
 
 2. **Spawn Coder agent**:
    ```
@@ -22,9 +24,9 @@ Execute the **Code ↔ Adviser** loop for pilot validation. No arguments needed.
    Agent(subagent_type="airesearchorchestrator:adviser", prompt="...")
    ```
 
-4. **Evaluate gate** — read `docs/pilot/phase-scorecard.md` and present Gate 2 scorecard to the user.
+4. **Evaluate gate** -- read `docs/pilot/phase-scorecard.md` and present Gate 2 scorecard to the user.
 
-5. **Loop or advance** — score < 3.5: loop with Adviser feedback. Score ≥ 3.5: await human approval before `/run-experiments`.
+5. **Loop or advance** -- score < 3.5: loop with Adviser feedback. Score >= 3.5: await human approval before `/run-experiments`.
 
 ## Required deliverables
 

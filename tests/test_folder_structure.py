@@ -203,23 +203,14 @@ class TestHandoffRequirementsSemanticNames(unittest.TestCase):
 class TestLegacyMappings(unittest.TestCase):
     """Test backward compatibility mappings."""
 
-    def test_phase_to_gate_legacy_defined(self) -> None:
-        """PHASE_TO_GATE_LEGACY should map old numbered phase names to gates."""
-        self.assertTrue(hasattr(COMMON, "PHASE_TO_GATE_LEGACY"))
-        self.assertEqual(COMMON.PHASE_TO_GATE_LEGACY["01-survey"], "gate_1")
-        self.assertEqual(COMMON.PHASE_TO_GATE_LEGACY["02-pilot-analysis"], "gate_2")
-        self.assertEqual(COMMON.PHASE_TO_GATE_LEGACY["03-full-experiments"], "gate_3")
-        self.assertEqual(COMMON.PHASE_TO_GATE_LEGACY["04-paper"], "gate_4")
-        self.assertEqual(COMMON.PHASE_TO_GATE_LEGACY["05-reflection-evolution"], "gate_5")
-
-    def test_next_phase_legacy_defined(self) -> None:
-        """NEXT_PHASE_LEGACY should map old numbered phases to next numbered phase."""
-        self.assertTrue(hasattr(COMMON, "NEXT_PHASE_LEGACY"))
-        self.assertEqual(COMMON.NEXT_PHASE_LEGACY["01-survey"], "02-pilot-analysis")
-        self.assertEqual(COMMON.NEXT_PHASE_LEGACY["02-pilot-analysis"], "03-full-experiments")
-        self.assertEqual(COMMON.NEXT_PHASE_LEGACY["03-full-experiments"], "04-paper")
-        self.assertEqual(COMMON.NEXT_PHASE_LEGACY["04-paper"], "05-reflection-evolution")
-        self.assertEqual(COMMON.NEXT_PHASE_LEGACY["05-reflection-evolution"], "06-archive")
+    def test_legacy_to_semantic_phase_defined(self) -> None:
+        """LEGACY_TO_SEMANTIC_PHASE should map old numbered phase names to semantic names."""
+        self.assertTrue(hasattr(COMMON, "LEGACY_TO_SEMANTIC_PHASE"))
+        self.assertEqual(COMMON.LEGACY_TO_SEMANTIC_PHASE["01-survey"], "survey")
+        self.assertEqual(COMMON.LEGACY_TO_SEMANTIC_PHASE["02-pilot-analysis"], "pilot")
+        self.assertEqual(COMMON.LEGACY_TO_SEMANTIC_PHASE["03-full-experiments"], "experiments")
+        self.assertEqual(COMMON.LEGACY_TO_SEMANTIC_PHASE["04-paper"], "paper")
+        self.assertEqual(COMMON.LEGACY_TO_SEMANTIC_PHASE["05-reflection-evolution"], "reflection")
 
     def test_old_to_new_path_mapping_defined(self) -> None:
         """OLD_TO_NEW_PATH_MAPPING should map old paths to new paths."""

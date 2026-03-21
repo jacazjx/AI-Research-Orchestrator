@@ -132,11 +132,11 @@ Each phase transition requires:
 
 The commands delegate to these skills:
 
-- `skills/ideation/` - Research ideation and idea development
+- `skills/ideation/` - Research ideation: generate, filter, verify novelty
 - `skills/literature/` - Literature search and survey
-- `skills/run-experiment/` - Experiment execution
-- `skills/paper-write/` - Paper writing
-- `skills/auto-review-loop/` - Autonomous review
+- `skills/run-experiment/` - Experiment execution (pilot and full scale)
+- `skills/paper-write/` - Paper planning and LaTeX writing
+- `skills/external-review/` - External review via Codex MCP (single-shot or multi-round)
 
 ## Configuration
 

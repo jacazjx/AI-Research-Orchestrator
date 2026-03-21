@@ -62,13 +62,6 @@ SEMANTIC_TO_LEGACY_PHASE = {v: k for k, v in LEGACY_TO_SEMANTIC_PHASE.items()}
 
 # Phase to gate mapping
 PHASE_TO_GATE = {
-    # Legacy phase names
-    "01-survey": "gate_1",
-    "02-pilot-analysis": "gate_2",
-    "03-full-experiments": "gate_3",
-    "04-paper": "gate_4",
-    "05-reflection-evolution": "gate_5",
-    # New semantic names
     "survey": "gate_1",
     "pilot": "gate_2",
     "experiments": "gate_3",
@@ -149,49 +142,10 @@ HANDOFF_REQUIREMENTS = {
 }
 
 # Required deliverables for each phase
+# Only CORE gate deliverables listed here.
+# Agents decide what additional artifacts to produce.
+# HANDOFF_REQUIREMENTS may check additional files for phase transitions.
 PHASE_REQUIRED_DELIVERABLES = {
-    # Legacy phase names (kept for backward compatibility)
-    "01-survey": (
-        "survey_round_log",
-        "critic_round_log",
-        "readiness_report",
-        "survey_scorecard",
-    ),
-    "02-pilot-analysis": (
-        "problem_validation_report",
-        "problem_analysis",
-        "pilot_plan",
-        "pilot_results",
-        "pilot_adviser_review",
-        "pilot_validation_report",
-        "pilot_scorecard",
-    ),
-    "03-full-experiments": (
-        "experiment_spec",
-        "run_registry",
-        "results_summary",
-        "checkpoint_index",
-        "experiment_adviser_review",
-        "evidence_package_index",
-        "experiment_scorecard",
-    ),
-    "04-paper": (
-        "paper_draft",
-        "citation_audit_report",
-        "reviewer_report",
-        "rebuttal_log",
-        "final_acceptance_report",
-        "paper_scorecard",
-    ),
-    "05-reflection-evolution": (
-        "lessons_learned",
-        "overlay_draft",
-        "runtime_improvement_report",
-        "reflection_scorecard",
-    ),
-    # Semantic phase names: only CORE gate deliverables listed here.
-    # Agents decide what additional artifacts to produce.
-    # HANDOFF_REQUIREMENTS may check additional files for phase transitions.
     "survey": ("readiness_report",),
     "pilot": ("pilot_results",),
     "experiments": ("evidence_package_index",),
@@ -246,24 +200,8 @@ DEFAULT_DELIVERABLES = {
     "archive_index": ".autoresearch/archive/archive-index.md",
 }
 
-# Phase to gate mapping (legacy only)
-PHASE_TO_GATE_LEGACY = {
-    "01-survey": "gate_1",
-    "02-pilot-analysis": "gate_2",
-    "03-full-experiments": "gate_3",
-    "04-paper": "gate_4",
-    "05-reflection-evolution": "gate_5",
-}
-
 # Next phase mapping
 NEXT_PHASE = {
-    # Legacy phase names
-    "01-survey": "02-pilot-analysis",
-    "02-pilot-analysis": "03-full-experiments",
-    "03-full-experiments": "04-paper",
-    "04-paper": "05-reflection-evolution",
-    "05-reflection-evolution": "06-archive",
-    # New semantic names
     "survey": "pilot",
     "pilot": "experiments",
     "experiments": "paper",
@@ -271,23 +209,8 @@ NEXT_PHASE = {
     "reflection": "archive",
 }
 
-NEXT_PHASE_LEGACY = {
-    "01-survey": "02-pilot-analysis",
-    "02-pilot-analysis": "03-full-experiments",
-    "03-full-experiments": "04-paper",
-    "04-paper": "05-reflection-evolution",
-    "05-reflection-evolution": "06-archive",
-}
-
 # Phase to review mapping
 PHASE_TO_REVIEW = {
-    # Legacy phase names
-    "01-survey": "survey_critic",
-    "02-pilot-analysis": "pilot_adviser",
-    "03-full-experiments": "experiment_adviser",
-    "04-paper": "paper_reviewer",
-    "05-reflection-evolution": "reflection_curator",
-    # New semantic phase names
     "survey": "survey_critic",
     "pilot": "pilot_adviser",
     "experiments": "experiment_adviser",
@@ -297,13 +220,6 @@ PHASE_TO_REVIEW = {
 
 # Phase loop key mapping
 PHASE_LOOP_KEY = {
-    # Legacy phase names
-    "01-survey": "survey_critic",
-    "02-pilot-analysis": "pilot_code_adviser",
-    "03-full-experiments": "experiment_code_adviser",
-    "04-paper": "writer_reviewer",
-    "05-reflection-evolution": "reflector_curator",
-    # New semantic phase names
     "survey": "survey_critic",
     "pilot": "pilot_code_adviser",
     "experiments": "experiment_code_adviser",
@@ -313,13 +229,6 @@ PHASE_LOOP_KEY = {
 
 # Phase completion percentages
 PHASE_COMPLETION = {
-    # Legacy phase names
-    "01-survey": 0,
-    "02-pilot-analysis": 20,
-    "03-full-experiments": 40,
-    "04-paper": 60,
-    "05-reflection-evolution": 80,
-    # New semantic phase names
     "survey": 0,
     "pilot": 20,
     "experiments": 40,
@@ -370,51 +279,6 @@ LOOP_REQUIREMENTS = {
 # Deprecated: gate validation uses reviewer agent judgment instead of structured signals.
 # Kept as empty dict for backward compatibility (code may reference this constant).
 STRUCTURED_SIGNAL_REQUIREMENTS: dict = {}
-# STRUCTURED_SIGNAL_REQUIREMENTS = {
-#     "survey": {
-#         "survey_scorecard": {"Gate readiness": {"approve", "advance"}},
-#         "readiness_report": {"Recommendation": {"approve"}},
-#     },
-#     "pilot": {
-#         "pilot_scorecard": {"Gate readiness": {"approve", "advance"}},
-#         "pilot_adviser_review": {
-#             "Status": {"approved"},
-#             "Recommendation": {"approve", "advance"},
-#         },
-#         "pilot_validation_report": {
-#             "Continue to full experiments": {"yes", "approved", "true"}
-#         },
-#         "problem_validation_report": {"Validation verdict": {"validated"}},
-#     },
-#     "experiments": {
-#         "experiment_scorecard": {"Gate readiness": {"approve", "advance"}},
-#         "experiment_adviser_review": {
-#             "Status": {"approved"},
-#             "Recommendation": {"approve", "advance"},
-#             "Handoff decision": {"approve", "advance"},
-#         },
-#     },
-#     "paper": {
-#         "paper_scorecard": {"Gate readiness": {"approve", "advance"}},
-#         "citation_audit_report": {
-#             "Citation authenticity status": {"approved", "verified"}
-#         },
-#         "reviewer_report": {
-#             "Submission bar": {"top-tier journal/conference ready"},
-#             "Verdict": {"accept", "minor revision"},
-#         },
-#         "final_acceptance_report": {
-#             "Meets top-tier venue bar": {"yes", "approved", "true"},
-#             "Recommendation": {"approve"},
-#         },
-#     },
-#     "reflection": {
-#         "reflection_scorecard": {"Gate readiness": {"approve", "advance"}},
-#         "runtime_improvement_report": {
-#             "Recommendation": {"approve", "approved-for-consideration"}
-#         },
-#     },
-# }
 
 
 # Helper functions for phase name conversion

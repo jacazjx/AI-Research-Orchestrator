@@ -40,9 +40,9 @@ The critical gate deliverable is `docs/survey/research-readiness-report.md`. The
 
 ## Available Resources
 
-- **Skill Library**: Browse `${CLAUDE_PLUGIN_ROOT}/skills/` for available capabilities. Choose and invoke skills based on what your current task requires. Relevant skills include literature survey, theoretical derivation, hypothesis formulation, novelty checking, and research ideation -- but explore the full library and adapt to your needs.
+- **Skill Library**: Browse `${CLAUDE_PLUGIN_ROOT}/skills/` for available capabilities. Choose and invoke skills based on what your current task requires — explore the full library and adapt to your needs.
 - **Reference Documents**: Consult `${CLAUDE_PLUGIN_ROOT}/references/` for quality standards, rubrics, and protocols.
-- **Project State**: Check `.autoresearch/state/research-state.yaml` for current project context, phase status, and configuration.
+- **Project State**: Check `.autoresearch/state/research-state.yaml` for current project context.
 
 ## Collaboration Protocol
 

@@ -21,35 +21,34 @@ class TestPhaseAgentNaming:
         assert primary == "writer", f"Expected 'writer', got '{primary}'"
         assert reviewer == "reviewer", f"Expected 'reviewer', got '{reviewer}'"
 
-    def test_all_agent_names_exist_as_skills(self):
-        """Every agent name in PHASE_AGENT_PAIRS should have a corresponding SKILL.md.
+    def test_all_agent_names_exist_as_agent_definitions(self):
+        """Every agent name in PHASE_AGENT_PAIRS should have an AGENT.md in agents/.
 
-        Note: Some agent names map to different skill directory names:
-        - "code" agent -> "coder" skill directory
+        Agent role definitions live in agents/<role>/AGENT.md, not in skills/.
         """
         from constants.phases import PHASE_AGENT_PAIRS
 
-        skill_dir = Path(__file__).parent.parent / "skills"
+        agent_dir = Path(__file__).parent.parent / "agents"
 
-        # Mapping from agent name to skill directory name (when they differ)
-        agent_to_skill = {
-            "code": "coder",  # "code" agent uses "coder" skill
+        # Mapping from agent name to agent directory name (when they differ)
+        agent_to_dir = {
+            "code": "coder",  # "code" agent uses "coder" directory
         }
 
         for phase, (primary, reviewer) in PHASE_AGENT_PAIRS.items():
-            primary_skill_name = agent_to_skill.get(primary, primary)
-            reviewer_skill_name = agent_to_skill.get(reviewer, reviewer)
+            primary_dir_name = agent_to_dir.get(primary, primary)
+            reviewer_dir_name = agent_to_dir.get(reviewer, reviewer)
 
-            primary_skill = skill_dir / primary_skill_name / "SKILL.md"
-            reviewer_skill = skill_dir / reviewer_skill_name / "SKILL.md"
+            primary_agent = agent_dir / primary_dir_name / "AGENT.md"
+            reviewer_agent = agent_dir / reviewer_dir_name / "AGENT.md"
 
-            assert primary_skill.exists(), (
-                f"Missing skill for primary agent '{primary}'"
-                f" (looked in '{primary_skill_name}') in phase '{phase}'"
+            assert primary_agent.exists(), (
+                f"Missing AGENT.md for primary agent '{primary}'"
+                f" (looked in '{primary_dir_name}') in phase '{phase}'"
             )
-            assert reviewer_skill.exists(), (
-                f"Missing skill for reviewer agent '{reviewer}'"
-                f" (looked in '{reviewer_skill_name}') in phase '{phase}'"
+            assert reviewer_agent.exists(), (
+                f"Missing AGENT.md for reviewer agent '{reviewer}'"
+                f" (looked in '{reviewer_dir_name}') in phase '{phase}'"
             )
 
     def test_agent_names_no_hyphens(self):

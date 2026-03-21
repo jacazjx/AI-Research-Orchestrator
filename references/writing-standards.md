@@ -1,6 +1,6 @@
 # Writing Standards
 
-This document covers academic writing conventions, APA style essentials, figure and table standards, paper quality assurance, and citation formatting rules for research manuscripts.
+Academic writing conventions, manuscript structure, common pitfalls, figure/table standards, citation formatting, and paper quality assurance for research manuscripts.
 
 ---
 
@@ -8,29 +8,11 @@ This document covers academic writing conventions, APA style essentials, figure 
 
 ### Core Principles
 
-#### 1. Objectivity
-
-| Feature | Academic | Non-Academic |
-|---------|----------|--------------|
-| Voice | Third person | First/second person |
-| Emotion | Neutral | Expressive |
-| Opinion | Evidence-based | Personal |
-| Language | Precise | Colloquial |
-
-#### 2. Precision
-
-Use precise, unambiguous language:
-- BAD: "The model works well."
-- GOOD: "The model achieves 94.2% accuracy on the test set."
-
-#### 3. Hedging
-
-| Hedge Type | Examples |
-|------------|----------|
-| Probability | likely, probably, possibly |
-| Frequency | often, frequently, sometimes |
-| Quantity | approximately, roughly, about |
-| Conditionality | may, might, could, would |
+| Principle | Academic Standard | Avoid |
+|-----------|-------------------|-------|
+| Objectivity | Third person, neutral, evidence-based, precise | First/second person, emotional, opinion-based, colloquial |
+| Precision | "The model achieves 94.2% accuracy on the test set." | "The model works well." |
+| Hedging | "may", "suggests", "likely" for speculative claims | Over-hedging: "could potentially suggest that results might possibly indicate..." |
 
 ### Document Structure
 
@@ -44,7 +26,7 @@ Broad context (1-2 sentences)
   -> Implications (1-2 sentences)
 ```
 
-**Checklist:** Self-contained (no citations), no undefined abbreviations, key results with numbers, under word limit (150-300 words).
+**Checklist:** Self-contained (no citations), no undefined abbreviations, key results with numbers, under word limit (150-300 words). Write last.
 
 #### Introduction (Inverted Triangle)
 
@@ -53,22 +35,22 @@ Broad context (1-2 sentences)
 3. **Problem:** What is unknown/unresolved?
 4. **Gap:** What is missing in prior work?
 5. **Contribution:** What did you do?
-6. **Preview:** What follows?
+6. **Preview:** Paper structure overview
 
 #### Section Quality Standards
 
 | Section | Key Requirements |
 |---------|-----------------|
 | Abstract | 150-250 words, covers problem, approach, results, impact |
-| Introduction | Clear motivation, contributions listed |
-| Related Work | Comprehensive, fair, differentiated |
-| Method | Complete, reproducible, well-illustrated |
-| Experiments | Complete setup, all details |
+| Introduction | Clear motivation, contributions listed, funnel structure |
+| Related Work | Comprehensive, fair, organized by approach, ends with gap identification |
+| Method | Complete, reproducible, well-illustrated, notation defined upfront |
+| Experiments | Complete setup, all details, ablation studies |
+| Results | Objective presentation with statistics, all figures/tables referenced |
+| Discussion | Interprets results, compares with related work, limitations acknowledged |
 | Conclusion | Summary + limitations + future work |
 
-### Style Guidelines
-
-#### Tense Usage
+### Tense Usage
 
 | Section | Tense | Example |
 |---------|-------|---------|
@@ -79,23 +61,79 @@ Broad context (1-2 sentences)
 | Discussion (interpretation) | Present | This suggests... |
 | Conclusion | Present | We conclude that... |
 
-#### Paragraph Structure (CLAIM)
+---
 
-- **C**laim: Topic sentence
-- **L**ead: Explanation
-- **A**rgument: Evidence
-- **I**nterpretation: Analysis
-- **M**ake connection: Transition
+## Paragraph Structure
 
-#### Transitions
+### The MEAL Plan
 
-| Purpose | Transition Words |
-|---------|------------------|
-| Addition | furthermore, moreover, additionally |
-| Contrast | however, nevertheless, conversely |
-| Cause | therefore, consequently, thus |
+| Component | Purpose | Example |
+|-----------|---------|---------|
+| **M**ain Idea | Topic sentence | "Our approach improves efficiency through a novel caching mechanism." |
+| **E**vidence | Supporting data or citation | "Experiments show 40% speedup (Table 3)." |
+| **A**nalysis | Interpretation | "This improvement stems from reduced redundant computation." |
+| **L**ink | Connect to next paragraph | "Having established efficiency gains, we now examine accuracy." |
+
+### Paragraph Length
+
+| Context | Recommended Length |
+|---------|-------------------|
+| Introduction | 4-8 sentences |
+| Methods | 4-6 sentences |
+| Results | 3-5 sentences per finding |
+| Discussion | 5-8 sentences |
+
+Warning signs: single-sentence paragraphs (merge), over 10 sentences (split), no clear topic sentence.
+
+### Transitions
+
+| Purpose | Phrases |
+|---------|---------|
+| Addition | furthermore, moreover, additionally, similarly |
+| Contrast | however, nevertheless, conversely, in contrast |
+| Cause | therefore, consequently, thus, hence |
 | Example | for instance, specifically, notably |
-| Sequence | first, second, subsequently |
+| Sequence | first, second, subsequently, finally |
+
+### Signposting
+
+Guide readers through complex arguments:
+- "To address this, we propose..."
+- "Building on this observation..."
+- "As shown in Figure 3..."
+- "This section is organized as follows..."
+
+---
+
+## Common Mistakes to Avoid
+
+### Weak Openings
+
+| Avoid | Use Instead |
+|-------|-------------|
+| "It is important to note that..." | Direct statement |
+| "It should be mentioned that..." | State the point directly |
+| "In terms of..." | Use specific preposition |
+
+### AI-Typical Language
+
+| AI Phrase | Natural Alternative |
+|-----------|-------------------|
+| "delve into" | "examine", "explore" |
+| "pivotal", "crucial", "paramount" | "key", "important", "primary" |
+| "It is worth noting that" | Remove entirely |
+| "In order to" | "to" |
+| "underscores" | "highlights", "emphasizes" |
+| "tapestry", "landscape" | Remove or use "field", "area" |
+
+### Other Pitfalls
+
+- **Ambiguous pronouns**: "This demonstrates its effectiveness" -- unclear referent. Be explicit.
+- **Passive voice overuse**: "We conducted experiments" is clearer than "Experiments were conducted." Use passive only when the actor is irrelevant.
+- **Redundancy**: "past history", "basic fundamentals", "reason why" -- drop the redundant word.
+- **Run-on sentences**: Break sentences over 30 words.
+- **Dangling modifiers**: "Using this approach, the results improved" -- who used it? Fix: "Using this approach, we improved the results."
+- **Excessive hedging**: Quantify when you can. "X% better" beats "somewhat better."
 
 ---
 
@@ -103,81 +141,58 @@ Broad context (1-2 sentences)
 
 ### General Principles
 
-Every figure and table should:
-1. **Communicate** a specific finding or concept
-2. **Replace** text that would be lengthy or confusing
-3. **Support** the narrative of the paper
-4. Be understandable without reading the main text (self-containment rule)
-
-### Figure Types
-
-| Type | Best For | Example |
-|------|----------|---------|
-| Line plot | Trends over time/epochs | Training curves |
-| Bar chart | Comparing categories | Model comparison |
-| Scatter plot | Relationships | Correlation analysis |
-| Heatmap | Matrices/distributions | Attention weights |
-| Box plot | Distributions | Performance variance |
-| Violin plot | Distribution shape | Accuracy spread |
+Every figure and table should: (1) communicate a specific finding, (2) be understandable without the main text, (3) support the narrative.
 
 ### Figure Best Practices
 
-- **Resolution**: 300 DPI minimum
-- **Format**: Vector (PDF/SVG) preferred
+- **Resolution**: 300 DPI minimum; vector (PDF/SVG) preferred
 - **Labels**: Readable at printed size
 - **Captions**: Self-contained explanation
-- **Colors**: Colorblind-safe palettes (Blue & Orange, viridis). Avoid Red & Green together or rainbow colormaps.
+- **Colors**: Colorblind-safe palettes (Blue & Orange, viridis). Avoid Red & Green or rainbow.
 - **Line styles**: Use different styles (solid, dashed, dotted) for B&W printing
 
-### Table Formatting Rules
+### Figure Types
+
+| Type | Best For |
+|------|----------|
+| Line plot | Trends over time/epochs |
+| Bar chart | Comparing categories |
+| Scatter plot | Relationships/correlation |
+| Heatmap | Matrices/distributions |
+| Box/Violin plot | Distribution shape and variance |
+
+### Table Formatting
 
 | Element | Convention |
 |---------|------------|
 | Title | Above table, italicized |
 | Headers | Bold, title case |
 | Numbers | Right-aligned, consistent decimals |
-| Text | Left-aligned |
-| Notes | Below table, smaller font |
 | Lines | Horizontal only (top, below headers, bottom) |
+| Best result | **Bold**, with significance markers (*, **, ***) |
 
-### Result Tables (ML Standard)
+Include: arrows for direction (higher/lower is better), mean +/- std, significance tests.
 
-| Method | Accuracy (up arrow) | F1 (up arrow) | Time (down arrow) |
-|--------|------------|------|--------|
-| Baseline | 85.2 +/- 0.3 | 0.841 | 12.3 |
-| Method A | 87.1 +/- 0.2 | 0.863 | 15.7 |
-| **Ours** | **91.3 +/- 0.2** | **0.907** | **11.8** |
+### Error Bars and Significance
 
-Include: Arrows for better direction, mean +/- std, bold for best, significance markers (*, **, ***)
-
-### Statistical Visualization
-
-| Error Bar Type | When to Use |
+| Type | When to Use |
 |------|-------------|
 | Standard deviation (SD) | Showing data spread |
 | Standard error (SEM) | Showing precision of mean |
 | 95% CI | Showing confidence in estimate |
-
-### Significance Indicators
 
 ```
 ns (not significant)   p > 0.05
 *                      p <= 0.05
 **                     p <= 0.01
 ***                    p <= 0.001
-****                   p <= 0.0001
 ```
 
 ### Sizing for Publication
 
 ```python
-# Single-column width
-fig, ax = plt.subplots(figsize=(3.5, 2.5))
-
-# Two-column width
-fig, ax = plt.subplots(figsize=(7, 4))
-
-# Save at appropriate DPI
+fig, ax = plt.subplots(figsize=(3.5, 2.5))   # Single-column
+fig, ax = plt.subplots(figsize=(7, 4))         # Two-column
 plt.savefig('figure.pdf', dpi=300, bbox_inches='tight')
 ```
 
@@ -185,61 +200,16 @@ plt.savefig('figure.pdf', dpi=300, bbox_inches='tight')
 
 ## Citation Formatting
 
-### Major Venue Style Preferences
+### Venue Style Preferences
 
 | Venue | Style | Notes |
 |-------|-------|-------|
-| NeurIPS | BibTeX | LaTeX template provided |
-| ICML | BibTeX | Author-year in-text |
-| ICLR | BibTeX | Open review format |
+| NeurIPS/ICML/ICLR | BibTeX | LaTeX template provided |
 | CVPR | IEEE-like | Numbered citations |
 | ACL | ACL style | Custom BibTeX style |
 | AAAI | AAAI style | Numbered citations |
-| JMLR | MLA-like | Author-year |
-
-### Quick Reference Card
-
-| Element | IEEE | ACM | APA |
-|---------|------|-----|-----|
-| In-text | [1] | [Smith 2020] | (Smith, 2020) |
-| Authors | A. Smith | Smith, A. | Smith, A. |
-| Year | After title | After author | After author |
-| Journal | Italic | Roman | Italic |
-| Pages | 100-115 | 100-115 | 100-115 |
-| DOI | Optional | DOI: | https://doi.org/ |
 
 ### BibTeX Entry Types
-
-```bibtex
-@article{smith2020,
-  author    = {Smith, Adam and Jones, Beth},
-  title     = {Title of the Article},
-  journal   = {Journal Name},
-  volume    = {10},
-  number    = {2},
-  pages     = {100--115},
-  year      = {2020},
-  doi       = {10.1000/xyz123}
-}
-
-@inproceedings{lee2021,
-  author    = {Lee, Chris and Wang, David and Chen, Eric},
-  title     = {Paper Title},
-  booktitle = {Proceedings of the International Conference on Machine Learning},
-  pages     = {1234--1245},
-  year      = {2021}
-}
-
-@misc{vaswani2017,
-  author    = {Vaswani, Ashish and others},
-  title     = {Attention Is All You Need},
-  year      = {2017},
-  eprint    = {1706.03762},
-  archivePrefix = {arXiv}
-}
-```
-
-### Required Fields by Type
 
 | Entry Type | Required Fields |
 |------------|-----------------|
@@ -247,135 +217,40 @@ plt.savefig('figure.pdf', dpi=300, bbox_inches='tight')
 | @inproceedings | author, title, booktitle, year |
 | @book | author, title, publisher, year |
 | @misc | author, title, year |
-| @phdthesis | author, title, school, year |
 
 ### APA 7th Edition Essentials
 
-**In-Text:**
-- One author: (Smith, 2020) or Smith (2020)
-- Two authors: (Smith & Jones, 2020)
-- Three+: (Smith et al., 2020)
-
-**Reference List:**
-- Alphabetical by surname, hanging indent, double-spaced
-- DOI format: https://doi.org/xxxxx
-
-**Statistical Reporting (APA):**
-```
-t-test: t(58) = 3.45, p < .001, d = 0.82
-ANOVA: F(2, 57) = 12.34, p < .001, eta-squared = 0.30
-Correlation: r(58) = .67, p < .001
-95% CI [lower, upper]
-```
+- One author: (Smith, 2020); Two: (Smith & Jones, 2020); Three+: (Smith et al., 2020)
+- Reference list: alphabetical, hanging indent, DOI as https://doi.org/xxxxx
 
 ### Citation Best Practices
 
-| Cite | Don't Cite |
-|------|------------|
-| Direct quotes | Common knowledge |
-| Paraphrased ideas | Your own prior work (unless published) |
-| Methods from others | Facts in public domain |
-| Data sources | General concepts |
-| Code/software | Your unpublished thoughts |
-
-### Typical Citation Counts
-
-| Document Type | Typical Citations |
-|---------------|-------------------|
-| Conference paper | 20-40 |
-| Journal article | 30-60 |
-| Survey paper | 100+ |
-| PhD thesis | 200+ |
+Cite: direct quotes, paraphrased ideas, methods from others, data sources, code/software.
+Do not cite: common knowledge, public domain facts, general concepts.
 
 ---
 
 ## Paper Quality Assurance
 
-### Venue Standards
+### Peer Review Criteria
 
-#### Top-Tier Conferences
+| Criterion | What Reviewers Look For |
+|-----------|------------------------|
+| Novelty | What's new? Is it significant? |
+| Soundness | Is the methodology correct? |
+| Significance | Does it matter? Impact? |
+| Clarity | Is the writing clear? |
+| Reproducibility | Can others replicate this? |
+| Comparison | Fair baselines? Honest comparison? |
 
-| Venue | Acceptance Criteria | Typical Bar |
-|-------|---------------------|-------------|
-| CVPR | Novelty + Visual Evidence | Top 25% |
-| NeurIPS | Novelty + Theory/Empirical | Top 20% |
-| ICLR | Novelty + Reproducibility | Top 30% |
-| ACL | Novelty + Linguistic Insight | Top 25% |
+### Addressing Common Reviewer Concerns
 
-#### Top-Tier Journals
+- **Novelty**: Clear contribution statement, explicit differentiation in Related Work, quantitative comparison.
+- **Methodology**: Hyperparameter settings, multiple runs with variance, significance tests, ablation studies.
+- **Significance**: Motivate clearly, show practical applications, quantify improvements.
+- **Clarity**: Figures for complex concepts, all notation defined, pseudocode for algorithms.
 
-| Venue | Acceptance Criteria | Typical Bar |
-|-------|---------------------|-------------|
-| TPAMI | Depth + Impact | ~15% |
-| JMLR | Theory + Rigor | ~20% |
-| Nature/Science | Impact + Broad Interest | <10% |
-
-### Quality Dimensions
-
-#### 1. Novelty Assessment
-
-| Type | Description | Evidence Required |
-|------|-------------|-------------------|
-| Problem Novelty | New problem formulation | Problem not addressed before |
-| Method Novelty | New algorithm/architecture | Technical innovation |
-| Theoretical Novelty | New insight/proposition | Mathematical contribution |
-| Empirical Novelty | New experimental findings | Novel results |
-
-#### 2. Evidence Strength
-
-**Experimental Rigor Checklist:**
-- [ ] Clear hypothesis stated
-- [ ] Appropriate evaluation metrics
-- [ ] Statistical significance reported
-- [ ] Multiple runs for variance
-- [ ] Ablation studies included
-- [ ] Baselines properly implemented
-
-#### 3. Theoretical Foundation
-
-**Correctness Checks:**
-- All variables defined, notation consistent, derivations correct
-- Assumptions clearly stated and justified
-- Claims precisely worded, scope limited to evidence
-
-#### 4. Limitations Section Template
-
-```markdown
-## Limitations
-
-1. **[Limitation 1]**: [Description]
-   - Impact: [How this affects applicability]
-   - Mitigation: [Possible future solutions]
-```
-
-### Content Authenticity
-
-#### Evidence-to-Claim Mapping
-
-For each claim in the manuscript:
-```markdown
-### Claim: "[exact quote from paper]"
-
-**Evidence Source:**
-- Document: [filename]
-- Section: [section]
-- Data: [specific numbers]
-
-**Verification Status:** [Verified/Partial/Unsupported]
-```
-
-#### Fabrication Prevention
-
-| Red Flag | Detection Method |
-|----------|-----------------|
-| Numbers not in logs | Cross-check with evidence package |
-| Citations to non-existent papers | DOI/Scholar verification |
-| Perfect results | Statistical plausibility check |
-| Missing experiments | Compare to experiment plan |
-
-### Review Protocol
-
-#### Review Dimensions
+### Review Dimensions
 
 | Dimension | Weight | Focus Areas |
 |-----------|--------|-------------|
@@ -385,62 +260,21 @@ For each claim in the manuscript:
 | Analysis | 15% | Depth, discussion, future work |
 | Writing | 15% | Clarity, structure, presentation |
 
-#### Review Template
+### Content Authenticity
 
-```markdown
-# Manuscript Review
+For each claim in the manuscript, map to evidence source, verify against experiment logs. Red flags: numbers not in logs, citations to non-existent papers, perfect results, missing experiments.
 
-## Decision: [Accept / Minor Revision / Major Revision / Reject]
+### Pre-Submission Checklist
 
-## Summary
-[Brief overall assessment]
-
-## Strengths
-1. [Specific strength]
-
-## Weaknesses
-1. [Specific weakness with location]
-
-## Detailed Scores
-
-| Dimension | Score | Comments |
-|-----------|-------|----------|
-| Novelty | [1-5] | [comments] |
-| Evidence | [1-5] | [comments] |
-| Theory | [1-5] | [comments] |
-| Analysis | [1-5] | [comments] |
-| Writing | [1-5] | [comments] |
-
-## Blocking Issues
-[List issues that prevent acceptance]
-
-## Recommendations
-[List specific, actionable recommendations]
-```
-
-### Gate 4 Requirements
-
-| Requirement | Status |
-|-------------|--------|
-| Manuscript complete | [ ] |
-| Citation audit passed | [ ] |
-| Content authenticity verified | [ ] |
-| Venue formatting compliant | [ ] |
-| Score >= 4.0 average | [ ] |
-| No blocking issues | [ ] |
-
-### Pre-Submission Quality Checklist
-
-- [ ] Title is informative and concise
-- [ ] Abstract is self-contained
-- [ ] Introduction has clear motivation and contribution
-- [ ] Methods are reproducible
-- [ ] Results are clearly presented with statistics
+- [ ] Title informative and concise
+- [ ] Abstract self-contained, under word limit
+- [ ] Introduction has clear motivation and contributions
+- [ ] Methods reproducible
+- [ ] Results with statistics, all figures/tables referenced
 - [ ] Discussion addresses limitations
-- [ ] Conclusion summarizes contributions
-- [ ] All claims are supported by evidence
-- [ ] Citations are complete and correct
-- [ ] Language is precise and objective
-- [ ] Figures are high-resolution and colorblind-safe
-- [ ] Tables have consistent formatting
-- [ ] Formatting follows venue guidelines
+- [ ] All claims supported by evidence
+- [ ] Citations complete, correct, DOI-verified
+- [ ] Language precise and objective, no AI-typical phrases
+- [ ] Figures high-resolution and colorblind-safe
+- [ ] Tables consistently formatted
+- [ ] Venue formatting guidelines followed
