@@ -22,7 +22,7 @@ Transform informal research hypotheses into mathematically rigorous formulations
 
 ## When to Use
 
-**Trigger: After `define-idea` but before `research-lit`**
+**Trigger: After `problem-analysis` but before `literature`**
 
 ```
 Research Idea → Idea Definition → Theoretical Derivation → Literature Survey
@@ -380,10 +380,10 @@ Before completion:
 
 | Skill | Relationship |
 |-------|--------------|
-| `define-idea` | Takes hypothesis as input |
-| `research-lit` | Provides theoretical foundation for literature search |
-| `audit-derivation` | Critic reviews the derivation |
-| `design-exp` | Uses predictions for experiment design |
+| `problem-analysis` | Takes hypothesis as input |
+| `literature` | Provides theoretical foundation for literature search |
+| `audit` | Critic reviews the derivation |
+| `experiment-design` | Uses predictions for experiment design |
 
 ## Key Rules
 

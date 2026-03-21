@@ -1,10 +1,3 @@
----
-name: airesearchorchestrator:statistical-reporting
-description: Statistical analysis guidance including test selection, assumption checking, effect sizes, power analysis, and APA reporting. Use when user says "statistical analysis", "power analysis", "effect size", "统计分析", or needs help with statistical reporting.
-user-invocable: false
-argument-hint: [data-description-or-analysis-goal]
-allowed-tools: Bash(python, R), Read, Write, Edit, Grep, Glob
----
 # Statistical Reporting
 
 ## Overview

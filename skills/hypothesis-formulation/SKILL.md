@@ -352,10 +352,10 @@ See `references/experimental_design_patterns.md` for design patterns:
 ## Integration with Research Pipeline
 
 This skill integrates with:
-- **research-lit**: Uses literature search results
-- **define-idea**: Provides hypothesis for idea definition
-- **audit-survey**: Quality gate for hypothesis quality
-- **design-exp**: Receives hypotheses for experiment design
+- **literature**: Uses literature search results
+- **problem-analysis**: Provides hypothesis for problem analysis
+- **audit**: Quality gate for hypothesis quality
+- **experiment-design**: Receives hypotheses for experiment design
 
 ## Output Files
 

@@ -314,8 +314,8 @@ See `references/academic_writing_style.md` for comprehensive guidelines on:
 This skill integrates with:
 - **paper-plan**: Receives section structure and key points
 - **paper-figure**: Receives figure specifications
-- **audit-paper**: Quality gate for paper quality
-- **latex-citation-curator**: Verified citation library
+- **audit**: Quality gate for paper quality
+- **citation**: Verified citation library
 
 ## References
 

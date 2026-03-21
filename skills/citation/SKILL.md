@@ -215,7 +215,7 @@ Save finalized index to `paper/citation-index.md`:
 ### Step 11: Sync and Persist
 
 After every run:
-- Sync accepted citations into `.latex-citation-curator/verification-ledger.json`
+- Sync accepted citations into `.citation-curator/verification-ledger.json`
 - Sync into user-level paper library for cross-project reuse
 - If a target `.bib` file was provided, sync the ledger with that file
 - Keep user-edited BibTeX entries intact; store extra verification state in the ledger
