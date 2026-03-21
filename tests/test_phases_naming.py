@@ -43,12 +43,14 @@ class TestPhaseAgentNaming:
             primary_skill = skill_dir / primary_skill_name / "SKILL.md"
             reviewer_skill = skill_dir / reviewer_skill_name / "SKILL.md"
 
-            assert (
-                primary_skill.exists()
-            ), f"Missing skill for primary agent '{primary}' (looked in '{primary_skill_name}') in phase '{phase}'"
-            assert (
-                reviewer_skill.exists()
-            ), f"Missing skill for reviewer agent '{reviewer}' (looked in '{reviewer_skill_name}') in phase '{phase}'"
+            assert primary_skill.exists(), (
+                f"Missing skill for primary agent '{primary}'"
+                f" (looked in '{primary_skill_name}') in phase '{phase}'"
+            )
+            assert reviewer_skill.exists(), (
+                f"Missing skill for reviewer agent '{reviewer}'"
+                f" (looked in '{reviewer_skill_name}') in phase '{phase}'"
+            )
 
     def test_agent_names_no_hyphens(self):
         """Agent names should not contain hyphens for consistency."""

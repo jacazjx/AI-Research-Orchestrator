@@ -1,15 +1,14 @@
 """Tests for phase rollback file handling."""
 
 import sys
+import tempfile
 from pathlib import Path
 
 # Add scripts directory to path
 _SCRIPTS_DIR = Path(__file__).resolve().parent.parent / "scripts"
 sys.path.insert(0, str(_SCRIPTS_DIR))
 
-import tempfile
-
-from phase_rollback import archive_phase_deliverables, get_deliverables_for_phase
+from phase_rollback import archive_phase_deliverables, get_deliverables_for_phase  # noqa: E402
 
 
 class TestPhaseRollback:
