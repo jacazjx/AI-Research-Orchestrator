@@ -14,8 +14,8 @@ Features:
 from __future__ import annotations
 
 import logging
-import re
 import subprocess
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -41,6 +41,8 @@ class GPUDevice:
         user: str | None = None,
         port: int = DEFAULT_SSH_PORT,
         allocated_to: str | None = None,
+        total_hours: float = 0.0,
+        last_used: str | None = None,
     ) -> None:
         self.id = id
         self.name = name
@@ -51,6 +53,8 @@ class GPUDevice:
         self.user = user
         self.port = port
         self.allocated_to = allocated_to
+        self.total_hours = total_hours
+        self.last_used = last_used
 
     def to_dict(self) -> dict[str, Any]:
         result: dict[str, Any] = {
@@ -59,7 +63,10 @@ class GPUDevice:
             "type": self.type,
             "status": self.status,
             "memory_gb": self.memory_gb,
+            "total_hours": self.total_hours,
         }
+        if self.last_used is not None:
+            result["last_used"] = self.last_used
         if self.type == "ssh":
             result["host"] = self.host
             result["user"] = self.user
@@ -80,6 +87,8 @@ class GPUDevice:
             user=data.get("user"),
             port=int(data.get("port", DEFAULT_SSH_PORT)),
             allocated_to=data.get("allocated_to"),
+            total_hours=float(data.get("total_hours", 0)),
+            last_used=data.get("last_used"),
         )
 
     def is_available(self) -> bool:
@@ -89,10 +98,35 @@ class GPUDevice:
         return self.type == "ssh"
 
 
+class GPURegistry:
+    def __init__(
+        self,
+        devices: list[GPUDevice] | None = None,
+        version: str = REGISTRY_VERSION,
+    ) -> None:
+        self.devices = devices or []
+        self.version = version
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "version": self.version,
+            "devices": [d.to_dict() for d in self.devices],
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> GPURegistry:
+        devices = [GPUDevice.from_dict(d) for d in data.get("devices", [])]
+        return cls(devices=devices, version=data.get("version", REGISTRY_VERSION))
+
+
 def get_gpu_registry_path() -> Path:
     from user_config import get_user_config_dir
 
     return get_user_config_dir() / "gpu-registry.yaml"
+
+
+def get_default_gpu_registry() -> dict[str, Any]:
+    return {"version": REGISTRY_VERSION, "devices": []}
 
 
 def load_user_gpu_registry() -> dict[str, Any]:
@@ -200,6 +234,9 @@ def probe_remote_gpu(
                 "name": parts[1].strip(),
                 "memory_gb": float(parts[2].strip()) / 1024,
                 "type": "ssh",
+                "host": host,
+                "user": user,
+                "port": port,
             }
         except (ValueError, IndexError):
             return None
@@ -259,3 +296,67 @@ def release_gpu(gpu_id: str) -> bool:
             save_user_gpu_registry(registry)
             return True
     return False
+
+
+def update_gpu_usage(gpu_id: str, hours: float) -> None:
+    registry = load_user_gpu_registry()
+    for d in registry.get("devices", []):
+        if isinstance(d, dict) and d.get("id") == gpu_id:
+            d["total_hours"] = d.get("total_hours", 0.0) + hours
+            d["last_used"] = datetime.now(timezone.utc).isoformat()
+            save_user_gpu_registry(registry)
+            return
+    raise ConfigurationError(
+        f"GPU '{gpu_id}' not found in registry", config_file="gpu-registry.yaml"
+    )
+
+
+def select_best_gpu(criteria: dict[str, Any]) -> str | None:
+    registry = load_user_gpu_registry()
+    devices = [GPUDevice.from_dict(d) for d in registry.get("devices", [])]
+    available = [d for d in devices if d.is_available()]
+
+    exclude = criteria.get("exclude", [])
+    available = [d for d in available if d.id not in exclude]
+
+    min_memory = criteria.get("min_memory_gb")
+    if min_memory is not None:
+        available = [d for d in available if d.memory_gb >= min_memory]
+
+    if not available:
+        return None
+
+    preference = criteria.get("preference")
+    if preference:
+        preferred = [d for d in available if d.type == preference]
+        if preferred:
+            available = preferred
+
+    available.sort(key=lambda d: d.total_hours)
+    return available[0].id
+
+
+def list_available_gpus() -> list[GPUDevice]:
+    registry = load_user_gpu_registry()
+    devices = [GPUDevice.from_dict(d) for d in registry.get("devices", [])]
+    return [d for d in devices if d.is_available()]
+
+
+def refresh_gpu_registry(auto_discover: bool = True) -> dict[str, Any]:
+    registry = load_user_gpu_registry()
+    if auto_discover:
+        local_gpus = discover_local_gpus()
+        existing_local = {
+            d["id"] for d in registry.get("devices", []) if d.get("type", "local") == "local"
+        }
+        for gpu in local_gpus:
+            found = False
+            for i, d in enumerate(registry.get("devices", [])):
+                if d.get("id") == gpu["id"]:
+                    d.update(gpu)
+                    found = True
+                    break
+            if not found:
+                registry.setdefault("devices", []).append(gpu)
+    save_user_gpu_registry(registry)
+    return registry
