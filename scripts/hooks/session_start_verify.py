@@ -7,35 +7,8 @@ Behavior:
 - If no: silent exit (no output, no error)
 - Never blocks session start, even on errors
 
-This hook is triggered automatically when a new Claude Code session starts.
-It verifies project integrity and warns about issues without blocking.
-
 Usage (automatic via hooks.json):
     Triggered by SessionStart event with matcher "startup"
-
-Manual test:
-    echo '{"cwd": "/path/to/project"}' | python3 scripts/hooks/session_start_verify.py
-
-Input (from Claude Code via stdin):
-    JSON with session_id, transcript_path, cwd, permission_mode, hook_event_name
-
-Output:
-    Exit 0 with JSON on stdout containing verification results
-    Exit 0 with no output if not in a project (silent)
-    Exit 0 on any error (never blocks session)
-
-Output format:
-    {
-        "hook": "session-start-verify",
-        "success": true,
-        "project_root": "/path/to/project",
-        "checks": {
-            "directory_structure": {"passed": true, "issues": []},
-            "required_files": {"passed": true, "issues": []},
-            "state_validity": {"passed": true, "issues": []}
-        },
-        "overall_status": "healthy" | "degraded" | "error"
-    }
 """
 
 from __future__ import annotations
@@ -43,26 +16,23 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
+from typing import Any
 
 # Setup path for imports - scripts directory is parent of hooks
 SCRIPT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
 # Import from existing scripts
-from reload_project import detect_project_root  # noqa: E402
-from verify_system import (  # noqa: E402
-    check_directory_structure,
-    check_required_files,
-    check_state_integrity,
+from orchestrator_common import (  # noqa: E402
+    DEFAULT_DELIVERABLES,
+    REQUIRED_DIRECTORIES,
+    load_state,
 )
+from reload_project import detect_project_root  # noqa: E402
 
 
 def read_hook_input() -> dict:
-    """Read hook input JSON from stdin.
-
-    Returns:
-        Dictionary with hook input data, or empty dict if no input.
-    """
+    """Read hook input JSON from stdin."""
     try:
         if not sys.stdin.isatty():
             input_data = sys.stdin.read().strip()
@@ -73,135 +43,113 @@ def read_hook_input() -> dict:
     return {}
 
 
+def check_directory_structure(project_root: Path) -> dict[str, Any]:
+    """Check that all required directories exist."""
+    results: dict[str, Any] = {"passed": True, "checks": []}
+    for dir_name in REQUIRED_DIRECTORIES:
+        dir_path = project_root / dir_name
+        exists = dir_path.exists() and dir_path.is_dir()
+        results["checks"].append(
+            {"type": "directory", "name": dir_name, "exists": exists, "status": "pass" if exists else "fail"}
+        )
+        if not exists:
+            results["passed"] = False
+    return results
+
+
+def check_required_files(project_root: Path) -> dict[str, Any]:
+    """Check that all required files exist."""
+    results: dict[str, Any] = {"passed": True, "checks": []}
+    for key in ["research_state", "workspace_manifest", "idea_brief", "project_config"]:
+        relative_path = DEFAULT_DELIVERABLES[key]
+        file_path = project_root / relative_path
+        exists = file_path.exists()
+        results["checks"].append(
+            {"type": "file", "name": relative_path, "exists": exists, "status": "pass" if exists else "fail"}
+        )
+        if not exists:
+            results["passed"] = False
+    return results
+
+
+def check_state_integrity(project_root: Path) -> dict[str, Any]:
+    """Check that research-state.yaml is valid."""
+    results: dict[str, Any] = {"passed": True, "checks": [], "errors": []}
+    state_path = project_root / DEFAULT_DELIVERABLES["research_state"]
+    if not state_path.exists():
+        results["passed"] = False
+        results["errors"].append("research-state.yaml does not exist")
+        return results
+    try:
+        state = load_state(project_root)
+        for field in ["project_id", "topic", "current_phase", "current_gate", "phase_reviews", "approval_status", "loop_counts", "deliverables"]:
+            has_field = field in state
+            results["checks"].append({"type": "state_field", "name": field, "exists": has_field, "status": "pass" if has_field else "fail"})
+            if not has_field:
+                results["passed"] = False
+    except Exception as e:
+        results["passed"] = False
+        results["errors"].append(f"Failed to parse state: {e}")
+    return results
+
+
 def extract_issues(check_result: dict) -> list[str]:
-    """Extract issue messages from a check result.
-
-    Args:
-        check_result: Result dict from a check function.
-
-    Returns:
-        List of issue strings.
-    """
+    """Extract issue messages from a check result."""
     issues = []
-
-    # Collect errors first
     for error in check_result.get("errors", []):
         issues.append(f"Error: {error}")
-
-    # Collect failed checks
     for check in check_result.get("checks", []):
-        status = check.get("status", "")
-        if status == "fail":
+        if check.get("status") == "fail":
             name = check.get("name", check.get("deliverable", "unknown"))
             check_type = check.get("type", "check")
             issues.append(f"{check_type}: {name}")
-
     return issues
 
 
-def determine_overall_status(
-    dir_passed: bool,
-    files_passed: bool,
-    state_passed: bool,
-    had_exception: bool = False,
-) -> str:
-    """Determine the overall status based on check results.
-
-    Args:
-        dir_passed: Whether directory structure check passed.
-        files_passed: Whether required files check passed.
-        state_passed: Whether state validity check passed.
-        had_exception: Whether an exception occurred during checks.
-
-    Returns:
-        Overall status string: "healthy", "degraded", or "error".
-    """
-    if had_exception:
-        return "error"
-
-    all_passed = dir_passed and files_passed and state_passed
-    any_passed = dir_passed or files_passed or state_passed
-
-    if all_passed:
-        return "healthy"
-    elif any_passed:
-        return "degraded"
-    else:
-        return "error"
-
-
 def main() -> int:
-    """Main entry point for SessionStart verification hook.
-
-    Returns:
-        0 on success, failure, or when not in a project (never blocks session).
-    """
-    # Read hook input to get cwd
+    """Main entry point for SessionStart verification hook."""
     hook_input = read_hook_input()
-
-    # Determine working directory
-    # Use cwd from hook input, fallback to actual cwd
     cwd_str = hook_input.get("cwd", str(Path.cwd()))
     cwd = Path(cwd_str)
-
-    # Detect if we're inside an AI Research project
     project_root = detect_project_root(cwd)
 
     if project_root is None:
-        # Not in an AI Research project - silent exit
-        # No output means the hook didn't match, session continues normally
         return 0
 
     try:
-        # Run verification checks
         dir_result = check_directory_structure(project_root)
         files_result = check_required_files(project_root)
         state_result = check_state_integrity(project_root)
 
-        # Extract pass/fail status
         dir_passed = dir_result.get("passed", False)
         files_passed = files_result.get("passed", False)
         state_passed = state_result.get("passed", False)
 
-        # Extract issues
-        dir_issues = extract_issues(dir_result)
-        files_issues = extract_issues(files_result)
-        state_issues = extract_issues(state_result)
+        all_passed = dir_passed and files_passed and state_passed
+        any_passed = dir_passed or files_passed or state_passed
 
-        # Determine overall status
-        overall_status = determine_overall_status(
-            dir_passed, files_passed, state_passed, had_exception=False
-        )
+        if all_passed:
+            overall_status = "healthy"
+        elif any_passed:
+            overall_status = "degraded"
+        else:
+            overall_status = "error"
 
-        # Build output JSON
         output = {
             "hook": "session-start-verify",
             "success": True,
             "project_root": str(project_root),
             "checks": {
-                "directory_structure": {
-                    "passed": dir_passed,
-                    "issues": dir_issues,
-                },
-                "required_files": {
-                    "passed": files_passed,
-                    "issues": files_issues,
-                },
-                "state_validity": {
-                    "passed": state_passed,
-                    "issues": state_issues,
-                },
+                "directory_structure": {"passed": dir_passed, "issues": extract_issues(dir_result)},
+                "required_files": {"passed": files_passed, "issues": extract_issues(files_result)},
+                "state_validity": {"passed": state_passed, "issues": extract_issues(state_result)},
             },
             "overall_status": overall_status,
         }
-
-        # Output JSON - this will be shown to user
         print(json.dumps(output, ensure_ascii=False))
         return 0
 
     except Exception as e:
-        # Catch all exceptions to never block session start
-        # Output error status but still return 0
         output = {
             "hook": "session-start-verify",
             "success": False,

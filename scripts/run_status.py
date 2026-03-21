@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""Show live status snapshot for AI Research Orchestrator project.
+"""Status snapshot for AI Research Orchestrator project.
+
+Returns a dict with phase, gate, decision, scores, blockers, next_actions.
+The model handles all formatting and display.
 
 Usage:
     python3 scripts/run_status.py --project-root /path/to/project
-    python3 scripts/run_status.py --project-root /path/to/project --verbose
     python3 scripts/run_status.py --project-root /path/to/project --json
 """
 
@@ -18,77 +20,19 @@ from typing import Any
 SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from constants import PHASE_SEQUENCE  # noqa: E402
 from quality_gate import evaluate_quality_gate  # noqa: E402
 from reload_project import get_next_actions, load_project_state  # noqa: E402
-
-# Maps decision key → human label
-_DECISION_LABELS: dict[str, str] = {
-    "advance": "✅ Advance — ready to proceed to next phase",
-    "revise": "🔄 Revise — complete missing work before advancing",
-    "pivot": "⚠️  Pivot — consider changing research direction",
-    "escalate_to_user": "🔔 Escalate — loop limit reached, human decision required",
-}
-
-# Maps blocker key → human explanation
-_BLOCKER_MESSAGES: dict[str, str] = {
-    "Missing": "Missing deliverables",
-    "Placeholders": "Files still contain placeholder text",
-    "Signal": "Structured gate signals invalid",
-    "Review": "Phase review status",
-    "Gate": "Human gate status",
-    "Loop limit": "Phase loop limit reached",
-}
-
-
-def format_phase_bar(current_phase: str) -> str:
-    """Return an ASCII phase progress bar with current phase in brackets."""
-    parts = []
-    for phase in PHASE_SEQUENCE:
-        label = phase.capitalize()
-        if phase == current_phase:
-            parts.append(f"[{label}]")
-        else:
-            parts.append(label)
-    return " → ".join(parts)
-
-
-def format_gate_scores(scores: dict[str, int]) -> str:
-    """Format gate score dict as a readable block."""
-    lines = [
-        f"  Evidence completeness : {scores.get('evidence_completeness', 0):3d}%",
-        f"  Review readiness      : {scores.get('review_readiness', 0):3d}%",
-        f"  Human gate            : {scores.get('human_gate', 0):3d}%",
-    ]
-    return "\n".join(lines)
-
-
-def get_decision_label(decision: str) -> str:
-    """Return a human-readable label for the gate decision."""
-    return _DECISION_LABELS.get(decision, decision)
-
-
-def format_blockers(blockers: list[str]) -> str:
-    """Return a formatted list of human-readable blockers."""
-    if not blockers:
-        return ""
-    lines = []
-    for b in blockers:
-        lines.append(f"  • {b}")
-    return "\n".join(lines)
 
 
 def run_status(
     project_root: Path,
     verbose: bool = False,
-    json_output: bool = False,
 ) -> dict[str, Any]:
     """Collect and return a status snapshot for the given project.
 
     Args:
         project_root: Absolute path to the research project root.
         verbose: Include extra detail (missing/existing deliverables).
-        json_output: Return JSON-serialisable dict (no formatting changes).
 
     Returns:
         Status dict with phase, gate, decision, scores, blockers, next_actions.
@@ -115,49 +59,6 @@ def run_status(
         result["placeholder_deliverables"] = gate_result["placeholder_deliverables"]
 
     return result
-
-
-def format_status_report(result: dict[str, Any]) -> str:
-    """Format the status result as a human-readable Markdown report."""
-    phase = result["phase"]
-    gate = result["gate"]
-    decision = result["decision"]
-    scores = result["scores"]
-    blockers = result["blockers"]
-    next_actions = result.get("next_actions", [])
-    loop_count = result.get("loop_count", 0)
-    loop_limit = result.get("loop_limit", 0)
-
-    lines = [
-        "## Research Project Status",
-        "",
-        f"**Phase:** {phase.capitalize()}  |  "
-        f"**Gate:** {gate}  |  "
-        f"**Loops:** {loop_count}/{loop_limit}",
-        "",
-        f"**Progress:** {format_phase_bar(phase)}",
-        "",
-        "### Gate Scores",
-        format_gate_scores(scores),
-        "",
-        f"**Decision:** {get_decision_label(decision)}",
-    ]
-
-    if blockers:
-        lines += ["", "### Blockers", format_blockers(blockers)]
-
-    if next_actions:
-        lines += ["", "### Next Actions"]
-        for i, action in enumerate(next_actions, 1):
-            lines.append(f"{i}. {action}")
-
-    # Verbose extras
-    if "missing_deliverables" in result and result["missing_deliverables"]:
-        lines += ["", "### Missing Deliverables"]
-        for d in result["missing_deliverables"]:
-            lines.append(f"  - `{d}`")
-
-    return "\n".join(lines)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -195,26 +96,14 @@ def main() -> int:
             "Error: no AI Research project found in the current directory or its parents.",
             file=sys.stderr,
         )
-        print(
-            "Hint: run /init-research first, or pass --project-root explicitly.",
-            file=sys.stderr,
-        )
         return 1
 
     try:
-        result = run_status(
-            project_root, verbose=args.verbose, json_output=args.json_output
-        )
-        if args.json_output:
-            print(json.dumps(result, indent=2))
-        else:
-            print(format_status_report(result))
+        result = run_status(project_root, verbose=args.verbose)
+        print(json.dumps(result, indent=2))
         return 0
     except FileNotFoundError as e:
         print(f"ERROR: {e}", file=sys.stderr)
-        print(
-            "Hint: run /init-research first, or check --project-root", file=sys.stderr
-        )
         return 1
 
 

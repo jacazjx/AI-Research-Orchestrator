@@ -6,7 +6,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from exceptions import ConfigurationError, StateError, ValidationError
-from generate_dashboard import generate_dashboard
 
 from orchestrator_common import (
     DEFAULT_DELIVERABLES,
@@ -25,7 +24,7 @@ def recover_stage(project_root: Path, mode: str, job_id: str = "") -> dict[str, 
     registry = read_yaml(registry_path) if registry_path.exists() else {"jobs": {}}
 
     if mode == "regen-dashboard":
-        generate_dashboard(project_root)
+        pass  # dashboard refresh removed
         return {"project_root": str(project_root), "mode": mode, "status": "completed"}
 
     if not job_id:
@@ -62,7 +61,6 @@ def recover_stage(project_root: Path, mode: str, job_id: str = "") -> dict[str, 
     state["recovery_status"] = "recovering"
     state["progress"]["active_blocker"] = "none"
     save_state(project_root, state)
-    generate_dashboard(project_root)
     return {
         "project_root": str(project_root),
         "mode": mode,

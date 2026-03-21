@@ -8,8 +8,6 @@ import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
-from generate_dashboard import generate_dashboard
-
 from orchestrator_common import (
     DEFAULT_DELIVERABLES,
     append_state_log,
@@ -193,7 +191,6 @@ def run_citation_audit(
     )
     state["progress"]["next_action"] = "review-citation-audit"
     save_state(project_root, state)
-    generate_dashboard(project_root)
     return {
         "project_root": str(project_root),
         "report_path": DEFAULT_DELIVERABLES["citation_audit_report"],

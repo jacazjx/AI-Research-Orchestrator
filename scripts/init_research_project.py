@@ -4,11 +4,9 @@ import argparse
 import json
 import logging
 import sys
-from json import JSONDecodeError
 from pathlib import Path
 from typing import Any
 
-import yaml
 from constants.phases import LEGACY_TO_SEMANTIC_PHASE, PHASE_SEQUENCE
 
 from orchestrator_common import (
@@ -31,15 +29,13 @@ from orchestrator_common import (
     write_yaml,
 )
 
-# Import new modules for interactive wizard support
 try:
-    from init_wizard import run_wizard
     from legacy_handler import analyze_directory_contents, handle_non_empty_directory
     from user_config import load_user_config
 
-    INTERACTIVE_MODE_AVAILABLE = True
+    _LEGACY_HANDLER_AVAILABLE = True
 except ImportError:
-    INTERACTIVE_MODE_AVAILABLE = False
+    _LEGACY_HANDLER_AVAILABLE = False
 
 try:
     from preflight import format_preflight_warnings, run_preflight_checks
@@ -88,32 +84,6 @@ AGENT_WORK_SUBDIRECTORIES = tuple(
 )
 
 
-def detect_codex_mcp() -> bool:
-    """Check if Codex MCP is available.
-
-    This performs a static config check. Actual tool availability
-    is determined at runtime by the client, but this provides
-    a reasonable heuristic for setup suggestions.
-
-    Returns:
-        True if Codex MCP appears to be configured.
-    """
-    # Check for Claude Code MCP config
-    claude_config = Path.home() / ".claude" / "mcp.json"
-    if claude_config.exists():
-        try:
-            config = json.loads(claude_config.read_text())
-            mcp_servers = config.get("mcpServers", {})
-            # Check for codex server in various possible names
-            for name in ["codex", "openai", "openai-codex"]:
-                if name in mcp_servers:
-                    return True
-        except (JSONDecodeError, PermissionError, OSError):
-            return False
-
-    return False
-
-
 def initialize_research_project(
     project_root: Path,
     topic: str,
@@ -124,18 +94,14 @@ def initialize_research_project(
     overwrite_templates: bool = False,
     explicit_init_paths: list[str] | None = None,
     starting_phase: str = "survey",
-    interactive: bool = False,
     research_type: str = "ml_experiment",
     compute_config: dict[str, Any] | None = None,
     user_profile: dict[str, Any] | None = None,
-    skip_clarification: bool = False,
-    force_brainstorm: bool = False,
-    clarity_score: float = 0.0,
-    clarification_rounds: int = 0,
-    clarified_idea: str | None = None,
     existing_resources_mode: str | None = None,
 ) -> dict[str, object]:
-    """Initialize a research project with optional interactive wizard.
+    """Initialize a research project.
+
+    All parameters are accepted directly (no interactive collection).
 
     Args:
         project_root: Path to the project directory.
@@ -147,17 +113,11 @@ def initialize_research_project(
         overwrite_templates: Whether to overwrite existing templates.
         explicit_init_paths: Explicit initialization paths.
         starting_phase: Starting phase for the project.
-        interactive: Whether to run in interactive mode.
         research_type: Type of research (ml_experiment, theory, survey, applied).
-        compute_config: Compute configuration from wizard.
-        user_profile: User profile from wizard.
-        skip_clarification: Whether to skip intent clarification.
-        force_brainstorm: Whether to force brainstorming invocation.
-        clarity_score: Intent clarity score from wizard.
-        clarification_rounds: Number of clarification rounds performed.
-        clarified_idea: Final clarified research idea.
-        existing_resources_mode: How to handle existing files in interactive mode
-            ("preserve", "migrate", or "cancel"). Only used when interactive=True.
+        compute_config: Compute configuration.
+        user_profile: User profile.
+        existing_resources_mode: How to handle existing files
+            ("preserve", "migrate", or "cancel").
 
     Returns:
         Dictionary with initialization results.
@@ -166,31 +126,20 @@ def initialize_research_project(
     normalized_phase = normalize_phase_name(starting_phase)
 
     # Handle non-empty directory (only if directory exists and is non-empty)
-    if INTERACTIVE_MODE_AVAILABLE and project_root.exists():
+    if _LEGACY_HANDLER_AVAILABLE and project_root.exists():
         analysis = analyze_directory_contents(project_root)
-        if not analysis.is_empty and not interactive:
-            # Non-interactive mode with non-empty directory - preserve existing files
-            migration_result = handle_non_empty_directory(
-                project_root,
-                mode="preserve",
-            )
-            if migration_result.legacy_path:
-                print(f"Preserved existing files in: {migration_result.legacy_path}")
-        elif not analysis.is_empty and interactive and existing_resources_mode:
-            # Interactive mode with non-empty directory - use wizard-chosen mode
-            migration_result = handle_non_empty_directory(
-                project_root,
-                mode=existing_resources_mode,
-            )
-            if existing_resources_mode == "cancel":
+        if not analysis.is_empty:
+            mode = existing_resources_mode or "preserve"
+            if mode == "cancel":
                 return {"status": "cancelled", "message": "Initialization cancelled by user"}
+            migration_result = handle_non_empty_directory(project_root, mode=mode)
             if migration_result.legacy_path:
-                print(f"Migrated existing files to: {migration_result.legacy_path}")
+                print(f"Handled existing files ({mode}): {migration_result.legacy_path}")
 
     # Ensure project structure using new directory layout
     ensure_project_structure(project_root, create_if_missing=True)
 
-    # Advisory preflight checks — never raises, never blocks
+    # Advisory preflight checks -- never raises, never blocks
     # Skip during test runs to avoid live network calls causing test interference
     _in_test = "pytest" in sys.modules
     if PREFLIGHT_AVAILABLE and not _in_test:
@@ -224,8 +173,8 @@ def initialize_research_project(
     project_identifier = project_id or slugify(project_root.name)
 
     # Load and merge user config
-    user_config_inherited = {}
-    if INTERACTIVE_MODE_AVAILABLE:
+    user_config_inherited: dict[str, Any] = {}
+    if _LEGACY_HANDLER_AVAILABLE:
         try:
             user_cfg = load_user_config()
             if user_cfg:
@@ -233,14 +182,8 @@ def initialize_research_project(
                     "author": user_cfg.get("author", {}),
                     "preferences": user_cfg.get("preferences", {}),
                 }
-        except FileNotFoundError:
-            pass  # User config file doesn't exist
-        except (JSONDecodeError, yaml.YAMLError) as e:
-            logging.warning(f"User config file has invalid format: {e}")
-        except PermissionError as e:
-            logging.warning(f"Permission denied reading user config: {e}")
-        except OSError as e:
-            logging.warning(f"Error reading user config: {e}")
+        except Exception as e:
+            logging.warning(f"Could not load user config: {e}")
 
     state = build_state(
         project_id=project_identifier,
@@ -254,7 +197,7 @@ def initialize_research_project(
         starting_phase=normalized_phase,
     )
 
-    # Update state with new fields from interactive wizard
+    # Update state with additional fields
     state["research_type"] = research_type
     state["user_config_inherited"] = user_config_inherited
     if compute_config:
@@ -262,21 +205,10 @@ def initialize_research_project(
     if user_profile:
         state["user_profile"] = user_profile
 
-    # Add intent clarification information
-    state["intent_clarification"] = {
-        "skip_clarification": skip_clarification,
-        "force_brainstorm": force_brainstorm,
-        "clarity_score": clarity_score,
-        "clarification_rounds": clarification_rounds,
-        "clarified_idea": clarified_idea or topic,
-    }
-
     prereq_warnings = warn_starting_phase_prerequisites(starting_phase)
     if prereq_warnings:
-        print("\n⚠️  Phase prerequisite warning:")
         for w in prereq_warnings:
-            print(f"   {w}")
-        print()
+            logging.warning(w)
 
     variables = build_template_variables(project_root, state)
     rendered_files = render_template_tree(
@@ -339,26 +271,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="Phase to start the project at. Use for resuming work or skipping completed phases.",
     )
     parser.add_argument(
-        "--interactive",
-        "-i",
-        action="store_true",
-        help="Run interactive initialization wizard to guide through project setup.",
-    )
-    parser.add_argument(
         "--research-type",
         default="ml_experiment",
         choices=["ml_experiment", "theory", "survey", "applied"],
-        help="Type of research project (used in non-interactive mode).",
-    )
-    parser.add_argument(
-        "--skip-clarification",
-        action="store_true",
-        help="Skip intent clarification process. Use for advanced users with well-defined ideas.",
-    )
-    parser.add_argument(
-        "--force-brainstorm",
-        action="store_true",
-        help="Force invocation of research-ideation skill for brainstorming.",
+        help="Type of research project.",
     )
     parser.add_argument("--json", action="store_true", help="Print a JSON summary.")
     return parser
@@ -372,92 +288,18 @@ def main() -> int:
     # Normalize phase name before passing to initialize_research_project
     normalized_phase = normalize_phase_name(args.starting_phase)
 
-    # Handle interactive mode
-    if args.interactive:
-        if not INTERACTIVE_MODE_AVAILABLE:
-            print("Error: Interactive mode requires additional modules.", file=sys.stderr)
-            print(
-                "Please ensure user_config.py, legacy_handler.py, "
-                "and init_wizard.py are available.",
-                file=sys.stderr,
-            )
-            return 1
-
-        print("=" * 60)
-        print("  AI Research Orchestrator - Interactive Setup")
-        print("=" * 60)
-        print()
-
-        # Run the interactive wizard
-        try:
-            wizard_responses = run_wizard(
-                project_root=project_root,
-                interactive=True,
-                prefill={
-                    "project_id": args.project_id,
-                    "starting_phase": normalized_phase,
-                    "research_type": args.research_type,
-                },
-            )
-        except (KeyboardInterrupt, SystemExit):
-            print("Initialization cancelled.")
-            return 0
-        except Exception as e:
-            if "cancelled" in str(e).lower():
-                print("Initialization cancelled by user.")
-                return 0
-            raise
-
-        # Use wizard responses for initialization
-        topic = wizard_responses.get("research_idea", args.topic)
-        project_id = wizard_responses.get("project_id") or args.project_id
-        research_type = wizard_responses.get("research_type", args.research_type)
-        compute_config = wizard_responses.get("compute_config", {})
-        user_profile = wizard_responses.get("user_profile", {})
-        wizard_starting_phase = wizard_responses.get("starting_phase", normalized_phase)
-        clarity_score = wizard_responses.get("clarity_score", 0.0)
-        clarification_rounds = wizard_responses.get("clarification_rounds", 0)
-        clarified_idea = wizard_responses.get("clarified_idea", "")
-        existing_resources_mode = wizard_responses.get("existing_resources_mode")
-
-        result = initialize_research_project(
-            project_root=project_root,
-            topic=topic,
-            project_id=project_id,
-            client_type=args.client_type,
-            process_language=args.process_language,
-            paper_language=args.paper_language,
-            overwrite_templates=args.overwrite_templates,
-            explicit_init_paths=args.client_init_paths,
-            starting_phase=wizard_starting_phase,
-            interactive=True,
-            research_type=research_type,
-            compute_config=compute_config,
-            user_profile=user_profile,
-            skip_clarification=args.skip_clarification,
-            force_brainstorm=args.force_brainstorm,
-            clarity_score=clarity_score,
-            clarification_rounds=clarification_rounds,
-            clarified_idea=clarified_idea or topic,
-            existing_resources_mode=existing_resources_mode,
-        )
-    else:
-        # Non-interactive mode (original behavior)
-        result = initialize_research_project(
-            project_root=project_root,
-            topic=args.topic,
-            project_id=args.project_id,
-            client_type=args.client_type,
-            process_language=args.process_language,
-            paper_language=args.paper_language,
-            overwrite_templates=args.overwrite_templates,
-            explicit_init_paths=args.client_init_paths,
-            starting_phase=normalized_phase,
-            interactive=False,
-            research_type=args.research_type,
-            skip_clarification=args.skip_clarification,
-            force_brainstorm=args.force_brainstorm,
-        )
+    result = initialize_research_project(
+        project_root=project_root,
+        topic=args.topic,
+        project_id=args.project_id,
+        client_type=args.client_type,
+        process_language=args.process_language,
+        paper_language=args.paper_language,
+        overwrite_templates=args.overwrite_templates,
+        explicit_init_paths=args.client_init_paths,
+        starting_phase=normalized_phase,
+        research_type=args.research_type,
+    )
     if args.json:
         print(json.dumps(result, ensure_ascii=False, indent=2))
     else:
@@ -479,15 +321,6 @@ def main() -> int:
         print("Rendered templates:")
         for path in result["rendered_files"]:
             print(f"- {path}")
-
-        # Codex MCP detection and suggestion
-        codex_available = detect_codex_mcp()
-        if not codex_available:
-            print("")
-            print("ℹ️  Cross-model review (Codex MCP) not detected.")
-            print("   To enable external LLM review, configure Codex MCP:")
-            print("   See: https://github.com/openai/codex")
-            print("   This allows higher quality feedback via cross-model review.")
     return 0
 
 

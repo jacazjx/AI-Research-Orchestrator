@@ -20,63 +20,7 @@ def load_script_module(name: str):
 
 
 COMMON = load_script_module("orchestrator_common")
-ANALYZE = load_script_module("analyze_project")
 MIGRATE = load_script_module("migrate_project")
-
-
-class AnalyzeProjectTest(unittest.TestCase):
-    def test_analyze_empty_directory(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            project_root = Path(temp_dir) / "empty-project"
-            project_root.mkdir()
-
-            analysis = ANALYZE.analyze_project(project_root)
-
-            self.assertTrue(analysis["project_exists"])
-            self.assertEqual(analysis["summary"]["total_files"], 0)
-            self.assertEqual(analysis["summary"]["deliverables_found"], 0)
-            self.assertFalse(analysis["research_state"]["exists"])
-
-    def test_analyze_detects_python_files(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            project_root = Path(temp_dir) / "python-project"
-            project_root.mkdir()
-
-            # Create some Python files
-            (project_root / "train.py").write_text("# training script")
-            (project_root / "eval.py").write_text("# eval script")
-
-            analysis = ANALYZE.analyze_project(project_root)
-
-            self.assertIn("experiment_code", analysis["file_patterns"])
-            self.assertTrue(len(analysis["file_patterns"]["experiment_code"]) >= 2)
-
-    def test_estimate_phase_for_empty_project(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            project_root = Path(temp_dir) / "empty-project"
-            project_root.mkdir()
-
-            estimate = ANALYZE.estimate_project_phase(project_root)
-
-            # Should return 'survey' for empty project (new semantic name)
-            self.assertEqual(estimate["estimated_phase"], "survey")
-            self.assertEqual(estimate["confidence"], "low")
-
-    def test_detect_file_patterns(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            project_root = Path(temp_dir) / "patterns-project"
-            project_root.mkdir()
-
-            # Create files with different patterns
-            (project_root / "paper.md").write_text("# Paper")
-            (project_root / "refs.bib").write_text("@article{test}")
-            (project_root / "data.csv").write_text("col1,col2")
-
-            patterns = ANALYZE.detect_file_patterns(project_root)
-
-            self.assertTrue(len(patterns["paper_draft"]) > 0)
-            self.assertTrue(len(patterns["bibliography"]) > 0)
-            self.assertTrue(len(patterns["data_files"]) > 0)
 
 
 class MigrateProjectTest(unittest.TestCase):
@@ -195,19 +139,15 @@ class MigrateProjectTest(unittest.TestCase):
             self.assertEqual(state["current_phase"], "pilot")
             self.assertEqual(state["current_gate"], "gate_2")
 
-    def test_migrate_auto_detect_phase(self) -> None:
-        """Test that phase is auto-detected when not specified."""
+    def test_migrate_default_phase(self) -> None:
+        """Test that default phase is 'survey' when not specified."""
         with tempfile.TemporaryDirectory() as temp_dir:
-            project_root = Path(temp_dir) / "auto-phase"
+            project_root = Path(temp_dir) / "default-phase"
             project_root.mkdir()
-
-            # Create experiment files
-            (project_root / "experiment.py").write_text("# experiment")
-            (project_root / "results.csv").write_text("col1,col2")
 
             MIGRATE.migrate_project(
                 project_root,
-                topic="Auto phase test",
+                topic="Default phase test",
                 dry_run=False,
             )
 
@@ -219,8 +159,8 @@ class MigrateProjectTest(unittest.TestCase):
             with open(state_path) as f:
                 state = yaml.safe_load(f)
 
-            # Should detect experiments and set appropriate phase (using new semantic names)
-            self.assertIn(state["current_phase"], ["pilot", "experiments"])
+            # Should default to 'survey' when no explicit phase given
+            self.assertEqual(state["current_phase"], "survey")
 
     def test_create_phase_directories(self) -> None:
         """Test create_phase_directories function."""

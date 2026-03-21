@@ -222,30 +222,7 @@ class InitializeResearchProjectTest(unittest.TestCase):
         self.assertEqual("paper", INIT.normalize_phase_name("paper"))
         self.assertEqual("reflection", INIT.normalize_phase_name("reflection"))
 
-    def test_detect_codex_mcp_returns_true_when_configured(self) -> None:
-        """Test that Codex MCP is detected when configured."""
-        with patch.object(Path, "home", return_value=Path("/fake/home")):
-            with patch.object(Path, "exists", return_value=True):
-                with patch.object(
-                    Path, "read_text", return_value=json.dumps({"mcpServers": {"codex": {}}})
-                ):
-                    result = INIT.detect_codex_mcp()
-                    self.assertTrue(result)
-
-    def test_detect_codex_mcp_returns_false_when_not_configured(self) -> None:
-        """Test that Codex MCP returns False when not configured."""
-        with patch.object(Path, "home", return_value=Path("/fake/home")):
-            with patch.object(Path, "exists", return_value=False):
-                result = INIT.detect_codex_mcp()
-                self.assertFalse(result)
-
-    def test_detect_codex_mcp_handles_malformed_config(self) -> None:
-        """Test that malformed config doesn't crash detection."""
-        with patch.object(Path, "home", return_value=Path("/fake/home")):
-            with patch.object(Path, "exists", return_value=True):
-                with patch.object(Path, "read_text", return_value="not valid json"):
-                    result = INIT.detect_codex_mcp()
-                    self.assertFalse(result)
+    # detect_codex_mcp tests removed: function was removed (model handles MCP detection)
 
     def test_explicit_init_paths_are_normalized(self) -> None:
         """Test that explicit init paths are normalized."""

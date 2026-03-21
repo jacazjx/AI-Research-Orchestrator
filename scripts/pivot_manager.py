@@ -6,7 +6,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from exceptions import StateError
-from generate_dashboard import generate_dashboard
 
 from orchestrator_common import (
     PHASE_TO_GATE,
@@ -45,7 +44,6 @@ def propose_pivot(
     state["progress"]["active_blocker"] = f"pivot:{pivot_type}"
     state["progress"]["next_action"] = "await-human-pivot-decision"
     save_state(project_root, state)
-    generate_dashboard(project_root)
     return {
         "project_root": str(project_root),
         "pivot_id": pivot_id,
@@ -94,7 +92,6 @@ def review_pivot(
     state["progress"]["active_blocker"] = "none"
 
     save_state(project_root, state)
-    generate_dashboard(project_root)
     return {
         "project_root": str(project_root),
         "pivot_id": pivot_id,

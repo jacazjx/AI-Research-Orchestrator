@@ -189,32 +189,12 @@ PHASE_REQUIRED_DELIVERABLES = {
         "runtime_improvement_report",
         "reflection_scorecard",
     ),
-    # New semantic phase names
-    "survey": ("readiness_report", "survey_scorecard"),
-    "pilot": (
-        "problem_validation_report",
-        "problem_analysis",
-        "pilot_plan",
-        "pilot_validation_report",
-        "pilot_scorecard",
-    ),
-    "experiments": (
-        "experiment_spec",
-        "results_summary",
-        "evidence_package_index",
-        "experiment_scorecard",
-    ),
-    "paper": (
-        "paper_draft",
-        "citation_audit_report",
-        "final_acceptance_report",
-        "paper_scorecard",
-    ),
-    "reflection": (
-        "lessons_learned",
-        "runtime_improvement_report",
-        "reflection_scorecard",
-    ),
+    # New semantic phase names (simplified to core deliverables only)
+    "survey": ("readiness_report",),
+    "pilot": ("pilot_results",),
+    "experiments": ("evidence_package_index",),
+    "paper": ("paper_draft",),
+    "reflection": ("lessons_learned",),
 }
 
 # Default deliverables with their paths
@@ -385,52 +365,54 @@ LOOP_REQUIREMENTS = {
     "reflection-loop": ("reflector_curator", "phase_reviews", "reflection_curator"),
 }
 
-# Structured signal requirements for gate validation
-STRUCTURED_SIGNAL_REQUIREMENTS = {
-    "survey": {
-        "survey_scorecard": {"Gate readiness": {"approve", "advance"}},
-        "readiness_report": {"Recommendation": {"approve"}},
-    },
-    "pilot": {
-        "pilot_scorecard": {"Gate readiness": {"approve", "advance"}},
-        "pilot_adviser_review": {
-            "Status": {"approved"},
-            "Recommendation": {"approve", "advance"},
-        },
-        "pilot_validation_report": {
-            "Continue to full experiments": {"yes", "approved", "true"}
-        },
-        "problem_validation_report": {"Validation verdict": {"validated"}},
-    },
-    "experiments": {
-        "experiment_scorecard": {"Gate readiness": {"approve", "advance"}},
-        "experiment_adviser_review": {
-            "Status": {"approved"},
-            "Recommendation": {"approve", "advance"},
-            "Handoff decision": {"approve", "advance"},
-        },
-    },
-    "paper": {
-        "paper_scorecard": {"Gate readiness": {"approve", "advance"}},
-        "citation_audit_report": {
-            "Citation authenticity status": {"approved", "verified"}
-        },
-        "reviewer_report": {
-            "Submission bar": {"top-tier journal/conference ready"},
-            "Verdict": {"accept", "minor revision"},
-        },
-        "final_acceptance_report": {
-            "Meets top-tier venue bar": {"yes", "approved", "true"},
-            "Recommendation": {"approve"},
-        },
-    },
-    "reflection": {
-        "reflection_scorecard": {"Gate readiness": {"approve", "advance"}},
-        "runtime_improvement_report": {
-            "Recommendation": {"approve", "approved-for-consideration"}
-        },
-    },
-}
+# Deprecated: gate validation uses reviewer agent judgment instead of structured signals.
+# Kept as empty dict for backward compatibility (code may reference this constant).
+STRUCTURED_SIGNAL_REQUIREMENTS: dict = {}
+# STRUCTURED_SIGNAL_REQUIREMENTS = {
+#     "survey": {
+#         "survey_scorecard": {"Gate readiness": {"approve", "advance"}},
+#         "readiness_report": {"Recommendation": {"approve"}},
+#     },
+#     "pilot": {
+#         "pilot_scorecard": {"Gate readiness": {"approve", "advance"}},
+#         "pilot_adviser_review": {
+#             "Status": {"approved"},
+#             "Recommendation": {"approve", "advance"},
+#         },
+#         "pilot_validation_report": {
+#             "Continue to full experiments": {"yes", "approved", "true"}
+#         },
+#         "problem_validation_report": {"Validation verdict": {"validated"}},
+#     },
+#     "experiments": {
+#         "experiment_scorecard": {"Gate readiness": {"approve", "advance"}},
+#         "experiment_adviser_review": {
+#             "Status": {"approved"},
+#             "Recommendation": {"approve", "advance"},
+#             "Handoff decision": {"approve", "advance"},
+#         },
+#     },
+#     "paper": {
+#         "paper_scorecard": {"Gate readiness": {"approve", "advance"}},
+#         "citation_audit_report": {
+#             "Citation authenticity status": {"approved", "verified"}
+#         },
+#         "reviewer_report": {
+#             "Submission bar": {"top-tier journal/conference ready"},
+#             "Verdict": {"accept", "minor revision"},
+#         },
+#         "final_acceptance_report": {
+#             "Meets top-tier venue bar": {"yes", "approved", "true"},
+#             "Recommendation": {"approve"},
+#         },
+#     },
+#     "reflection": {
+#         "reflection_scorecard": {"Gate readiness": {"approve", "advance"}},
+#         "runtime_improvement_report": {
+#             "Recommendation": {"approve", "approved-for-consideration"}
+#         },
+#     },
+# }
 
 
 # Helper functions for phase name conversion

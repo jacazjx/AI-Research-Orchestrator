@@ -137,12 +137,4 @@ class TestFormatPreflightWarnings:
         assert "pdflatex" in text
 
 
-class TestVerifySystemIntegration:
-    def test_run_all_checks_includes_preflight(self, tmp_path: Path) -> None:
-        import init_research_project as INIT
-        from verify_system import run_all_checks
-
-        INIT.initialize_research_project(project_root=tmp_path, topic="Preflight test")
-        report = run_all_checks(tmp_path)
-        assert "preflight" in report
-        assert "warnings" in report["preflight"]
+# TestVerifySystemIntegration removed: verify_system.py was deleted (model judgment work)

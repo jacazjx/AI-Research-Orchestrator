@@ -6,7 +6,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from exceptions import PhaseTransitionError
-from generate_dashboard import generate_dashboard
 from quality_gate import evaluate_quality_gate
 
 from orchestrator_common import (
@@ -206,7 +205,6 @@ def run_stage_loop(
             state["previous_phase"] = transitioned_to
 
     save_state(project_root, state)
-    generate_dashboard(project_root)
     return {
         "project_root": str(project_root),
         "phase": phase_name,

@@ -33,8 +33,6 @@ from pathlib import Path
 SCRIPT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from generate_statusline import generate_statusline  # noqa: E402
-
 # Import from existing scripts
 from reload_project import (  # noqa: E402
     detect_project_root,
@@ -86,9 +84,6 @@ def main() -> int:
         state = load_project_state(project_root)
         gpu_registry = load_gpu_registry()
 
-        # Generate compact statusline for display
-        statusline = generate_statusline(project_root, use_color=False, compact=True)
-
         # Build output with essential context
         # This output will be shown to the user when session starts
         output = {
@@ -104,8 +99,6 @@ def main() -> int:
             "current_phase": state.get("current_phase", "survey"),
             "current_gate": state.get("current_gate", "gate_1"),
             "state_version": state.get("state_version", "2.0.0"),
-            # Status display
-            "statusline": statusline,
             # Additional context for session restoration
             "progress": {
                 "completion_percent": state.get("progress", {}).get("completion_percent", 0),

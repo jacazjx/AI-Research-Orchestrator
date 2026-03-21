@@ -111,7 +111,7 @@ class TestSubstepStatus(unittest.TestCase):
 
     def test_pilot_phase_has_problem_validation_substep(self):
         """Pilot phase should include problem_validation substep."""
-        from orchestrator_common import _build_default_substep_status
+        from state.builder import _build_default_substep_status
 
         substep_status = _build_default_substep_status()
 
@@ -122,7 +122,7 @@ class TestSubstepStatus(unittest.TestCase):
 
     def test_all_substeps_have_required_fields(self):
         """Each substep should have status, review_result, attempts, last_agent."""
-        from orchestrator_common import _build_default_substep_status
+        from state.builder import _build_default_substep_status
 
         substep_status = _build_default_substep_status()
         required_fields = {"status", "review_result", "attempts", "last_agent"}

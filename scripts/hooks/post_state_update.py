@@ -37,8 +37,6 @@ from pathlib import Path
 SCRIPT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from generate_dashboard import generate_dashboard  # noqa: E402
-
 # Import from existing scripts
 from reload_project import detect_project_root  # noqa: E402
 
@@ -104,15 +102,12 @@ def main() -> int:
             # Not inside an AI Research project - silent exit
             return 0
 
-        # Generate dashboard
-        generate_dashboard(project_root)
-
         # Build success output
         output = {
             "hook": "post-state-update",
             "success": True,
             "project_root": str(project_root),
-            "dashboard_updated": True,
+            "state_updated": True,
         }
 
         # Output JSON confirmation

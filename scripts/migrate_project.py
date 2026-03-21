@@ -20,8 +20,6 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 SKILL_DIR = SCRIPT_DIR.parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from analyze_project import analyze_project  # noqa: E402
-
 from orchestrator_common import (  # noqa: E402
     DEFAULT_DELIVERABLES,
     DEFAULT_LANGUAGE_POLICY,
@@ -319,16 +317,23 @@ def migrate_project(
         "steps": {},
     }
 
-    # Step 1: Analyze existing project
-    analysis = analyze_project(project_root)
-    estimated_phase = analysis["phase_estimate"]["estimated_phase"]
+    # Step 1: Determine starting phase
+    effective_starting_phase = starting_phase or "survey"
     results["steps"]["analysis"] = {
         "status": "completed",
-        "estimated_phase": estimated_phase,
+        "estimated_phase": effective_starting_phase,
     }
 
-    # Determine starting phase: use explicit value or auto-detected
-    effective_starting_phase = starting_phase or estimated_phase or "01-survey"
+    # Minimal analysis for file import: detect bib/pdf files
+    analysis: dict[str, Any] = {"literature_evidence": {"bib_files": [], "reference_papers": []}}
+    for f in project_root.rglob("*.bib"):
+        analysis["literature_evidence"]["bib_files"].append(
+            str(f.relative_to(project_root))
+        )
+    for f in project_root.rglob("*.pdf"):
+        analysis["literature_evidence"]["reference_papers"].append(
+            str(f.relative_to(project_root))
+        )
 
     if dry_run:
         results["steps"]["create_directories"] = {"status": "skipped", "reason": "dry_run"}
