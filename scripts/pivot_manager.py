@@ -15,6 +15,7 @@ from orchestrator_common import (
     normalize_phase_name,
     save_state,
 )
+from phase_rollback import archive_phase_deliverables
 
 
 def propose_pivot(
@@ -89,7 +90,7 @@ def review_pivot(
     )
 
     if decision == "approve":
-        _execute_pivot(state, pivot_entry)
+        _execute_pivot(state, pivot_entry, project_root=project_root)
         state["progress"]["last_gate_result"] = "pivot_approved"
         state["progress"]["next_action"] = "execute-approved-pivot"
     else:
@@ -107,9 +108,18 @@ def review_pivot(
     }
 
 
-def _execute_pivot(state: dict[str, object], pivot_entry: dict[str, str]) -> None:
+def _execute_pivot(
+    state: dict[str, object],
+    pivot_entry: dict[str, str],
+    project_root: Path | None = None,
+) -> None:
     pivot_type = pivot_entry["type"]
     phase = pivot_entry["phase"]
+
+    # Archive current phase deliverables before changing direction
+    if project_root is not None:
+        archive_phase_deliverables(project_root, phase, reason="pivot")
+
     if pivot_type == "downgrade_to_pilot":
         state["current_phase"] = "pilot"  # Semantic name
         state["phase"] = "pilot"

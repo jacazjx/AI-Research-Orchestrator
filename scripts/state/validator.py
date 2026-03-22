@@ -182,22 +182,6 @@ def parse_markdown_fields(path: Path) -> dict[str, str]:
     return fields
 
 
-def normalize_signal_value(value: str | None) -> str:
-    """Normalize a signal value for comparison.
-
-    Args:
-        value: Raw signal value.
-
-    Returns:
-        Normalized lowercase string.
-    """
-    if value is None:
-        return ""
-    normalized = value.strip().strip("`").lower()
-    normalized = re.sub(r"\s+", " ", normalized)
-    return normalized
-
-
 def is_unmodified_template(project_root: Path, state: dict[str, Any], relative_path: str) -> bool:
     """Check if a file is still an unmodified template.
 

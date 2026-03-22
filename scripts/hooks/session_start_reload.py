@@ -41,20 +41,7 @@ from reload_project import (  # noqa: E402
 )
 
 
-def read_hook_input() -> dict:
-    """Read hook input JSON from stdin.
-
-    Returns:
-        Dictionary with hook input data, or empty dict if no input.
-    """
-    try:
-        if not sys.stdin.isatty():
-            input_data = sys.stdin.read().strip()
-            if input_data:
-                return json.loads(input_data)
-    except (json.JSONDecodeError, IOError):
-        pass
-    return {}
+from hooks import read_hook_input  # noqa: E402
 
 
 def main() -> int:
@@ -124,13 +111,25 @@ def main() -> int:
         return 0
 
     except FileNotFoundError:
-        # State file not found - likely corrupted or incomplete project
-        # Silent exit to not disturb session
+        # State file not found - output warning so user knows
+        output = {
+            "hook": "session-start-reload",
+            "success": False,
+            "project_root": str(project_root),
+            "error": "research-state.yaml not found — project may be corrupted or incomplete",
+        }
+        print(json.dumps(output, ensure_ascii=False))
         return 0
 
-    except Exception:
-        # Catch all exceptions to never block session start
-        # Silent exit on any error
+    except Exception as e:
+        # Output error context so user can diagnose, but never block session
+        output = {
+            "hook": "session-start-reload",
+            "success": False,
+            "project_root": str(project_root),
+            "error": f"Failed to reload project state: {e}",
+        }
+        print(json.dumps(output, ensure_ascii=False))
         return 0
 
 

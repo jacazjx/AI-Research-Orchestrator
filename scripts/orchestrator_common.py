@@ -91,7 +91,6 @@ from state import (  # noqa: F401
     is_unmodified_template,
     load_json,
     load_state,
-    normalize_signal_value,
     parse_markdown_fields,
     resolve_deliverable_path,
     save_state,
@@ -249,7 +248,6 @@ __all__ = [
     "validate_deliverable_content",
     "parse_markdown_fields",
     "validate_structured_signals",
-    "normalize_signal_value",
     # Phase transition helpers
     "shell_join",
     "allowed_return_phases",

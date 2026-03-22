@@ -41,20 +41,7 @@ sys.path.insert(0, str(SCRIPT_DIR))
 from reload_project import detect_project_root  # noqa: E402
 
 
-def read_hook_input() -> dict:
-    """Read hook input JSON from stdin.
-
-    Returns:
-        Dictionary with hook input data, or empty dict if no input.
-    """
-    try:
-        if not sys.stdin.isatty():
-            input_data = sys.stdin.read().strip()
-            if input_data:
-                return json.loads(input_data)
-    except (json.JSONDecodeError, IOError):
-        pass
-    return {}
+from hooks import read_hook_input  # noqa: E402
 
 
 def is_research_state_file(file_path: Path) -> bool:

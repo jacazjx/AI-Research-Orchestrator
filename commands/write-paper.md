@@ -26,6 +26,13 @@ Execute the **Writer ↔ Reviewer** loop for manuscript development. No argument
 
 5. **Loop or advance** — score < 3.5: loop with Reviewer feedback. Score ≥ 3.5: await human approval before `/reflect`.
 
+6. **Shutdown agents** — after gate evaluation completes (advance or escalate):
+   ```
+   SendMessage(to="writer", message={"type": "shutdown_request", "reason": "Phase complete"})
+   SendMessage(to="reviewer", message={"type": "shutdown_request", "reason": "Phase complete"})
+   TeamDelete(team_name="research-paper")
+   ```
+
 ## Required deliverables
 
 - `paper/paper-draft.md`

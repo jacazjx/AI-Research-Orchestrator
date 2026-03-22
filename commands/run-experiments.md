@@ -26,6 +26,13 @@ Execute the **Code ↔ Adviser** loop for full experiments. No arguments needed.
 
 5. **Loop or advance** — score < 3.5: loop with Adviser feedback. Score ≥ 3.5: await human approval before `/write-paper`.
 
+6. **Shutdown agents** — after gate evaluation completes (advance or escalate):
+   ```
+   SendMessage(to="coder", message={"type": "shutdown_request", "reason": "Phase complete"})
+   SendMessage(to="adviser", message={"type": "shutdown_request", "reason": "Phase complete"})
+   TeamDelete(team_name="research-experiments")
+   ```
+
 ## Required deliverables
 
 - `docs/experiments/experiment-spec.md`

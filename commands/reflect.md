@@ -28,6 +28,21 @@ Execute the **Reflector ↔ Curator** loop for project closure. No arguments nee
    - Approve the lessons-learned report?
    - Activate any overlay proposals? (requires explicit opt-in per overlay)
 
+6. **Shutdown agents** — after gate evaluation completes:
+   ```
+   SendMessage(to="reflector", message={"type": "shutdown_request", "reason": "Phase complete"})
+   SendMessage(to="curator", message={"type": "shutdown_request", "reason": "Phase complete"})
+   TeamDelete(team_name="research-reflection")
+   ```
+
+7. **Project closure validation** — after user approves Gate 5, run closure validation:
+   ```bash
+   python3 ${CLAUDE_PLUGIN_ROOT}/scripts/validate_handoff.py \
+     --project-root <project_root> --target reflection-closeout --json
+   ```
+   If validation fails, report issues to user before marking project complete.
+   If validation passes, update state: `current_phase: "archive"`, `progress.completion_percent: 100`.
+
 ## Required deliverables
 
 - `docs/reflection/lessons-learned.md`

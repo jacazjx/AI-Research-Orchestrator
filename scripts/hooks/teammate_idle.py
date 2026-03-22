@@ -26,16 +26,11 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+# Setup path for imports - scripts directory is parent of hooks
+SCRIPT_DIR = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(SCRIPT_DIR))
 
-def get_project_root() -> Path | None:
-    """Try to find project root from environment or current directory."""
-    cwd = Path.cwd()
-    if (cwd / ".autoresearch").exists():
-        return cwd
-    for parent in cwd.parents:
-        if (parent / ".autoresearch").exists():
-            return parent
-    return None
+from hooks import get_project_root  # noqa: E402
 
 
 def log_idle_event(agent_name: str, team_name: str, message_summary: str | None = None) -> None:

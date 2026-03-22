@@ -32,16 +32,7 @@ from orchestrator_common import (  # noqa: E402
 )
 
 
-def read_hook_input() -> dict:
-    """Read hook input JSON from stdin."""
-    try:
-        if not sys.stdin.isatty():
-            input_data = sys.stdin.read().strip()
-            if input_data:
-                return json.loads(input_data)
-    except (json.JSONDecodeError, IOError):
-        pass
-    return {}
+from hooks import read_hook_input  # noqa: E402
 
 
 def check_directory_structure(project_root: Path) -> dict[str, Any]:

@@ -26,6 +26,13 @@ Execute the **Survey ↔ Critic** loop. No arguments needed — Orchestrator rea
 
 5. **Loop or advance** — score < 3.5: loop with Critic feedback. Score ≥ 3.5: await human approval before `/run-pilot`.
 
+6. **Shutdown agents** — after gate evaluation completes (advance or escalate):
+   ```
+   SendMessage(to="survey", message={"type": "shutdown_request", "reason": "Phase complete"})
+   SendMessage(to="critic", message={"type": "shutdown_request", "reason": "Phase complete"})
+   TeamDelete(team_name="research-survey")
+   ```
+
 ## Required deliverables
 
 - `docs/survey/survey-round-summary.md`
