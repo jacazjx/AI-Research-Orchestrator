@@ -137,15 +137,17 @@ This document defines the detailed rubrics for each gate in the five-phase resea
 | Overlay drafts | Marked as drafts | Check overlay-draft.md |
 | Safety notes | All changes documented | Check runtime-improvement-report.md |
 | Opt-in list | Changes requiring approval | Check report |
+| System evaluation | Evidence-based, audited | Check system-evaluation-report.md |
 
 ### Scoring Dimensions
 
 | Dimension | Weight | 5 (Excellent) | 3 (Acceptable) | 1 (Poor) |
 |-----------|--------|---------------|----------------|----------|
-| Lessons Quality | 30% | Actionable, transferable | Documented | Superficial |
-| Overlay Safety | 30% | Fully documented, opt-in | Mostly documented | Undocumented |
-| Runtime Improvements | 25% | Clear, prioritized | Listed | Vague |
-| Documentation | 15% | Complete | Mostly complete | Incomplete |
+| Lessons Quality | 25% | Actionable, transferable | Documented | Superficial |
+| Overlay Safety | 25% | Fully documented, opt-in | Mostly documented | Undocumented |
+| Runtime Improvements | 20% | Clear, prioritized | Listed | Vague |
+| Documentation | 10% | Complete | Mostly complete | Incomplete |
+| System Evaluation Quality | 20% | Evidence-based, audited, trend-aware | Mostly evidenced | Unsupported scores |
 
 ### Rejection Conditions
 
@@ -194,3 +196,6 @@ The following issues automatically block gate approval regardless of score:
 - Silent policy changes
 - Undocumented overlays
 - Missing safety rationale
+- Unsupported evaluation scores (no evidence)
+- Systematic self-leniency unaddressed by Curator
+- Omitted escalation/pivot analysis
