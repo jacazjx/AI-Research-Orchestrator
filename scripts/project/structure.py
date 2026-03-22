@@ -10,9 +10,7 @@ from constants import DEFAULT_DELIVERABLES, REQUIRED_DIRECTORIES
 logger = logging.getLogger(__name__)
 
 
-def ensure_project_structure(
-    project_root: Path, create_if_missing: bool = True
-) -> bool:
+def ensure_project_structure(project_root: Path, create_if_missing: bool = True) -> bool:
     """Ensure project directory structure is valid.
 
     Args:

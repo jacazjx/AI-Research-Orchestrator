@@ -62,9 +62,7 @@ def run_status(
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        description="Show research project status snapshot"
-    )
+    parser = argparse.ArgumentParser(description="Show research project status snapshot")
     parser.add_argument(
         "--project-root",
         type=Path,
@@ -72,9 +70,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Path to the project root. Defaults to the nearest parent containing .autoresearch/.",
     )
     parser.add_argument("--verbose", action="store_true", default=False)
-    parser.add_argument(
-        "--json", dest="json_output", action="store_true", default=False
-    )
+    parser.add_argument("--json", dest="json_output", action="store_true", default=False)
     return parser
 
 

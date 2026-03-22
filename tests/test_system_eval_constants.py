@@ -5,14 +5,17 @@ from pathlib import Path
 SKILL_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SKILL_DIR / "scripts"))
 
-from constants.phases import DEFAULT_DELIVERABLES, HANDOFF_REQUIREMENTS
 from constants.paths import EXPECTED_DELIVERABLE_PREFIXES
+from constants.phases import DEFAULT_DELIVERABLES, HANDOFF_REQUIREMENTS
 from state.builder import _build_default_substep_status
 
 
 def test_system_evaluation_report_in_default_deliverables():
     assert "system_evaluation_report" in DEFAULT_DELIVERABLES
-    assert DEFAULT_DELIVERABLES["system_evaluation_report"] == "docs/reflection/system-evaluation-report.md"
+    assert (
+        DEFAULT_DELIVERABLES["system_evaluation_report"]
+        == "docs/reflection/system-evaluation-report.md"
+    )
 
 
 def test_system_evaluation_report_in_expected_prefixes():

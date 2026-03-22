@@ -137,9 +137,7 @@ class TestSystemEvalRegistry(unittest.TestCase):
                 top_issues=[],
                 registry_path=registry_path,
             )
-            history = registry.query_history(
-                registry_path=registry_path, project_id=project_id
-            )
+            history = registry.query_history(registry_path=registry_path, project_id=project_id)
             self.assertEqual(1, len(history))
             self.assertEqual(project_id, history[0]["project_id"])
 

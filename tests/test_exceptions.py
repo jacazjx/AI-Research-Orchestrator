@@ -55,24 +55,6 @@ class ExceptionsTest(unittest.TestCase):
         self.assertEqual(error.field, "current_phase")
         self.assertEqual(error.context, {"extra": "info"})
 
-    def test_validation_error_basic(self) -> None:
-        """Test basic ValidationError."""
-        error = EXCEPTIONS.ValidationError("Validation failed")
-
-        self.assertEqual(error.message, "Validation failed")
-        self.assertEqual(error.errors, [])
-
-    def test_validation_error_with_errors(self) -> None:
-        """Test ValidationError with errors list."""
-        error = EXCEPTIONS.ValidationError(
-            "Validation failed",
-            errors=["Error 1", "Error 2"],
-            context={"field": "test"},
-        )
-
-        self.assertEqual(error.errors, ["Error 1", "Error 2"])
-        self.assertEqual(error.context, {"field": "test"})
-
     def test_path_security_error_basic(self) -> None:
         """Test basic PathSecurityError."""
         error = EXCEPTIONS.PathSecurityError("Path violation")
@@ -92,33 +74,6 @@ class ExceptionsTest(unittest.TestCase):
 
         self.assertEqual(error.path, "../../../etc/passwd")
         self.assertEqual(error.reason, "Directory traversal detected")
-
-    def test_command_execution_error_basic(self) -> None:
-        """Test basic CommandExecutionError."""
-        error = EXCEPTIONS.CommandExecutionError("Command failed")
-
-        self.assertEqual(error.message, "Command failed")
-        self.assertIsNone(error.command)
-        self.assertIsNone(error.exit_code)
-        self.assertIsNone(error.stdout)
-        self.assertIsNone(error.stderr)
-
-    def test_command_execution_error_with_params(self) -> None:
-        """Test CommandExecutionError with all parameters."""
-        error = EXCEPTIONS.CommandExecutionError(
-            "Command failed",
-            command=["python", "script.py"],
-            exit_code=1,
-            stdout="output",
-            stderr="error",
-            context={"cwd": "/tmp"},
-        )
-
-        self.assertEqual(error.command, ["python", "script.py"])
-        self.assertEqual(error.exit_code, 1)
-        self.assertEqual(error.stdout, "output")
-        self.assertEqual(error.stderr, "error")
-        self.assertEqual(error.context, {"cwd": "/tmp"})
 
     def test_configuration_error_basic(self) -> None:
         """Test basic ConfigurationError."""
@@ -163,64 +118,17 @@ class ExceptionsTest(unittest.TestCase):
         self.assertEqual(error.to_phase, "paper")
         self.assertEqual(error.reason, "Must go through pilot phase first")
 
-    def test_template_error_basic(self) -> None:
-        """Test basic TemplateError."""
-        error = EXCEPTIONS.TemplateError("Template error")
-
-        self.assertEqual(error.message, "Template error")
-        self.assertIsNone(error.template_path)
-        self.assertIsNone(error.variable)
-
-    def test_template_error_with_params(self) -> None:
-        """Test TemplateError with parameters."""
-        error = EXCEPTIONS.TemplateError(
-            "Missing template variable",
-            template_path="templates/report.md",
-            variable="topic",
-            context={"role": "survey"},
-        )
-
-        self.assertEqual(error.template_path, "templates/report.md")
-        self.assertEqual(error.variable, "topic")
-
-    def test_dependency_error_basic(self) -> None:
-        """Test basic DependencyError."""
-        error = EXCEPTIONS.DependencyError("Dependency missing")
-
-        self.assertEqual(error.message, "Dependency missing")
-        self.assertIsNone(error.dependency)
-        self.assertIsNone(error.path)
-
-    def test_dependency_error_with_params(self) -> None:
-        """Test DependencyError with parameters."""
-        error = EXCEPTIONS.DependencyError(
-            "Missing dependency",
-            dependency="latex-citation-curator",
-            path="/skills/latex-citation-curator",
-            context={"version": "1.0"},
-        )
-
-        self.assertEqual(error.dependency, "latex-citation-curator")
-        self.assertEqual(error.path, "/skills/latex-citation-curator")
-
     def test_exception_inheritance(self) -> None:
         """Test that all exceptions inherit from OrchestratorError."""
         self.assertTrue(issubclass(EXCEPTIONS.StateError, EXCEPTIONS.OrchestratorError))
-        self.assertTrue(issubclass(EXCEPTIONS.ValidationError, EXCEPTIONS.OrchestratorError))
         self.assertTrue(issubclass(EXCEPTIONS.PathSecurityError, EXCEPTIONS.OrchestratorError))
-        self.assertTrue(issubclass(EXCEPTIONS.CommandExecutionError, EXCEPTIONS.OrchestratorError))
         self.assertTrue(issubclass(EXCEPTIONS.ConfigurationError, EXCEPTIONS.OrchestratorError))
         self.assertTrue(issubclass(EXCEPTIONS.PhaseTransitionError, EXCEPTIONS.OrchestratorError))
-        self.assertTrue(issubclass(EXCEPTIONS.TemplateError, EXCEPTIONS.OrchestratorError))
-        self.assertTrue(issubclass(EXCEPTIONS.DependencyError, EXCEPTIONS.OrchestratorError))
 
     def test_exception_catch_as_base(self) -> None:
         """Test that exceptions can be caught as OrchestratorError."""
         with self.assertRaises(EXCEPTIONS.OrchestratorError):
             raise EXCEPTIONS.StateError("Test")
-
-        with self.assertRaises(EXCEPTIONS.OrchestratorError):
-            raise EXCEPTIONS.ValidationError("Test")
 
         with self.assertRaises(EXCEPTIONS.OrchestratorError):
             raise EXCEPTIONS.ConfigurationError("Test")

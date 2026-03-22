@@ -13,9 +13,8 @@ from constants import (
     LEGACY_TO_SEMANTIC_PHASE,
     PHASE_SEQUENCE,
 )
-
-from utils import build_template_variables, render_template_string
 from constants.paths import TEMPLATE_ROOT
+from utils import build_template_variables, render_template_string
 
 logger = logging.getLogger(__name__)
 
@@ -47,9 +46,7 @@ def validate_state_schema(state: dict[str, Any]) -> list[str]:
     if "current_phase" in state:
         phase = state["current_phase"]
         valid_phases = (
-            set(PHASE_SEQUENCE)
-            | set(LEGACY_TO_SEMANTIC_PHASE)
-            | {"archive", "06-archive"}
+            set(PHASE_SEQUENCE) | set(LEGACY_TO_SEMANTIC_PHASE) | {"archive", "06-archive"}
         )
         if phase not in valid_phases:
             errors.append(
@@ -93,9 +90,7 @@ def validate_state_schema(state: dict[str, Any]) -> list[str]:
 
         expected_loop_keys = set(PHASE_LOOP_KEY.values())
         actual_loop_keys = (
-            set(state["loop_counts"].keys())
-            if isinstance(state["loop_counts"], dict)
-            else set()
+            set(state["loop_counts"].keys()) if isinstance(state["loop_counts"], dict) else set()
         )
         missing_loop_keys = expected_loop_keys - actual_loop_keys
         if missing_loop_keys:
@@ -104,9 +99,7 @@ def validate_state_schema(state: dict[str, Any]) -> list[str]:
     return errors
 
 
-def validate_deliverable_content(
-    project_root: Path, state: dict[str, Any], key: str
-) -> list[str]:
+def validate_deliverable_content(project_root: Path, state: dict[str, Any], key: str) -> list[str]:
     """Validate that a deliverable has been modified from template.
 
     Args:
@@ -119,9 +112,7 @@ def validate_deliverable_content(
     """
     relative_path = state["deliverables"][key]
     if is_unmodified_template(project_root, state, relative_path):
-        return [
-            f"{relative_path} is still the unedited template and does not satisfy the gate."
-        ]
+        return [f"{relative_path} is still the unedited template and does not satisfy the gate."]
     if not (project_root / relative_path).read_text(encoding="utf-8").strip():
         return [f"{relative_path} is empty and does not satisfy the gate."]
     return []
@@ -147,9 +138,7 @@ def validate_structured_signals(
     return []
 
 
-def validate_deliverable_location(
-    project_root: Path, relative_path: str, key: str
-) -> list[str]:
+def validate_deliverable_location(project_root: Path, relative_path: str, key: str) -> list[str]:
     """Validate a deliverable path location.
 
     Args:
@@ -164,9 +153,7 @@ def validate_deliverable_location(
     relative = Path(relative_path)
     expected_prefix = EXPECTED_DELIVERABLE_PREFIXES[key]
     if relative.is_absolute():
-        errors.append(
-            f"{key} must be project-relative, got absolute path: {relative_path}"
-        )
+        errors.append(f"{key} must be project-relative, got absolute path: {relative_path}")
         return errors
     if ".." in relative.parts:
         errors.append(f"{key} must stay inside the project root, got: {relative_path}")
@@ -211,9 +198,7 @@ def normalize_signal_value(value: str | None) -> str:
     return normalized
 
 
-def is_unmodified_template(
-    project_root: Path, state: dict[str, Any], relative_path: str
-) -> bool:
+def is_unmodified_template(project_root: Path, state: dict[str, Any], relative_path: str) -> bool:
     """Check if a file is still an unmodified template.
 
     Args:
@@ -231,9 +216,7 @@ def is_unmodified_template(
     if not template_path.exists():
         return False
     variables = build_template_variables(project_root, state)
-    expected = render_template_string(
-        template_path.read_text(encoding="utf-8"), variables
-    ).strip()
+    expected = render_template_string(template_path.read_text(encoding="utf-8"), variables).strip()
     actual = target_path.read_text(encoding="utf-8").strip()
     return actual == expected
 

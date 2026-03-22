@@ -86,7 +86,9 @@ def update_version_py(new_version: str, message: str) -> None:
 
     # Add new history entry
     today = datetime.now().strftime("%Y-%m-%d")
-    new_entry = f'    (\n        "{new_version}",\n        "{today}",\n        "{message}",\n    ),\n'
+    new_entry = (
+        f'    (\n        "{new_version}",\n        "{today}",\n        "{message}",\n    ),\n'
+    )
 
     # Find the last entry in VERSION_HISTORY and add after it
     # Look for the closing bracket of VERSION_HISTORY

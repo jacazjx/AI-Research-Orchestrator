@@ -340,7 +340,9 @@ class InitializeResearchProjectTest(unittest.TestCase):
         parser = INIT.build_parser()
         # Test all valid phases (semantic + legacy)
         for phase in INIT.ALL_VALID_PHASES:
-            args = parser.parse_args(["--project-root", "/tmp", "--topic", "test", "--starting-phase", phase])
+            args = parser.parse_args(
+                ["--project-root", "/tmp", "--topic", "test", "--starting-phase", phase]
+            )
             self.assertEqual(phase, args.starting_phase)
 
     def test_warn_starting_phase_returns_empty_for_survey(self) -> None:

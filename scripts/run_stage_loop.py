@@ -44,9 +44,7 @@ def _initialize_gpu_for_phase(
 
         registry = load_user_gpu_registry()
         devices = registry.get("devices", [])
-        available = [
-            d for d in devices if isinstance(d, dict) and d.get("status") == "available"
-        ]
+        available = [d for d in devices if isinstance(d, dict) and d.get("status") == "available"]
         if available:
             state.setdefault("progress", {})["gpu_status"] = "available"
             state["progress"]["gpu_count"] = len(available)
@@ -102,12 +100,8 @@ def run_stage_loop(
     if review_status is not None:
         state["phase_reviews"][review_key] = review_status
         if review_status == "revise" and not loop_incremented:
-            state["inner_loops"][loop_key] = (
-                int(state["inner_loops"].get(loop_key, 0)) + 1
-            )
-            state["loop_counts"][loop_key] = (
-                int(state["loop_counts"].get(loop_key, 0)) + 1
-            )
+            state["inner_loops"][loop_key] = int(state["inner_loops"].get(loop_key, 0)) + 1
+            state["loop_counts"][loop_key] = int(state["loop_counts"].get(loop_key, 0)) + 1
             loop_incremented = True
 
         if review_status == "approved" and gitmem_is_initialized(project_root):
@@ -138,9 +132,7 @@ def run_stage_loop(
 
     save_state(project_root, state)
     gate_result = evaluate_quality_gate(project_root, phase=phase_name, state=state)
-    score = int(
-        round(sum(gate_result["scores"].values()) / max(len(gate_result["scores"]), 1))
-    )
+    score = int(round(sum(gate_result["scores"].values()) / max(len(gate_result["scores"]), 1)))
     state["gate_scores"][gate_key] = score
     state["progress"]["last_gate_result"] = gate_result["decision"]
     state["progress"]["active_blocker"] = (
@@ -151,9 +143,7 @@ def run_stage_loop(
     state["progress"]["suggested_return_phase"] = suggest_return_phase(
         phase_name, gate_result["blockers"]
     )
-    if _should_continue_internal_iteration(
-        gate_result["decision"], review_status, gate_status
-    ):
+    if _should_continue_internal_iteration(gate_result["decision"], review_status, gate_status):
         next_agent = _next_loop_agent(phase_name, actor)
         state["progress"]["current_agent"] = next_agent
         state["subphase"] = f"iteration-{state['loop_counts'][loop_key]}"
@@ -204,13 +194,11 @@ def run_stage_loop(
                 if transitioned_to == "06-archive"
                 else f"start-{transitioned_to}"
             )
-            state["progress"]["completion_percent"] = _completion_percent(
-                transitioned_to
-            )
+            state["progress"]["completion_percent"] = _completion_percent(transitioned_to)
             state["previous_phase"] = transitioned_to
 
     save_state(project_root, state)
-    return {
+    result = {
         "project_root": str(project_root),
         "phase": phase_name,
         "decision": gate_result["decision"],
@@ -222,6 +210,68 @@ def run_stage_loop(
         "allowed_return_phases": state["progress"]["allowed_return_phases"],
         "suggested_return_phase": state["progress"]["suggested_return_phase"],
     }
+    if gate_result["decision"] == "escalate_to_user":
+        result["escalation_options"] = _build_escalation_options(phase_name, gate_result, state)
+    if gate_result["decision"] == "pivot":
+        result["pivot_candidates"] = [c for c in state.get("pivot_candidates", []) if c]
+    return result
+
+
+def _build_escalation_options(
+    phase_name: str, gate_result: dict[str, object], state: dict[str, object]
+) -> list[dict[str, str]]:
+    """Build actionable options for the user when escalation occurs."""
+    options = []
+    loop_key = PHASE_LOOP_KEY[phase_name]
+    loop_count = state["loop_counts"].get(loop_key, 0)
+    blockers = gate_result.get("blockers", [])
+
+    blocker_text = ", ".join(str(b) for b in blockers[:3]) if blockers else "none identified"
+    options.append(
+        {
+            "action": "revise",
+            "description": f"Continue {phase_name} with targeted fixes",
+            "detail": f"Address blockers: {blocker_text}",
+            "command": f"Continue working on {phase_name} deliverables",
+        }
+    )
+    allowed = allowed_return_phases(phase_name)
+    if allowed:
+        suggested = suggest_return_phase(phase_name, blockers)
+        detail = f"Suggested: {suggested}" if suggested else "Choose from allowed phases"
+        target = suggested or allowed[0]
+        options.append(
+            {
+                "action": "rollback",
+                "description": f"Return to earlier phase ({', '.join(allowed)})",
+                "detail": detail,
+                "command": (
+                    f"run_stage_loop --phase {phase_name}"
+                    f" --gate-status rejected"
+                    f" --return-phase {target}"
+                ),
+            }
+        )
+    options.append(
+        {
+            "action": "pivot",
+            "description": "Propose a research direction change",
+            "detail": "Create a pivot proposal for human review",
+            "command": "/pivot",
+        }
+    )
+    scores = gate_result.get("scores", {})
+    options.append(
+        {
+            "action": "force_advance",
+            "description": f"Approve {phase_name} gate and advance",
+            "detail": f"Score: {scores}. Loops: {loop_count}",
+            "command": (
+                f"run_stage_loop --phase {phase_name}" f" --gate-status approved --auto-transition"
+            ),
+        }
+    )
+    return options
 
 
 def _next_action(decision: str, phase_name: str) -> str:

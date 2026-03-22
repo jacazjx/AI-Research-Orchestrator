@@ -33,20 +33,6 @@ class StateError(OrchestratorError):
         self.field = field
 
 
-class ValidationError(OrchestratorError):
-    """Raised when validation of deliverables, signals, or state fails."""
-
-    def __init__(
-        self,
-        message: str,
-        *,
-        errors: list[str] | None = None,
-        context: dict[str, str] | None = None,
-    ) -> None:
-        super().__init__(message, context=context)
-        self.errors = errors or []
-
-
 class PathSecurityError(OrchestratorError):
     """Raised when a path violates security constraints (traversal, absolute, etc.)."""
 
@@ -61,26 +47,6 @@ class PathSecurityError(OrchestratorError):
         super().__init__(message, context=context)
         self.path = path
         self.reason = reason
-
-
-class CommandExecutionError(OrchestratorError):
-    """Raised when a subprocess command fails."""
-
-    def __init__(
-        self,
-        message: str,
-        *,
-        command: list[str] | None = None,
-        exit_code: int | None = None,
-        stdout: str | None = None,
-        stderr: str | None = None,
-        context: dict[str, str] | None = None,
-    ) -> None:
-        super().__init__(message, context=context)
-        self.command = command
-        self.exit_code = exit_code
-        self.stdout = stdout
-        self.stderr = stderr
 
 
 class ConfigurationError(OrchestratorError):
@@ -115,38 +81,6 @@ class PhaseTransitionError(OrchestratorError):
         self.from_phase = from_phase
         self.to_phase = to_phase
         self.reason = reason
-
-
-class TemplateError(OrchestratorError):
-    """Raised when template rendering fails."""
-
-    def __init__(
-        self,
-        message: str,
-        *,
-        template_path: str | None = None,
-        variable: str | None = None,
-        context: dict[str, str] | None = None,
-    ) -> None:
-        super().__init__(message, context=context)
-        self.template_path = template_path
-        self.variable = variable
-
-
-class DependencyError(OrchestratorError):
-    """Raised when a required external dependency or skill is missing."""
-
-    def __init__(
-        self,
-        message: str,
-        *,
-        dependency: str | None = None,
-        path: str | None = None,
-        context: dict[str, str] | None = None,
-    ) -> None:
-        super().__init__(message, context=context)
-        self.dependency = dependency
-        self.path = path
 
 
 class StateSchemaError(ValueError):

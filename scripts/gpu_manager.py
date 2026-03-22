@@ -200,9 +200,7 @@ def discover_local_gpus() -> list[dict[str, Any]]:
     return gpus
 
 
-def probe_remote_gpu(
-    host: str, user: str, port: int = DEFAULT_SSH_PORT
-) -> dict[str, Any] | None:
+def probe_remote_gpu(host: str, user: str, port: int = DEFAULT_SSH_PORT) -> dict[str, Any] | None:
     cmd = [
         "ssh",
         "-o",
@@ -260,9 +258,7 @@ def register_gpu(device: GPUDevice) -> None:
 def unregister_gpu(gpu_id: str) -> bool:
     registry = load_user_gpu_registry()
     devices = registry.get("devices", [])
-    new_devices = [
-        d for d in devices if not (isinstance(d, dict) and d.get("id") == gpu_id)
-    ]
+    new_devices = [d for d in devices if not (isinstance(d, dict) and d.get("id") == gpu_id)]
     if len(new_devices) == len(devices):
         return False
     registry["devices"] = new_devices

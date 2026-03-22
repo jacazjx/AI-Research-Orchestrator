@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Any
 
 from constants import DEFAULT_DELIVERABLES, DEFAULT_LOOP_LIMITS
-
 from utils import read_yaml
 
 logger = logging.getLogger(__name__)
@@ -75,9 +74,7 @@ def select_client_template(platform: str, template_root: Path) -> Path | None:
     Returns:
         Path to the appropriate template file, or None if not found.
     """
-    template_name = (
-        "CLAUDE.md.tmpl" if platform in ("claude-code", "claude") else "AGENTS.md.tmpl"
-    )
+    template_name = "CLAUDE.md.tmpl" if platform in ("claude-code", "claude") else "AGENTS.md.tmpl"
     template_path = template_root / "project-root" / template_name
 
     if not template_path.exists():
@@ -87,9 +84,7 @@ def select_client_template(platform: str, template_root: Path) -> Path | None:
     return template_path
 
 
-def detect_client_profile(
-    project_root: Path, init_paths: list[str], client_type: str
-) -> str:
+def detect_client_profile(project_root: Path, init_paths: list[str], client_type: str) -> str:
     """Detect the client profile based on existing files or explicit type.
 
     Args:

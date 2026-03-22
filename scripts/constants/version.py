@@ -1,7 +1,7 @@
 """Version and version history constants."""
 
 # System version
-SYSTEM_VERSION = "1.17.0"
+SYSTEM_VERSION = "1.18.0"
 SYSTEM_VERSION_NAME = "Research Orchestrator"
 
 VERSION_HISTORY = [
@@ -80,5 +80,10 @@ VERSION_HISTORY = [
         "1.17.0",
         "2026-03-22",
         "Fix system audit issues: state migration consistency, gate race condition, schema validation, pivot validation, GPU error handling, version sync, env var config support",
+    ),
+    (
+        "1.18.0",
+        "2026-03-22",
+        "Community extensibility, pivot command, escalation UX, code cleanup",
     ),
 ]

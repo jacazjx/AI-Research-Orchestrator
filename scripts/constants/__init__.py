@@ -41,10 +41,12 @@ from .phases import (
     PHASE_SEQUENCE,
     PHASE_TO_GATE,
     PHASE_TO_REVIEW,
+    RESEARCH_TYPE_PHASE_SEQUENCE,
     SEMANTIC_TO_LEGACY_PHASE,
     get_all_phase_aliases,
     get_legacy_phase_name,
     get_phase_agents,
+    get_phase_sequence_for_research_type,
     normalize_phase_name,
 )
 from .version import SYSTEM_VERSION, SYSTEM_VERSION_NAME, VERSION_HISTORY
@@ -68,6 +70,7 @@ __all__ = [
     "OLD_TO_NEW_PATH_MAPPING",
     # Phase constants
     "PHASE_SEQUENCE",
+    "RESEARCH_TYPE_PHASE_SEQUENCE",
     "PHASE_AGENT_PAIRS",
     "LEGACY_TO_SEMANTIC_PHASE",
     "SEMANTIC_TO_LEGACY_PHASE",
@@ -85,6 +88,7 @@ __all__ = [
     "get_legacy_phase_name",
     "get_all_phase_aliases",
     "get_phase_agents",
+    "get_phase_sequence_for_research_type",
     # ARIS constants
     "REVIEW_STATE_FILENAME",
     "IDEA_STATE_FILENAME",

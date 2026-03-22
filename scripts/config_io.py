@@ -330,9 +330,7 @@ def set_config(project_root: Path, key: str, value: str) -> dict[str, Any]:
 
 def build_parser() -> argparse.ArgumentParser:
     """Build argument parser."""
-    parser = argparse.ArgumentParser(
-        description="Configuration I/O for AI Research Orchestrator."
-    )
+    parser = argparse.ArgumentParser(description="Configuration I/O for AI Research Orchestrator.")
     parser.add_argument(
         "--project-root",
         default=None,

@@ -22,13 +22,14 @@ from typing import Any
 SCRIPT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
+from reload_project import detect_project_root  # noqa: E402
+
 # Import from existing scripts
 from orchestrator_common import (  # noqa: E402
     DEFAULT_DELIVERABLES,
     REQUIRED_DIRECTORIES,
     load_state,
 )
-from reload_project import detect_project_root  # noqa: E402
 
 
 def read_hook_input() -> dict:
@@ -50,7 +51,12 @@ def check_directory_structure(project_root: Path) -> dict[str, Any]:
         dir_path = project_root / dir_name
         exists = dir_path.exists() and dir_path.is_dir()
         results["checks"].append(
-            {"type": "directory", "name": dir_name, "exists": exists, "status": "pass" if exists else "fail"}
+            {
+                "type": "directory",
+                "name": dir_name,
+                "exists": exists,
+                "status": "pass" if exists else "fail",
+            }
         )
         if not exists:
             results["passed"] = False
@@ -65,7 +71,12 @@ def check_required_files(project_root: Path) -> dict[str, Any]:
         file_path = project_root / relative_path
         exists = file_path.exists()
         results["checks"].append(
-            {"type": "file", "name": relative_path, "exists": exists, "status": "pass" if exists else "fail"}
+            {
+                "type": "file",
+                "name": relative_path,
+                "exists": exists,
+                "status": "pass" if exists else "fail",
+            }
         )
         if not exists:
             results["passed"] = False
@@ -82,9 +93,25 @@ def check_state_integrity(project_root: Path) -> dict[str, Any]:
         return results
     try:
         state = load_state(project_root)
-        for field in ["project_id", "topic", "current_phase", "current_gate", "phase_reviews", "approval_status", "loop_counts", "deliverables"]:
+        for field in [
+            "project_id",
+            "topic",
+            "current_phase",
+            "current_gate",
+            "phase_reviews",
+            "approval_status",
+            "loop_counts",
+            "deliverables",
+        ]:
             has_field = field in state
-            results["checks"].append({"type": "state_field", "name": field, "exists": has_field, "status": "pass" if has_field else "fail"})
+            results["checks"].append(
+                {
+                    "type": "state_field",
+                    "name": field,
+                    "exists": has_field,
+                    "status": "pass" if has_field else "fail",
+                }
+            )
             if not has_field:
                 results["passed"] = False
     except Exception as e:

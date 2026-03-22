@@ -3,11 +3,13 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
 import sys
 from pathlib import Path
 from typing import Any
 
 from constants.phases import LEGACY_TO_SEMANTIC_PHASE, PHASE_SEQUENCE
+from user_config import load_user_config
 
 from orchestrator_common import (
     DEFAULT_DELIVERABLES,
@@ -28,8 +30,6 @@ from orchestrator_common import (
     write_text_if_needed,
     write_yaml,
 )
-
-from user_config import load_user_config
 
 try:
     from preflight import format_preflight_warnings, run_preflight_checks
@@ -232,9 +232,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--project-root", required=True, help="Path to the target research project root."
     )
-    parser.add_argument(
-        "--topic", required=True, help="Research idea or problem statement."
-    )
+    parser.add_argument("--topic", required=True, help="Research idea or problem statement.")
     parser.add_argument(
         "--project-id", help="Optional stable project id. Defaults to the project directory slug."
     )
@@ -244,8 +242,18 @@ def build_parser() -> argparse.ArgumentParser:
         choices=("auto", "codex", "claude"),
         help="Generate the client instruction file for Codex (AGENTS.md) or Claude (CLAUDE.md).",
     )
-    parser.add_argument("--process-language", default=DEFAULT_LANGUAGE_POLICY["process_docs"])
-    parser.add_argument("--paper-language", default=DEFAULT_LANGUAGE_POLICY["paper_docs"])
+    parser.add_argument(
+        "--process-language",
+        default=os.environ.get(
+            "AUTORESEARCH_PROCESS_LANGUAGE", DEFAULT_LANGUAGE_POLICY["process_docs"]
+        ),
+    )
+    parser.add_argument(
+        "--paper-language",
+        default=os.environ.get(
+            "AUTORESEARCH_PAPER_LANGUAGE", DEFAULT_LANGUAGE_POLICY["paper_docs"]
+        ),
+    )
     parser.add_argument(
         "--overwrite-templates", action="store_true", help="Rewrite existing template files."
     )
@@ -263,7 +271,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--research-type",
-        default="ml_experiment",
+        default=os.environ.get("AUTORESEARCH_DEFAULT_RESEARCH_TYPE", "ml_experiment"),
         choices=["ml_experiment", "theory", "survey", "applied"],
         help="Type of research project.",
     )

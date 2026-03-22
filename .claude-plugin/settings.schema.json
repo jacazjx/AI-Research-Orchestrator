@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AI Research Orchestrator Settings",
+  "description": "User-configurable settings for the AI Research Orchestrator plugin.",
+  "type": "object",
+  "properties": {
+    "env": {
+      "type": "object",
+      "description": "Environment variables injected into the plugin runtime.",
+      "properties": {
+        "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": {
+          "type": "string",
+          "description": "Enable Agent Teams for multi-agent phase execution (required).",
+          "default": "1",
+          "enum": ["0", "1"]
+        },
+        "AUTORESEARCH_MAX_LOOPS": {
+          "type": "string",
+          "description": "Default maximum inner-loop iterations per phase (1-10).",
+          "default": "3"
+        },
+        "AUTORESEARCH_PROCESS_LANGUAGE": {
+          "type": "string",
+          "description": "Language for process documents (e.g., zh-CN, en-US).",
+          "default": "zh-CN"
+        },
+        "AUTORESEARCH_PAPER_LANGUAGE": {
+          "type": "string",
+          "description": "Language for paper-facing documents (e.g., en-US, zh-CN).",
+          "default": "en-US"
+        },
+        "AUTORESEARCH_DEFAULT_RESEARCH_TYPE": {
+          "type": "string",
+          "description": "Default research type for new projects.",
+          "default": "ml_experiment",
+          "enum": ["ml_experiment", "theory", "survey", "applied"]
+        },
+        "AUTORESEARCH_REVIEWER_MODEL": {
+          "type": "string",
+          "description": "Model used for external review via ARIS (e.g., gpt-5.4).",
+          "default": "gpt-5.4"
+        },
+        "AUTORESEARCH_AUTO_GITMEM": {
+          "type": "string",
+          "description": "Automatically initialize GitMem for version tracking in new projects.",
+          "default": "1",
+          "enum": ["0", "1"]
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

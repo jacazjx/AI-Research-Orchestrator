@@ -10,6 +10,7 @@ commands/
 ├── configure.md        # Configure system parameters
 ├── insight.md          # Interactive intent clarification
 ├── status.md           # Show live project status
+├── pivot.md            # Manage research direction pivots
 ├── run-survey.md       # Literature survey and readiness assessment
 ├── run-pilot.md        # Pilot validation and feasibility check
 ├── run-experiments.md  # Full experiments and evidence collection
@@ -26,6 +27,7 @@ commands/
 | `/configure` | Any | - | "configure", "配置", "设置参数" |
 | `/insight` | Init | - | "insight", "澄清意图", "明确想法" |
 | `/status` | Any | - | "status", "查看状态", "项目状态" |
+| `/pivot` | Any | - | "pivot", "转向", "换方向" |
 | `/run-survey` | Survey | Survey, Critic | "run survey", "文献调研" |
 | `/run-pilot` | Pilot | Code, Adviser | "run pilot", "Pilot验证" |
 | `/run-experiments` | Experiments | Code, Adviser | "run experiments", "完整实验" |
@@ -46,6 +48,7 @@ These commands can be used at any point in the workflow:
 - **`/configure`** - Modify project or user settings
 - **`/insight`** - Clarify research intent before or during a project
 - **`/status`** - Show live project status with gate scores and blockers
+- **`/pivot`** - Propose, review, or execute a research direction pivot
 
 > **Note**: Project state is automatically reloaded on session start via the `SessionStart` hook.
 

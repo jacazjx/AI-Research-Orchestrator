@@ -120,9 +120,7 @@ def evaluate_quality_gate(
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        description="Evaluate quality gate for a project phase."
-    )
+    parser = argparse.ArgumentParser(description="Evaluate quality gate for a project phase.")
     parser.add_argument("--project-root", required=True)
     parser.add_argument("--phase", choices=sorted(PHASE_REQUIRED_DELIVERABLES))
     parser.add_argument("--json", action="store_true")

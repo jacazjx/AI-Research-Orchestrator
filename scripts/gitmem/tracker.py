@@ -23,7 +23,11 @@ def _run_git_command(project_root: Path, args: list[str], check: bool = True) ->
 
     try:
         result = subprocess.run(
-            cmd, capture_output=True, text=True, check=check, timeout=30,
+            cmd,
+            capture_output=True,
+            text=True,
+            check=check,
+            timeout=30,
         )
         return result.stdout.strip()
     except subprocess.TimeoutExpired:
@@ -85,9 +89,7 @@ Files are mirrored here with the same directory structure for version tracking.
                 encoding="utf-8",
             )
     else:
-        main_gitignore.write_text(
-            f"# GitMem version tracking\n{GITMEM_DIR}/\n", encoding="utf-8"
-        )
+        main_gitignore.write_text(f"# GitMem version tracking\n{GITMEM_DIR}/\n", encoding="utf-8")
 
     logger.info(f"Initialized GitMem at {gitmem_path}")
 
@@ -110,9 +112,7 @@ def gitmem_commit(project_root: Path, file_path: str, message: str) -> str:
 
     gitmem_file_path = gitmem_path / file_path
     gitmem_file_path.parent.mkdir(parents=True, exist_ok=True)
-    gitmem_file_path.write_text(
-        source_path.read_text(encoding="utf-8"), encoding="utf-8"
-    )
+    gitmem_file_path.write_text(source_path.read_text(encoding="utf-8"), encoding="utf-8")
 
     _run_git_command(project_root, ["add", file_path])
 
@@ -198,15 +198,12 @@ def gitmem_get_loop_info(project_root: Path, file_path: str) -> dict[str, Any]:
                 break
 
     result["in_loop"] = (
-        result["change_count"] >= GITMEM_LOOP_THRESHOLD
-        and result["last_checkpoint"] is None
+        result["change_count"] >= GITMEM_LOOP_THRESHOLD and result["last_checkpoint"] is None
     )
     return result
 
 
-def gitmem_history(
-    project_root: Path, file_path: str, limit: int = 20
-) -> list[dict[str, str]]:
+def gitmem_history(project_root: Path, file_path: str, limit: int = 20) -> list[dict[str, str]]:
     """Get commit history for a file."""
     if not gitmem_is_initialized(project_root):
         return []
@@ -226,9 +223,7 @@ def gitmem_history(
         if "|" in line:
             parts = line.split("|", 2)
             if len(parts) >= 3:
-                history.append(
-                    {"hash": parts[0], "message": parts[1], "date": parts[2]}
-                )
+                history.append({"hash": parts[0], "message": parts[1], "date": parts[2]})
     return history
 
 
@@ -264,7 +259,9 @@ def gitmem_rollback(
 
     try:
         content = _run_git_command(
-            project_root, ["show", f"{to_rev}:{file_path}"], check=True,
+            project_root,
+            ["show", f"{to_rev}:{file_path}"],
+            check=True,
         )
     except RuntimeError as e:
         logger.error(f"Cannot find revision {to_rev}: {e}")

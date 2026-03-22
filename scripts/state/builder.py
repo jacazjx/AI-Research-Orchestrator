@@ -12,13 +12,7 @@ from constants import (
     PHASE_TO_GATE,
     SYSTEM_VERSION,
 )
-
-
-# Language policy defaults
-DEFAULT_LANGUAGE_POLICY = {
-    "process_docs": "zh-CN",
-    "paper_docs": "en-US",
-}
+from project.client import DEFAULT_LANGUAGE_POLICY
 
 
 def build_state(
@@ -157,29 +151,109 @@ def _build_default_substep_status() -> dict[str, Any]:
     """Build the default substep status structure."""
     return {
         "survey": {
-            "literature_survey": {"status": "pending", "review_result": "pending", "attempts": 0, "last_agent": None},
-            "idea_definition": {"status": "pending", "review_result": "pending", "attempts": 0, "last_agent": None},
-            "research_plan": {"status": "pending", "review_result": "pending", "attempts": 0, "last_agent": None},
+            "literature_survey": {
+                "status": "pending",
+                "review_result": "pending",
+                "attempts": 0,
+                "last_agent": None,
+            },
+            "idea_definition": {
+                "status": "pending",
+                "review_result": "pending",
+                "attempts": 0,
+                "last_agent": None,
+            },
+            "research_plan": {
+                "status": "pending",
+                "review_result": "pending",
+                "attempts": 0,
+                "last_agent": None,
+            },
         },
         "pilot": {
-            "problem_validation": {"status": "pending", "review_result": "pending", "attempts": 0, "last_agent": None},
-            "problem_analysis": {"status": "pending", "review_result": "pending", "attempts": 0, "last_agent": None},
-            "pilot_design": {"status": "pending", "review_result": "pending", "attempts": 0, "last_agent": None},
-            "pilot_execution": {"status": "pending", "review_result": "pending", "attempts": 0, "last_agent": None},
+            "problem_validation": {
+                "status": "pending",
+                "review_result": "pending",
+                "attempts": 0,
+                "last_agent": None,
+            },
+            "problem_analysis": {
+                "status": "pending",
+                "review_result": "pending",
+                "attempts": 0,
+                "last_agent": None,
+            },
+            "pilot_design": {
+                "status": "pending",
+                "review_result": "pending",
+                "attempts": 0,
+                "last_agent": None,
+            },
+            "pilot_execution": {
+                "status": "pending",
+                "review_result": "pending",
+                "attempts": 0,
+                "last_agent": None,
+            },
         },
         "experiments": {
-            "experiment_design": {"status": "pending", "review_result": "pending", "attempts": 0, "last_agent": None},
-            "experiment_execution": {"status": "pending", "review_result": "pending", "attempts": 0, "last_agent": None},
-            "results_analysis": {"status": "pending", "review_result": "pending", "attempts": 0, "last_agent": None},
+            "experiment_design": {
+                "status": "pending",
+                "review_result": "pending",
+                "attempts": 0,
+                "last_agent": None,
+            },
+            "experiment_execution": {
+                "status": "pending",
+                "review_result": "pending",
+                "attempts": 0,
+                "last_agent": None,
+            },
+            "results_analysis": {
+                "status": "pending",
+                "review_result": "pending",
+                "attempts": 0,
+                "last_agent": None,
+            },
         },
         "paper": {
-            "paper_planning": {"status": "pending", "review_result": "pending", "attempts": 0, "last_agent": None},
-            "paper_writing": {"status": "pending", "review_result": "pending", "attempts": 0, "last_agent": None},
-            "citation_curation": {"status": "pending", "review_result": "pending", "attempts": 0, "last_agent": None},
+            "paper_planning": {
+                "status": "pending",
+                "review_result": "pending",
+                "attempts": 0,
+                "last_agent": None,
+            },
+            "paper_writing": {
+                "status": "pending",
+                "review_result": "pending",
+                "attempts": 0,
+                "last_agent": None,
+            },
+            "citation_curation": {
+                "status": "pending",
+                "review_result": "pending",
+                "attempts": 0,
+                "last_agent": None,
+            },
         },
         "reflection": {
-            "lessons_extraction": {"status": "pending", "review_result": "pending", "attempts": 0, "last_agent": None},
-            "overlay_proposal": {"status": "pending", "review_result": "pending", "attempts": 0, "last_agent": None},
-            "system_evaluation": {"status": "pending", "review_result": "pending", "attempts": 0, "last_agent": None},
+            "lessons_extraction": {
+                "status": "pending",
+                "review_result": "pending",
+                "attempts": 0,
+                "last_agent": None,
+            },
+            "overlay_proposal": {
+                "status": "pending",
+                "review_result": "pending",
+                "attempts": 0,
+                "last_agent": None,
+            },
+            "system_evaluation": {
+                "status": "pending",
+                "review_result": "pending",
+                "attempts": 0,
+                "last_agent": None,
+            },
         },
     }

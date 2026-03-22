@@ -11,15 +11,12 @@ from pathlib import Path
 from typing import Any
 
 from constants import DEFAULT_DELIVERABLES
-
 from utils import read_yaml, write_yaml
 
 logger = logging.getLogger(__name__)
 
 
-def resolve_deliverable_path(
-    project_root: Path, state: dict[str, Any], key: str
-) -> Path:
+def resolve_deliverable_path(project_root: Path, state: dict[str, Any], key: str) -> Path:
     """Resolve a deliverable path from state.
 
     Args:
@@ -34,9 +31,7 @@ def resolve_deliverable_path(
     return (project_root / relative_value).resolve()
 
 
-def append_state_log(
-    state: dict[str, Any], key: str, entry: dict[str, Any] | str
-) -> None:
+def append_state_log(state: dict[str, Any], key: str, entry: dict[str, Any] | str) -> None:
     """Append an entry to a state log list.
 
     Args:
@@ -77,9 +72,7 @@ def write_json(path: Path, payload: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     content = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
 
-    fd, temp_path = tempfile.mkstemp(
-        dir=path.parent, prefix=path.name + ".", suffix=".tmp"
-    )
+    fd, temp_path = tempfile.mkstemp(dir=path.parent, prefix=path.name + ".", suffix=".tmp")
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as f:
             f.write(content)
@@ -160,9 +153,7 @@ def _append_gate_audit_events(
     old_approvals = old_state.get("approval_status", {})
     new_approvals = new_state.get("approval_status", {})
     changed = {
-        gate: status
-        for gate, status in new_approvals.items()
-        if status != old_approvals.get(gate)
+        gate: status for gate, status in new_approvals.items() if status != old_approvals.get(gate)
     }
     if not changed:
         return

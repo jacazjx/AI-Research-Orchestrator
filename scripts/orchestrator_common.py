@@ -14,10 +14,6 @@ from __future__ import annotations
 
 import logging
 
-# ============================================================================
-# Re-export from constants module
-# ============================================================================
-
 from constants import (  # noqa: F401
     AGENT_DIRECTORIES,
     DEFAULT_ARIS_CONFIG,
@@ -57,31 +53,37 @@ from constants import (  # noqa: F401
     get_phase_agents,
     normalize_phase_name,
 )
-
-# ============================================================================
-# Re-export from utils module
-# ============================================================================
-
-from utils import (  # noqa: F401
-    build_list_section,
-    build_template_variables,
-    normalize_relative_path,
-    read_yaml,
-    render_template_string,
-    render_template_tree,
-    setup_logging,
-    shell_join,
-    slugify,
-    write_text_if_needed,
-    write_yaml,
-    yaml_dump,
-    yaml_load,
+from gitmem import (  # noqa: F401
+    GITMEM_DIR,
+    GITMEM_LOOP_THRESHOLD,
+    GITMEM_TRACKED_DIRS,
+    gitmem_check_loop,
+    gitmem_checkpoint,
+    gitmem_commit,
+    gitmem_diff,
+    gitmem_get_loop_info,
+    gitmem_history,
+    gitmem_init,
+    gitmem_is_initialized,
+    gitmem_list_tags,
+    gitmem_rollback,
 )
-
-# ============================================================================
-# Re-export from state module
-# ============================================================================
-
+from project import (  # noqa: F401
+    DEFAULT_LANGUAGE_POLICY,
+    DEFAULT_REVIEWER_CONFIG,
+    DEFAULT_RUNTIME_CONFIG,
+    allowed_return_phases,
+    build_client_instruction_text,
+    detect_client_init_artifacts,
+    detect_client_profile,
+    detect_platform,
+    ensure_project_structure,
+    load_project_config,
+    reset_state_for_phase,
+    select_client_template,
+    suggest_return_phase,
+    warn_starting_phase_prerequisites,
+)
 from state import (  # noqa: F401
     append_state_log,
     build_state,
@@ -99,47 +101,45 @@ from state import (  # noqa: F401
     validate_structured_signals,
     write_json,
 )
+from utils import (  # noqa: F401
+    build_list_section,
+    build_template_variables,
+    normalize_relative_path,
+    read_yaml,
+    render_template_string,
+    render_template_tree,
+    setup_logging,
+    shell_join,
+    slugify,
+    write_text_if_needed,
+    write_yaml,
+    yaml_dump,
+    yaml_load,
+)
+
+# ============================================================================
+# Re-export from constants module
+# ============================================================================
+
+
+# ============================================================================
+# Re-export from utils module
+# ============================================================================
+
+
+# ============================================================================
+# Re-export from state module
+# ============================================================================
+
 
 # ============================================================================
 # Re-export from project module
 # ============================================================================
 
-from project import (  # noqa: F401
-    DEFAULT_LANGUAGE_POLICY,
-    DEFAULT_REVIEWER_CONFIG,
-    DEFAULT_RUNTIME_CONFIG,
-    allowed_return_phases,
-    build_client_instruction_text,
-    detect_client_init_artifacts,
-    detect_client_profile,
-    detect_platform,
-    ensure_project_structure,
-    load_project_config,
-    reset_state_for_phase,
-    select_client_template,
-    suggest_return_phase,
-    warn_starting_phase_prerequisites,
-)
 
 # ============================================================================
 # Re-export from gitmem module
 # ============================================================================
-
-from gitmem import (  # noqa: F401
-    GITMEM_DIR,
-    GITMEM_LOOP_THRESHOLD,
-    GITMEM_TRACKED_DIRS,
-    gitmem_check_loop,
-    gitmem_checkpoint,
-    gitmem_commit,
-    gitmem_diff,
-    gitmem_get_loop_info,
-    gitmem_history,
-    gitmem_init,
-    gitmem_is_initialized,
-    gitmem_list_tags,
-    gitmem_rollback,
-)
 
 
 # ============================================================================
@@ -155,73 +155,119 @@ logger = logging.getLogger(__name__)
 
 from state.validator import MARKDOWN_FIELD_RE  # noqa: F401
 
-
 # ============================================================================
 # Public API (backward compatibility)
 # ============================================================================
 
 __all__ = [
     # Version constants
-    "SYSTEM_VERSION", "SYSTEM_VERSION_NAME", "VERSION_HISTORY",
+    "SYSTEM_VERSION",
+    "SYSTEM_VERSION_NAME",
+    "VERSION_HISTORY",
     # Path constants
-    "SCRIPT_DIR", "SKILL_DIR", "TEMPLATE_ROOT",
-    "PHASE_DIRECTORIES", "MAIN_DIRECTORIES", "AGENT_DIRECTORIES",
-    "SYSTEM_DIRECTORIES", "REQUIRED_DIRECTORIES",
-    "DEFAULT_DELIVERABLES", "EXPECTED_DELIVERABLE_PREFIXES", "OLD_TO_NEW_PATH_MAPPING",
+    "SCRIPT_DIR",
+    "SKILL_DIR",
+    "TEMPLATE_ROOT",
+    "PHASE_DIRECTORIES",
+    "MAIN_DIRECTORIES",
+    "AGENT_DIRECTORIES",
+    "SYSTEM_DIRECTORIES",
+    "REQUIRED_DIRECTORIES",
+    "DEFAULT_DELIVERABLES",
+    "EXPECTED_DELIVERABLE_PREFIXES",
+    "OLD_TO_NEW_PATH_MAPPING",
     # Phase constants
-    "PHASE_SEQUENCE", "PHASE_AGENT_PAIRS",
-    "LEGACY_TO_SEMANTIC_PHASE", "SEMANTIC_TO_LEGACY_PHASE",
+    "PHASE_SEQUENCE",
+    "PHASE_AGENT_PAIRS",
+    "LEGACY_TO_SEMANTIC_PHASE",
+    "SEMANTIC_TO_LEGACY_PHASE",
     "PHASE_TO_GATE",
     "NEXT_PHASE",
-    "HANDOFF_REQUIREMENTS", "LOOP_REQUIREMENTS",
-    "PHASE_REQUIRED_DELIVERABLES", "PHASE_TO_REVIEW",
-    "PHASE_LOOP_KEY", "PHASE_COMPLETION",
+    "HANDOFF_REQUIREMENTS",
+    "LOOP_REQUIREMENTS",
+    "PHASE_REQUIRED_DELIVERABLES",
+    "PHASE_TO_REVIEW",
+    "PHASE_LOOP_KEY",
+    "PHASE_COMPLETION",
     "DEFAULT_LOOP_LIMITS",
     # Phase helper functions
-    "normalize_phase_name", "get_legacy_phase_name",
-    "get_all_phase_aliases", "get_phase_agents",
+    "normalize_phase_name",
+    "get_legacy_phase_name",
+    "get_all_phase_aliases",
+    "get_phase_agents",
     # YAML utilities
-    "yaml_dump", "yaml_load", "read_yaml", "write_yaml",
+    "yaml_dump",
+    "yaml_load",
+    "read_yaml",
+    "write_yaml",
     # Path utilities
     "normalize_relative_path",
     # Text utilities
     "slugify",
     # Template utilities
-    "build_template_variables", "render_template_string",
-    "render_template_tree", "write_text_if_needed",
+    "build_template_variables",
+    "render_template_string",
+    "render_template_tree",
+    "write_text_if_needed",
     # Local constants
-    "DEFAULT_LANGUAGE_POLICY", "DEFAULT_REVIEWER_CONFIG",
-    "REVIEW_STATE_FILENAME", "MAX_REVIEW_ROUNDS",
-    "POSITIVE_SCORE_THRESHOLD", "POSITIVE_VERDICT_KEYWORDS",
-    "DEFAULT_ARIS_CONFIG", "IDEA_STATE_FILENAME",
-    "DEFAULT_RUNTIME_CONFIG", "MARKDOWN_FIELD_RE",
-    "GITMEM_DIR", "GITMEM_LOOP_THRESHOLD", "GITMEM_TRACKED_DIRS",
+    "DEFAULT_LANGUAGE_POLICY",
+    "DEFAULT_REVIEWER_CONFIG",
+    "REVIEW_STATE_FILENAME",
+    "MAX_REVIEW_ROUNDS",
+    "POSITIVE_SCORE_THRESHOLD",
+    "POSITIVE_VERDICT_KEYWORDS",
+    "DEFAULT_ARIS_CONFIG",
+    "IDEA_STATE_FILENAME",
+    "DEFAULT_RUNTIME_CONFIG",
+    "MARKDOWN_FIELD_RE",
+    "GITMEM_DIR",
+    "GITMEM_LOOP_THRESHOLD",
+    "GITMEM_TRACKED_DIRS",
     # JSON utilities
-    "load_json", "write_json",
+    "load_json",
+    "write_json",
     # Platform and client detection
-    "detect_platform", "select_client_template",
-    "detect_client_profile", "build_client_instruction_text",
+    "detect_platform",
+    "select_client_template",
+    "detect_client_profile",
+    "build_client_instruction_text",
     # State management
-    "detect_client_init_artifacts", "build_state",
-    "build_list_section", "resolve_deliverable_path",
-    "validate_deliverable_location", "ensure_complete_deliverables",
-    "load_state", "save_state",
-    "warn_starting_phase_prerequisites", "validate_state_schema",
-    "load_project_config", "append_state_log",
+    "detect_client_init_artifacts",
+    "build_state",
+    "build_list_section",
+    "resolve_deliverable_path",
+    "validate_deliverable_location",
+    "ensure_complete_deliverables",
+    "load_state",
+    "save_state",
+    "warn_starting_phase_prerequisites",
+    "validate_state_schema",
+    "load_project_config",
+    "append_state_log",
     # Deliverable validation
-    "is_unmodified_template", "validate_deliverable_content",
-    "parse_markdown_fields", "validate_structured_signals",
+    "is_unmodified_template",
+    "validate_deliverable_content",
+    "parse_markdown_fields",
+    "validate_structured_signals",
     "normalize_signal_value",
     # Phase transition helpers
-    "shell_join", "allowed_return_phases",
-    "reset_state_for_phase", "suggest_return_phase",
+    "shell_join",
+    "allowed_return_phases",
+    "reset_state_for_phase",
+    "suggest_return_phase",
     # Logging
     "setup_logging",
     # Project structure
     "ensure_project_structure",
     # GitMem functions
-    "gitmem_is_initialized", "gitmem_init", "gitmem_commit",
-    "gitmem_checkpoint", "gitmem_list_tags",
-    "gitmem_check_loop", "gitmem_get_loop_info",
-    "gitmem_history", "gitmem_diff", "gitmem_rollback",
+    "gitmem_is_initialized",
+    "gitmem_init",
+    "gitmem_commit",
+    "gitmem_checkpoint",
+    "gitmem_list_tags",
+    "gitmem_check_loop",
+    "gitmem_get_loop_info",
+    "gitmem_history",
+    "gitmem_diff",
+    "gitmem_rollback",
 ]

@@ -7,6 +7,7 @@ This module provides utility functions organized by category:
 - template_utils: Template rendering and materialization
 """
 
+from .logging_utils import setup_logging
 from .path_utils import normalize_relative_path
 from .template_utils import (
     build_template_variables,
@@ -14,7 +15,6 @@ from .template_utils import (
     render_template_tree,
     write_text_if_needed,
 )
-from .logging_utils import setup_logging
 from .text_utils import build_list_section, shell_join, slugify
 from .yaml_utils import read_yaml, write_yaml, yaml_dump, yaml_load
 

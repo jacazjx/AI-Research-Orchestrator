@@ -260,6 +260,7 @@ LOOP_REQUIREMENTS = {
     "reflection-loop": ("reflector_curator", "phase_reviews", "reflection_curator"),
 }
 
+
 # Helper functions for phase name conversion
 def normalize_phase_name(phase_name: str) -> str:
     """Convert legacy phase name to semantic name."""
