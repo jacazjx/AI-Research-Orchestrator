@@ -8,19 +8,22 @@ from constants import PHASE_SEQUENCE, PHASE_TO_GATE, PHASE_TO_REVIEW
 from constants.phases import normalize_phase_name
 
 
-def allowed_return_phases(phase_name: str) -> list[str]:
+def allowed_return_phases(phase_name: str, state: dict[str, Any] | None = None) -> list[str]:
     """Get list of phases that can be returned to from a given phase.
 
     Args:
         phase_name: Current phase name.
+        state: Optional project state dict. If provided and contains
+            ``phase_sequence``, only phases in that sequence are offered.
 
     Returns:
         List of valid return phase names.
     """
-    if phase_name not in PHASE_SEQUENCE:
+    seq = tuple(state.get("phase_sequence", PHASE_SEQUENCE)) if state else PHASE_SEQUENCE
+    if phase_name not in seq:
         return []
-    index = PHASE_SEQUENCE.index(phase_name)
-    return list(PHASE_SEQUENCE[: index + 1])
+    index = seq.index(phase_name)
+    return list(seq[: index + 1])
 
 
 def reset_state_for_phase(state: dict[str, Any], phase_name: str) -> None:
@@ -51,7 +54,7 @@ def reset_state_for_phase(state: dict[str, Any], phase_name: str) -> None:
     state["phase"] = phase_name
     state["current_gate"] = PHASE_TO_GATE[phase_name]
     state["subphase"] = "entry"
-    state["progress"]["allowed_return_phases"] = allowed_return_phases(phase_name)
+    state["progress"]["allowed_return_phases"] = allowed_return_phases(phase_name, state)
     state["progress"]["suggested_return_phase"] = phase_name
 
 

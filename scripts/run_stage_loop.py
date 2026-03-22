@@ -140,7 +140,7 @@ def run_stage_loop(
         gate_result["blockers"][0] if gate_result["blockers"] else "none"
     )
     state["progress"]["next_action"] = _next_action(gate_result["decision"], phase_name)
-    state["progress"]["allowed_return_phases"] = allowed_return_phases(phase_name)
+    state["progress"]["allowed_return_phases"] = allowed_return_phases(phase_name, state)
     state["progress"]["suggested_return_phase"] = suggest_return_phase(
         phase_name, gate_result["blockers"]
     )
@@ -167,7 +167,7 @@ def run_stage_loop(
     if gate_status == "rejected":
         state["progress"]["next_action"] = "await-human-return-phase-selection"
         if return_phase:
-            allowed_phases = allowed_return_phases(phase_name)
+            allowed_phases = allowed_return_phases(phase_name, state)
             if return_phase not in allowed_phases:
                 raise PhaseTransitionError(
                     f"Unsupported return phase for {phase_name}: {return_phase}",
@@ -184,7 +184,14 @@ def run_stage_loop(
             state["progress"]["completion_percent"] = _completion_percent(return_phase)
             state["previous_phase"] = return_phase
     if auto_transition and gate_result["decision"] == "advance":
-        transitioned_to = get_next_phase_for_state(state)
+        # Safety guard: only auto-transition if gate is explicitly approved
+        if state["approval_status"].get(gate_key) != "approved":
+            logger.warning(
+                "auto_transition requested but gate %s not approved — skipping",
+                gate_key,
+            )
+            auto_transition = False
+        transitioned_to = get_next_phase_for_state(state) if auto_transition else None
         if transitioned_to:
             state["outer_loop"] = int(state.get("outer_loop", 0)) + 1
             reset_state_for_phase(state, transitioned_to)

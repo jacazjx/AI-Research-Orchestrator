@@ -60,15 +60,62 @@ What artifacts this skill produces.
 
 **Agent roles:** `orchestrator`, `survey`, `critic`, `coder`, `adviser`, `writer`, `reviewer`, `reflector`, `curator`
 
-### 2. Reference Documents
+### 2. Custom Agents (Advanced)
+
+Agents are role definitions that give Claude a specific persona and expertise. Each phase uses exactly two agents (primary + reviewer).
+
+**To add a new agent:**
+
+1. Create `agents/<role-name>/AGENT.md` with the template below
+2. To use the agent in a phase, update `PHASE_AGENT_PAIRS` in `scripts/constants/phases.py`
+3. Create skills that reference the new agent via the `agent:` frontmatter field
+
+**Agent template** (`agents/<role>/AGENT.md`):
+
+```yaml
+---
+name: <role-name>
+description: "When to invoke this agent"
+---
+
+# Identity & Expertise
+
+You are the <Role Name> agent. Your expertise is in <domain>.
+
+# Mission
+
+<What this agent is responsible for achieving>
+
+# Quality Standards
+
+- <Standard 1>
+- <Standard 2>
+
+# Hard Constraints
+
+- <Constraint 1>
+- <Constraint 2>
+```
+
+**Current agent pairs per phase:**
+
+| Phase | Primary | Reviewer |
+|-------|---------|----------|
+| survey | survey | critic |
+| pilot | code | adviser |
+| experiments | code | adviser |
+| paper | writer | reviewer |
+| reflection | reflector | curator |
+
+### 3. Reference Documents
 
 Reference documents in `references/` define standards and protocols. Improvements to rubrics, evidence standards, or writing guidelines are welcome.
 
-### 3. Bug Fixes
+### 4. Bug Fixes
 
 Check [open issues](https://github.com/jacazjx/AI-Research-Orchestrator/issues) for bugs. Fix, add a test, and submit a PR.
 
-### 4. Python Scripts
+### 5. Python Scripts
 
 Scripts in `scripts/` handle state management, gate evaluation, and project structure. Changes here require tests and backward compatibility.
 
