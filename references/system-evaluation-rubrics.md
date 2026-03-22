@@ -173,6 +173,38 @@ The following issues automatically block Gate 5 approval for the system evaluati
 - **Omitted critical events**: Project escalations or pivots not analyzed in evaluation
 - **Fabricated trends**: Cross-project comparison data inconsistent with registry records
 
+## Curator Independent Scoring Protocol
+
+Before reviewing the Reflector's scores, the Curator MUST produce independent scores using this protocol:
+
+### Step 1: Independent Assessment
+
+For each of the 6 dimensions, the Curator:
+1. Reads ONLY the evidence sources listed in that dimension's rubric (not the Reflector's report)
+2. Applies the scoring criteria from the rubric above
+3. Records a score (0-5) with a 1-sentence justification citing specific evidence
+
+### Step 2: Comparison
+
+After completing all 6 independent scores:
+1. Read the Reflector's scores and justifications
+2. For each dimension, compute `delta = |Curator_score - Reflector_score|`
+
+### Step 3: Dispute Resolution
+
+| Delta | Action |
+|-------|--------|
+| 0 | Agreement — accept score as-is |
+| 1 | Minor disagreement — Curator notes the difference, accepts Reflector's score with caveat |
+| ≥ 2 | Major disagreement — flag as "disputed", require Reflector to provide additional evidence or revise score. If unresolved after 1 round, use the LOWER of the two scores |
+
+### Step 4: Final Score
+
+The final reported score for each dimension is:
+- The agreed score (if delta ≤ 1)
+- The lower score (if delta ≥ 2 and unresolved)
+- Weighted total recalculated from final dimension scores
+
 ## Curator Audit Checklist
 
 ### Evidence Completeness

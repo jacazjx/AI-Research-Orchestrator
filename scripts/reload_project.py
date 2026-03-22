@@ -87,7 +87,7 @@ def load_project_state(project_root: Path) -> dict[str, Any]:
     if needs_migration(state):
         logger.info("State migration required from version %s", state.get("state_version", "1.0.0"))
         state, migration_log = migrate_state(state)
-        logger.info("Migration complete: %s", migration_log)
+        logger.info("Migration complete: %s", "; ".join(migration_log))
         # Note: We don't save the migrated state here to avoid side effects
         # The caller can save it if desired
 

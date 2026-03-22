@@ -259,6 +259,19 @@ After presenting gate results:
    - PIVOT: Initiate pivot protocol
    - ROLLBACK: Return to specified earlier phase
 
+### Researcher Override Protocol
+
+When the researcher's decision differs from the Orchestrator's recommendation:
+
+| Scenario | Orchestrator Action |
+|----------|--------------------|
+| Orchestrator recommends ADVANCE, researcher chooses REVISE | Accept. Log reason in `human_decisions`. Re-enter phase with researcher's feedback. |
+| Orchestrator recommends REVISE, researcher chooses ADVANCE | Accept with warning. Log "researcher_override" in `human_decisions`. Note risk in state. Proceed to next phase. |
+| Orchestrator recommends PIVOT, researcher chooses to continue | Accept. Log "pivot_rejected" in `human_decisions`. Resume current phase. |
+| Researcher chooses ROLLBACK to earlier phase | Validate target phase is in `allowed_return_phases`. Execute rollback. Log in `human_decisions`. |
+
+**Key principle**: The researcher always has final authority. The Orchestrator's role is to inform, recommend, and record — never to block a researcher's explicit decision.
+
 ## Escalation Handling
 
 ### When to Escalate
@@ -339,3 +352,42 @@ Your decision: _______________
 - Record decisions verbatim
 - Note uncertainty explicitly
 - Maintain audit trail
+
+## Handoff Summary Protocol
+
+When the Orchestrator dismisses an agent (via `shutdown_request`), the agent MUST save a handoff summary before shutting down. When a new agent is spawned for the same role (e.g., after context reset), the Orchestrator provides the handoff summary as startup context.
+
+### Handoff Summary Template
+
+```
+# Handoff Summary: [Agent Role] — [Phase]
+
+## Completed Work
+- [List of completed substeps with key outcomes]
+
+## Current Status
+- Substep: [current substep name]
+- Loop iteration: [N of M]
+- Last review score: [score if applicable]
+
+## Key Findings
+- [Most important discoveries/decisions]
+
+## Open Issues
+- [Unresolved problems or pending decisions]
+
+## Files Modified
+- [List of deliverables created or updated with paths]
+
+## Context for Successor
+- [Critical context the next agent instance needs to continue effectively]
+```
+
+### Agent Startup Context
+
+When spawning an agent, the Orchestrator provides:
+1. Phase-specific task summary (what to accomplish)
+2. Handoff summary from predecessor (if resuming)
+3. Current loop count and limit
+4. Relevant human decisions from state
+5. Key deliverable paths

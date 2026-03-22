@@ -58,17 +58,24 @@ def review_pivot(
     project_root = project_root.resolve()
     state = load_state(project_root)
     serialized = list(state.get("pivot_candidates", []))
-    matching = [item for item in serialized if f'"id": "{pivot_id}"' in item]
+    # Deserialize all entries for proper matching
+    parsed_entries = []
+    for item in serialized:
+        try:
+            parsed_entries.append((item, json.loads(item)))
+        except (json.JSONDecodeError, TypeError):
+            continue
+    matching = [(raw, obj) for raw, obj in parsed_entries if obj.get("id") == pivot_id]
     if not matching:
         raise StateError(
             f"Unknown pivot id: {pivot_id}",
             state_file="research-state.yaml",
             field="pivot_candidates",
         )
-    pivot_entry = json.loads(matching[0])
+    raw_match, pivot_entry = matching[0]
     phase = pivot_entry["phase"]
 
-    state["pivot_candidates"] = [item for item in serialized if item != matching[0]]
+    state["pivot_candidates"] = [item for item in serialized if item != raw_match]
     append_state_log(
         state,
         "human_decisions",

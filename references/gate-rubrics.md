@@ -75,13 +75,14 @@ This document defines the detailed rubrics for each gate in the five-phase resea
 | Results tied to matrix | Results match experiment plan | Check results-summary.md |
 | Checkpoint tracking | All checkpoints documented | Check checkpoint-index.md |
 | Evidence index | Complete package linked | Check evidence-package-index.md |
+| Statistical minimums | Runs meet minimum counts per evidence-standards.md | Check run counts vs. requirements |
 
 ### Scoring Dimensions
 
 | Dimension | Weight | 5 (Excellent) | 3 (Acceptable) | 1 (Poor) |
 |-----------|--------|---------------|----------------|----------|
 | Result Traceability | 30% | All runs verified | Most verified | Unverified claims |
-| Statistical Validity | 25% | Complete statistics | Basic statistics | No statistics |
+| Statistical Validity | 25% | Complete statistics; meets sample-size minimums | Basic statistics; most minimums met | No statistics or below minimums |
 | Baseline Completeness | 25% | Fair, comprehensive | Adequate | Missing or unfair |
 | Negative Handling | 20% | All documented | Some documented | Hidden |
 
@@ -91,6 +92,7 @@ This document defines the detailed rubrics for each gate in the five-phase resea
 - Baselines or datasets changed without justification
 - Negative results hidden
 - Statistical claims unsupported
+- Run counts below minimum thresholds (single method < 3, comparison < 5 per method, ablation < 3 per config — see [Evidence Standards](evidence-standards.md#sample-size-guidelines))
 - Checkpoint integrity issues
 
 ---
@@ -155,6 +157,8 @@ This document defines the detailed rubrics for each gate in the five-phase resea
 - Runtime changes without safety rationale
 - Mixes observations with unreviewed policy changes
 - Opt-in requirements not explicit
+
+> **Note**: Gate 5 is the final gate. After approval, the project transitions to archive status. The Orchestrator moves superseded artifacts to `.autoresearch/archive/`, updates state to `completed`, and closes the project. No further phase transitions occur. To start a new project, use `/init-research`.
 
 ---
 

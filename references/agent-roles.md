@@ -198,27 +198,27 @@ Derived from the AI-Researcher benchmark criteria in `README.md`.
 ### Communication Flow
 
 ```
-[Orchestrator] ──dispatch──> [Primary Agent]
-       ^                          |
-       |                          v
-       |                    [Deliverable]
-       |                          |
-       |                          v
-       └────report──────── [Reviewer Agent]
+[Orchestrator]
+    │
+    ├── spawn ──> [Primary Agent] ◄──SendMessage──► [Reviewer Agent]
+    │                                                      │
+    └── monitor (TaskList) ◄───── task status ─────────────┘
 ```
 
 ### Inner Loop Process
 
-1. **Primary Agent** executes task, produces deliverable
-2. **Reviewer Agent** reviews deliverable, provides score and feedback
-3. If score < 3.5: Primary Agent revises, loop continues
-4. If score >= 3.5: Proceed to Gate
-5. **Gate** requires human approval before next phase
+1. **Orchestrator** spawns Primary and Reviewer, creates tasks
+2. **Primary Agent** executes task, produces deliverable
+3. **Primary sends deliverable to Reviewer** via `SendMessage`
+4. **Reviewer Agent** reviews, sends feedback directly to Primary via `SendMessage`
+5. If score < 3.5: Primary revises, loop continues (direct exchange)
+6. If score >= 3.5: Primary updates task status, Orchestrator proceeds to Gate
+7. **Gate** requires human approval before next phase
 
 ### Interaction Rules
 
-1. **Orchestrator is the hub**: All agent communication flows through the Orchestrator
-2. **No direct agent-to-agent communication**: Prevents context pollution
+1. **Orchestrator is Team Lead**: Manages lifecycle (spawn, monitor, shutdown) but does not relay inter-agent messages
+2. **Direct Primary-Reviewer communication**: Within a phase, Primary and Reviewer iterate via `SendMessage` without Orchestrator intermediation
 3. **Explicit handoffs**: Agents save summaries when dismissed
 4. **Fresh context per agent**: Each agent starts with relevant context from state
 
