@@ -561,6 +561,8 @@ my-project/
 | `/airesearchorchestrator:reflect` | 运行反思总结 | "reflect", "反思总结" |
 | `/airesearchorchestrator:reload` | 恢复会话上下文 | "reload", "重新加载", "恢复项目" |
 | `/airesearchorchestrator:configure` | 配置项目设置 | "configure", "配置" |
+| `/airesearchorchestrator:pivot` | 研究方向转向 | "pivot", "转向", "换方向" |
+| `/airesearchorchestrator:abandon` | 归档并退出项目 | "abandon", "停止项目" |
 
 ## 硬规则
 

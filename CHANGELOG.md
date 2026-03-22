@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.20.0] - 2026-03-22
+
+### Added
+
+- `/abandon` command for graceful project exit at any phase with deliverable archival
+- `available_commands` field in `/status` output — ranked list of actions based on current state
+- Abandon option in escalation choices to prevent all-pivots-rejected deadlock
+
+### Changed
+
+- Strengthened auto-transition safety guard: requires explicit gate approval before advancing
+
+## [1.19.0] - 2026-03-22
+
+### Added
+
+- `agents/orchestrator/AGENT.md` — orchestrator agent definition (referenced by 9 skills)
+- Agent shutdown protocol (SendMessage + TeamDelete) in all 5 phase commands
+- Project closure validation (reflection-closeout) step in `/reflect` command
+- Shared `read_hook_input()` and `get_project_root()` in `hooks/__init__.py`
+
+### Fixed
+
+- Pivot execution now archives deliverables before changing phase direction
+- Session reload hook outputs error context instead of failing silently
+
+### Removed
+
+- Dead code: `normalize_signal_value()` from state/validator.py
+- Empty stub modules: `scripts/templates/` and `scripts/platform/`
+
 ## [1.18.0] - 2026-03-22
 
 ### Added

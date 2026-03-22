@@ -565,6 +565,8 @@ my-project/
 | `/airesearchorchestrator:reflect` | Run reflection | "reflect", "lessons learned" |
 | `/airesearchorchestrator:reload` | Restore session context | "reload", "continue research" |
 | `/airesearchorchestrator:configure` | Configure project settings | "configure", "config" |
+| `/airesearchorchestrator:pivot` | Change research direction | "pivot", "change direction" |
+| `/airesearchorchestrator:abandon` | Archive and exit project | "abandon", "stop project" |
 
 ## Hard Rules
 

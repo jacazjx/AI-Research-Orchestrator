@@ -107,17 +107,62 @@ You are the <Role Name> agent. Your expertise is in <domain>.
 | paper | writer | reviewer |
 | reflection | reflector | curator |
 
-### 3. Reference Documents
+### 3. Custom Research Types
+
+The system supports 4 built-in research types with different phase sequences. You can add more.
+
+**To add a custom research type:**
+
+1. Edit `scripts/constants/phases.py`:
+   - Add your type to `RESEARCH_TYPE_PHASE_SEQUENCE`:
+     ```python
+     "genomics": ("survey", "pilot", "experiments", "paper", "reflection"),
+     ```
+   - Add to `RESEARCH_TYPE_GPU_REQUIRED`:
+     ```python
+     "genomics": True,
+     ```
+2. Add the type to `settings.schema.json` enum list for `AUTORESEARCH_DEFAULT_RESEARCH_TYPE`
+3. Add a test in `tests/test_phases_naming.py` covering the new type
+4. Update README.md research types table
+
+**Current research types:**
+
+| Type | Phase Sequence | GPU Required |
+|------|----------------|--------------|
+| `ml_experiment` | survey → pilot → experiments → paper → reflection | Yes |
+| `theory` | survey → pilot → paper → reflection | No |
+| `survey` | survey → paper → reflection | No |
+| `applied` | survey → pilot → experiments → paper → reflection | Yes |
+
+### 4. Reference Documents
 
 Reference documents in `references/` define standards and protocols. Improvements to rubrics, evidence standards, or writing guidelines are welcome.
 
-### 4. Bug Fixes
+### 5. Bug Fixes
 
 Check [open issues](https://github.com/jacazjx/AI-Research-Orchestrator/issues) for bugs. Fix, add a test, and submit a PR.
 
-### 5. Python Scripts
+### 6. Python Scripts
 
 Scripts in `scripts/` handle state management, gate evaluation, and project structure. Changes here require tests and backward compatibility.
+
+## Extensibility Notes
+
+**What can be extended:**
+- Skills (add `skills/<name>/SKILL.md`)
+- Agents (add `agents/<role>/AGENT.md`)
+- Commands (add `commands/<name>.md`)
+- Research types (edit `scripts/constants/phases.py`)
+- Reference standards (edit `references/*.md`)
+- Hook scripts (edit `hooks/hooks.json` + add scripts)
+
+**What requires forking:**
+- Adding custom phases beyond the 5-phase workflow
+- Changing the gate scoring system
+- Modifying the dual-loop runtime architecture
+
+**Design intent:** The 5-phase workflow and dual-agent-per-phase constraint are intentional architectural decisions that ensure quality. Skills and agents are the primary extension points.
 
 ## Architecture Notes
 

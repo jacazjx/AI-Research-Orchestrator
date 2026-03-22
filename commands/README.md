@@ -16,6 +16,7 @@ commands/
 ├── run-experiments.md  # Full experiments and evidence collection
 ├── write-paper.md      # Paper writing and submission preparation
 ├── reflect.md          # Lessons learned and project evolution
+├── abandon.md          # Gracefully archive and exit a project
 └── README.md           # This file
 ```
 
@@ -33,6 +34,7 @@ commands/
 | `/run-experiments` | Experiments | Code, Adviser | "run experiments", "完整实验" |
 | `/write-paper` | Paper | Writer, Reviewer | "write paper", "写论文" |
 | `/reflect` | Reflection | Reflector, Curator | "reflect", "反思总结" |
+| `/abandon` | Any | - | "abandon", "stop project", "archive project" |
 
 ## Workflow Order
 
@@ -49,6 +51,7 @@ These commands can be used at any point in the workflow:
 - **`/insight`** - Clarify research intent before or during a project
 - **`/status`** - Show live project status with gate scores and blockers
 - **`/pivot`** - Propose, review, or execute a research direction pivot
+- **`/abandon`** - Gracefully archive and exit a project at any phase
 
 > **Note**: Project state is automatically reloaded on session start via the `SessionStart` hook.
 
