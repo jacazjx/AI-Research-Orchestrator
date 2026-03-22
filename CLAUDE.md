@@ -48,6 +48,7 @@ pre-commit run --all-files
 | `/write-paper` | Paper | "write paper", "写论文" |
 | `/reflect` | Reflection | "reflect", "反思总结" |
 | `/status` | Any | "status", "查看状态", "项目状态" |
+| `/pivot` | Any | "pivot", "转向", "换方向" |
 
 Commands are defined in `commands/<name>.md`. Trigger flow: User Input → COMMAND.md → SKILL.md → Script execution.
 
@@ -134,12 +135,12 @@ project/
 
 ```
 AI-Research-Orchestrator/
-├── commands/                # User-facing commands (9)
-├── skills/                  # Skills (~37, consolidated from 64)
+├── commands/                # User-facing commands (11)
+├── skills/                  # Skills (21)
 ├── scripts/                 # Python scripts (modular structure)
 ├── agents/                  # Agent configurations (principles-based, ~60 lines each)
 ├── assets/templates/        # Project templates
-└── references/              # Protocol documentation (~26 files, consolidated from 45+)
+└── references/              # Protocol documentation (17 files)
 ```
 
 ## Agent Teams Architecture

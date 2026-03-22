@@ -7,32 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.18.0] - 2026-03-22
+
 ### Added
 
-- Documentation: Added `skills/README.md` as comprehensive skill navigation index (52 skills organized by category)
-- Documentation: Added `references/README.md` as reference document reading guide
-- Documentation: Added Time Expectations, FAQ, and Troubleshooting sections to README
+- `/pivot` command for explicit research direction management (propose, review, execute)
+- `settings.schema.json` for user-configurable plugin settings via environment variables
+- `CONTRIBUTING.md` with skill template and contribution guidelines
+- GitHub issue templates (bug report, feature request) and PR template
+- Actionable escalation options when `escalate_to_user` is triggered (revise/rollback/pivot/force-advance)
+- Environment variable fallbacks (`AUTORESEARCH_*`) for init script defaults
+- Exported `RESEARCH_TYPE_PHASE_SEQUENCE` and `get_phase_sequence_for_research_type` from constants
+
+### Removed
+
+- 21 duplicate templates from `assets/templates/docs/reports/` (superseded by `docs/` templates)
+- Unused exception classes: `ValidationError`, `CommandExecutionError`, `TemplateError`, `DependencyError`
+- Deprecated `.bak` test backup files
 
 ### Fixed
 
-- Project configuration: added `scripts/__init__.py`, fixed pyproject.toml resource paths
-- Commands: restructured to subdirectories, added required frontmatter fields
-- Skills: standardized format, resolved trigger phrase conflicts, renamed `paper-writing` to `paper-pipeline`
-- Scripts: fixed KeyError risk in `_completion_percent()`, unified phase names, extracted common functions
-- Documentation: synced skill counts (17 → 52), removed duplicate entries in directory-structure-design.md, updated structure descriptions
+- Consolidated duplicate `DEFAULT_LANGUAGE_POLICY` constant (was in both `state/builder.py` and `project/client.py`)
+- Description mismatch between `plugin.json` and `marketplace.json`
+- Applied consistent `black`/`isort` formatting across codebase
 
-### Changed
+## [1.17.0] - 2026-03-22
 
-- `paper-writing` skill renamed to `paper-pipeline` to avoid confusion with `paper-write`
-- Phase names unified to semantic names (survey, pilot, experiments, paper, reflection)
-- Commands directory restructured from flat files to subdirectories with `COMMAND.md`
+### Fixed
+
+- State migration consistency, gate race condition, schema validation
+- Pivot validation, GPU error handling, version sync, env var config support
+
+## [1.16.0] - 2026-03-22
+
+### Added
+
+- System evaluation grader for Reflection phase (6-dimension scoring)
+- Global registry for cross-project trend tracking
+- Curator audit workflow for system evaluation reports
 
 ## [1.12.0] - 2026-03-14
 
 ### Added
 
 - **ARIS Integration**: Full integration of Auto-Research-In-Sleep capabilities
-- 52 skills for autonomous research workflows (6 main workflows + 16 phase skills + 14 audit skills + 16 supporting utilities)
+- Skills for autonomous research workflows (consolidated to 21 skills in v1.18.0)
   - Three main workflows: idea-discovery, auto-review-loop, paper-pipeline
   - Cross-model review via Codex MCP (optional)
 

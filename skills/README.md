@@ -1,6 +1,6 @@
 # Skills Directory
 
-This directory contains 19 specialized skills for the AI Research Orchestrator.
+This directory contains 21 specialized skills for the AI Research Orchestrator.
 
 > **Note**: Agent role definitions (survey, critic, coder, adviser, writer, reviewer, reflector, curator) are in `agents/`, not here. Each agent discovers skills dynamically from this directory at runtime.
 
@@ -45,6 +45,13 @@ This directory contains 19 specialized skills for the AI Research Orchestrator.
 | [paper-write](./paper-write/) | Plan structure (Claims-Evidence Matrix) and generate LaTeX sections |
 | [paper-figure](./paper-figure/) | Generate data-driven plots and tables |
 | [paper-compile](./paper-compile/) | Compile LaTeX to PDF with auto-fix |
+
+## System Evaluation (2)
+
+| Skill | Description |
+|-------|-------------|
+| [system-evaluation](./system-evaluation/) | Evaluate orchestrator performance across 6 dimensions during Reflection |
+| [audit-system-evaluation](./audit-system-evaluation/) | Audit system evaluation reports for objectivity and scoring accuracy |
 
 ## Utilities (2)
 
