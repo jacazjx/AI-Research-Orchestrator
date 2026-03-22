@@ -54,9 +54,15 @@ def _initialize_gpu_for_phase(
         else:
             state.setdefault("progress", {})["gpu_status"] = "none_available"
             logger.warning("No GPUs available for this phase")
-    except Exception as exc:
-        logger.debug(f"GPU initialization skipped: {exc}")
+    except ImportError:
+        logger.debug("GPU manager not available, skipping GPU initialization")
         state.setdefault("progress", {})["gpu_status"] = "not_configured"
+    except FileNotFoundError:
+        logger.debug("GPU registry not found, skipping GPU initialization")
+        state.setdefault("progress", {})["gpu_status"] = "not_configured"
+    except Exception as exc:
+        logger.warning(f"Unexpected error during GPU initialization: {exc}")
+        state.setdefault("progress", {})["gpu_status"] = "error"
 
 
 def run_stage_loop(
@@ -131,8 +137,7 @@ def run_stage_loop(
             logger.info(f"Created GitMem checkpoint: {checkpoint_name}")
 
     save_state(project_root, state)
-    gate_result = evaluate_quality_gate(project_root, phase=phase_name)
-    state = load_state(project_root)
+    gate_result = evaluate_quality_gate(project_root, phase=phase_name, state=state)
     score = int(
         round(sum(gate_result["scores"].values()) / max(len(gate_result["scores"]), 1))
     )
@@ -230,23 +235,14 @@ def _next_action(decision: str, phase_name: str) -> str:
 
 
 def _completion_percent(phase_name: str) -> int:
-    phase_progress = {
-        "survey": 10,
-        "pilot": 30,
-        "experiments": 55,
-        "paper": 80,
-        "reflection": 95,
-        "01-survey": 10,
-        "02-pilot-analysis": 30,
-        "03-full-experiments": 55,
-        "04-paper": 80,
-        "05-reflection-evolution": 95,
-        "06-archive": 100,
-    }
+    from constants import PHASE_COMPLETION
+
     normalized = normalize_phase_name(phase_name)
-    if normalized not in phase_progress:
+    if normalized not in PHASE_COMPLETION:
+        if normalized in ("archive", "06-archive"):
+            return 100
         raise ValueError(f"Unknown phase name: {phase_name}")
-    return phase_progress[normalized]
+    return PHASE_COMPLETION[normalized]
 
 
 def _next_loop_agent(phase_name: str, actor: str) -> str:

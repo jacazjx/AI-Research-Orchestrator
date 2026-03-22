@@ -222,13 +222,17 @@ class UserConfig:
 def get_user_config_dir() -> Path:
     """Get the user configuration directory path.
 
-    Returns the path to ~/.autoresearch/. Creates the directory if it
-    does not exist.
+    Checks AUTORESEARCH_HOME environment variable first, then falls back
+    to ~/.autoresearch/. Creates the directory if it does not exist.
 
     Returns:
         Path to the user configuration directory.
     """
-    config_dir = Path.home() / USER_CONFIG_DIR_NAME
+    env_home = os.environ.get("AUTORESEARCH_HOME")
+    if env_home:
+        config_dir = Path(env_home)
+    else:
+        config_dir = Path.home() / USER_CONFIG_DIR_NAME
     config_dir.mkdir(parents=True, exist_ok=True)
     return config_dir
 

@@ -153,6 +153,13 @@ Set before using phase commands:
 CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
 ```
 
+### Architecture Note
+
+Agent Teams integration lives at the **skill layer** (SKILL.md files), not the Python script layer.
+Python scripts (`scripts/`) handle state management, gate evaluation, and project structure.
+Skills (`skills/`) instruct Claude which Agent Teams tools to use (TeamCreate, SendMessage, etc.).
+This separation is intentional: scripts are testable pure logic; skills are declarative orchestration.
+
 ### Agent Teams Tools Available
 
 When Agent Teams is enabled, the following tools become available:

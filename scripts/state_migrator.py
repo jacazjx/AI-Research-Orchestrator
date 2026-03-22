@@ -20,6 +20,8 @@ from __future__ import annotations
 import logging
 from typing import Any, Callable
 
+from constants import DEFAULT_LOOP_LIMITS
+
 # Configure module logger
 logger = logging.getLogger(__name__)
 
@@ -114,6 +116,7 @@ def migrate_1_0_to_1_1(state: dict[str, Any]) -> tuple[dict[str, Any], str]:
                 "research_plan": dict(default_substep),
             },
             "pilot": {
+                "problem_validation": dict(default_substep),
                 "problem_analysis": dict(default_substep),
                 "pilot_design": dict(default_substep),
                 "pilot_execution": dict(default_substep),
@@ -131,6 +134,7 @@ def migrate_1_0_to_1_1(state: dict[str, Any]) -> tuple[dict[str, Any], str]:
             "reflection": {
                 "lessons_extraction": dict(default_substep),
                 "overlay_proposal": dict(default_substep),
+                "system_evaluation": dict(default_substep),
             },
         }
 
@@ -194,13 +198,7 @@ def migrate_1_1_to_1_12(state: dict[str, Any]) -> tuple[dict[str, Any], str]:
 
     # Ensure loop_limits exists
     if "loop_limits" not in migrated:
-        migrated["loop_limits"] = {
-            "survey_critic": 5,
-            "pilot_code_adviser": 5,
-            "experiment_code_adviser": 5,
-            "writer_reviewer": 5,
-            "reflector_curator": 3,
-        }
+        migrated["loop_limits"] = dict(DEFAULT_LOOP_LIMITS)
         changes.append("loop_limits")
 
     # Ensure recovery_status exists

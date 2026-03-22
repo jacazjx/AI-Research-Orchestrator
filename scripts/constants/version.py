@@ -1,7 +1,7 @@
 """Version and version history constants."""
 
 # System version
-SYSTEM_VERSION = "1.16.0"
+SYSTEM_VERSION = "1.17.0"
 SYSTEM_VERSION_NAME = "Research Orchestrator"
 
 VERSION_HISTORY = [
@@ -75,5 +75,10 @@ VERSION_HISTORY = [
         "Added system evaluation grader to Reflection phase: 6-dimension scoring "
         "(workflow, collaboration, gate accuracy, templates, efficiency, UX), "
         "global registry for cross-project trend tracking, Curator audit workflow",
+    ),
+    (
+        "1.17.0",
+        "2026-03-22",
+        "Fix system audit issues: state migration consistency, gate race condition, schema validation, pivot validation, GPU error handling, version sync, env var config support",
     ),
 ]

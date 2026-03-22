@@ -34,9 +34,27 @@ class StateSchemaValidationTest(unittest.TestCase):
         return {
             "current_phase": "survey",
             "deliverables": {},
-            "approval_status": {"gate_1": "pending"},
-            "phase_reviews": {"survey_critic": "pending"},
-            "loop_counts": {},
+            "approval_status": {
+                "gate_1": "pending",
+                "gate_2": "pending",
+                "gate_3": "pending",
+                "gate_4": "pending",
+                "gate_5": "pending",
+            },
+            "phase_reviews": {
+                "survey_critic": "pending",
+                "pilot_adviser": "pending",
+                "experiment_adviser": "pending",
+                "paper_reviewer": "pending",
+                "reflection_curator": "pending",
+            },
+            "loop_counts": {
+                "survey_critic": 0,
+                "pilot_code_adviser": 0,
+                "experiment_code_adviser": 0,
+                "writer_reviewer": 0,
+                "reflector_curator": 0,
+            },
         }
 
     def test_validate_accepts_valid_state(self) -> None:

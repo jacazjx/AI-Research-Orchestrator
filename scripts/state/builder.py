@@ -84,6 +84,9 @@ def build_state(
             "process_docs": process_language,
             "paper_docs": paper_language,
         },
+        # inner_loops: Per-phase iteration counter that resets when a phase is
+        # re-entered (e.g., after a rollback/pivot). Tracks iterations within
+        # the current attempt at a phase.
         "inner_loops": {
             "survey_critic": 0,
             "pilot_code_adviser": 0,
@@ -91,6 +94,8 @@ def build_state(
             "writer_reviewer": 0,
             "reflector_curator": 0,
         },
+        # loop_counts: Cumulative per-phase iteration counter that never resets.
+        # Tracks total iterations across all attempts.
         "loop_counts": {
             "survey_critic": 0,
             "pilot_code_adviser": 0,

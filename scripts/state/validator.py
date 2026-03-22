@@ -57,6 +57,50 @@ def validate_state_schema(state: dict[str, Any]) -> list[str]:
                 f"Expected one of: {sorted(valid_phases)}"
             )
 
+    # Validate approval_status structure
+    if "approval_status" in state:
+        expected_gates = {"gate_1", "gate_2", "gate_3", "gate_4", "gate_5"}
+        actual_gates = (
+            set(state["approval_status"].keys())
+            if isinstance(state["approval_status"], dict)
+            else set()
+        )
+        missing_gates = expected_gates - actual_gates
+        if missing_gates:
+            errors.append(f"approval_status missing gates: {sorted(missing_gates)}")
+
+    # Validate phase_reviews structure
+    if "phase_reviews" in state:
+        expected_reviews = {
+            "survey_critic",
+            "pilot_adviser",
+            "experiment_adviser",
+            "paper_reviewer",
+            "reflection_curator",
+        }
+        actual_reviews = (
+            set(state["phase_reviews"].keys())
+            if isinstance(state["phase_reviews"], dict)
+            else set()
+        )
+        missing_reviews = expected_reviews - actual_reviews
+        if missing_reviews:
+            errors.append(f"phase_reviews missing keys: {sorted(missing_reviews)}")
+
+    # Validate loop_counts structure
+    if "loop_counts" in state:
+        from constants import PHASE_LOOP_KEY
+
+        expected_loop_keys = set(PHASE_LOOP_KEY.values())
+        actual_loop_keys = (
+            set(state["loop_counts"].keys())
+            if isinstance(state["loop_counts"], dict)
+            else set()
+        )
+        missing_loop_keys = expected_loop_keys - actual_loop_keys
+        if missing_loop_keys:
+            errors.append(f"loop_counts missing keys: {sorted(missing_loop_keys)}")
+
     return errors
 
 

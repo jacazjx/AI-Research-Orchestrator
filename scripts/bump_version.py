@@ -2,10 +2,11 @@
 """
 Bump version across all version-related files.
 
-This script ensures all three version files are updated together:
+This script ensures all four version files are updated together:
 1. scripts/constants/version.py (SYSTEM_VERSION + VERSION_HISTORY)
 2. pyproject.toml
 3. .claude-plugin/plugin.json
+4. .claude-plugin/marketplace.json
 
 Usage:
     python scripts/bump_version.py --minor --message "Add new feature"
@@ -33,6 +34,7 @@ PROJECT_ROOT = SCRIPT_DIR.parent
 VERSION_PY = PROJECT_ROOT / "scripts" / "constants" / "version.py"
 PYPROJECT_TOML = PROJECT_ROOT / "pyproject.toml"
 PLUGIN_JSON = PROJECT_ROOT / ".claude-plugin" / "plugin.json"
+MARKETPLACE_JSON = PROJECT_ROOT / ".claude-plugin" / "marketplace.json"
 
 BumpType = Literal["major", "minor", "patch"]
 
@@ -126,6 +128,18 @@ def update_plugin_json(new_version: str) -> None:
     print(f"Updated {PLUGIN_JSON.relative_to(PROJECT_ROOT)}")
 
 
+def update_marketplace_json(new_version: str) -> None:
+    """Update marketplace.json with new version."""
+    data = json.loads(MARKETPLACE_JSON.read_text(encoding="utf-8"))
+    for plugin in data.get("plugins", []):
+        plugin["version"] = new_version
+    MARKETPLACE_JSON.write_text(
+        json.dumps(data, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    print(f"Updated {MARKETPLACE_JSON.relative_to(PROJECT_ROOT)}")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Bump version across all version files.",
@@ -141,6 +155,7 @@ Files updated:
     - scripts/constants/version.py (SYSTEM_VERSION + VERSION_HISTORY)
     - pyproject.toml (version field)
     - .claude-plugin/plugin.json (version field)
+    - .claude-plugin/marketplace.json (version field)
         """,
     )
 
@@ -211,12 +226,14 @@ Files updated:
         print(f"  - {VERSION_PY.relative_to(PROJECT_ROOT)}")
         print(f"  - {PYPROJECT_TOML.relative_to(PROJECT_ROOT)}")
         print(f"  - {PLUGIN_JSON.relative_to(PROJECT_ROOT)}")
+        print(f"  - {MARKETPLACE_JSON.relative_to(PROJECT_ROOT)}")
         return 0
 
     try:
         update_version_py(new_version, args.message)
         update_pyproject_toml(new_version)
         update_plugin_json(new_version)
+        update_marketplace_json(new_version)
         print()
         print(f"Version bumped to {new_version}")
         print("Remember to commit and push these changes.")

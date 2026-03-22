@@ -9,6 +9,7 @@ from orchestrator_common import (
     PHASE_REQUIRED_DELIVERABLES,
     PHASE_TO_GATE,
     PHASE_TO_REVIEW,
+    allowed_return_phases,
     ensure_project_structure,
     load_state,
     normalize_phase_name,
@@ -18,10 +19,13 @@ from orchestrator_common import (
 
 
 def evaluate_quality_gate(
-    project_root: Path, phase: str | None = None
+    project_root: Path,
+    phase: str | None = None,
+    state: dict[str, object] | None = None,
 ) -> dict[str, object]:
     project_root = project_root.resolve()
-    state = load_state(project_root)
+    if state is None:
+        state = load_state(project_root)
     phase_name = phase or state["current_phase"]
     required_deliverables = PHASE_REQUIRED_DELIVERABLES[phase_name]
     review_key = PHASE_TO_REVIEW[phase_name]
@@ -57,6 +61,13 @@ def evaluate_quality_gate(
 
     if review_status == "pivot" or pivot_candidates:
         decision = "pivot"
+        # Validate pivot candidates against allowed return phases
+        allowed_phases = allowed_return_phases(phase_name)
+        invalid_pivots = [p for p in pivot_candidates if p not in allowed_phases]
+        if invalid_pivots:
+            signal_errors.append(
+                f"Invalid pivot targets {invalid_pivots}; allowed: {allowed_phases}"
+            )
     elif (
         review_status == "approved"
         and not missing
