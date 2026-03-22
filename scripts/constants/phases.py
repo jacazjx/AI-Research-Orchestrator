@@ -136,6 +136,7 @@ HANDOFF_REQUIREMENTS = {
             "overlay_draft",
             "runtime_improvement_report",
             "reflection_scorecard",
+            "system_evaluation_report",
         ),
         "next_phase": "handoff-user",
     },
@@ -197,6 +198,7 @@ DEFAULT_DELIVERABLES = {
     "overlay_draft": "paper/overlay-draft.md",
     "runtime_improvement_report": "docs/reflection/runtime-improvement-report.md",
     "reflection_scorecard": "docs/reflection/phase-scorecard.md",
+    "system_evaluation_report": "docs/reflection/system-evaluation-report.md",
     "archive_index": ".autoresearch/archive/archive-index.md",
 }
 

@@ -175,5 +175,6 @@ def _build_default_substep_status() -> dict[str, Any]:
         "reflection": {
             "lessons_extraction": {"status": "pending", "review_result": "pending", "attempts": 0, "last_agent": None},
             "overlay_proposal": {"status": "pending", "review_result": "pending", "attempts": 0, "last_agent": None},
+            "system_evaluation": {"status": "pending", "review_result": "pending", "attempts": 0, "last_agent": None},
         },
     }

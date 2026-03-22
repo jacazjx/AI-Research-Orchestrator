@@ -96,6 +96,7 @@ EXPECTED_DELIVERABLE_PREFIXES = {
     "overlay_draft": "paper/",
     "runtime_improvement_report": ".autoresearch/",
     "reflection_scorecard": "agents/",
+    "system_evaluation_report": "docs/",
     "archive_index": ".autoresearch/",
 }
 
