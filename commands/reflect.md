@@ -34,11 +34,13 @@ Execute the **Reflector ↔ Curator** loop for project closure. No arguments nee
 - `docs/reflection/overlay-draft.md`
 - `docs/reflection/runtime-improvement-report.md`
 - `docs/reflection/phase-scorecard.md`
+- `docs/reflection/system-evaluation-report.md`
 
 ## Gate 5 requirements
 
 - Lessons documented and transferable
 - Overlay proposals clearly marked as drafts
 - Safe vs. human-judgment changes separated
+- System evaluation report evidence-based and Curator-audited
 
 **Overlays are NEVER applied automatically — each requires explicit user approval.**
