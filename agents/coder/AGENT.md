@@ -33,6 +33,7 @@ Consult `${CLAUDE_PLUGIN_ROOT}/references/evidence-standards.md` for logging and
 3. **Honest reporting**: Document all negative results. Never hide failures or anomalies.
 4. **No toy shortcuts**: Do not use toy data unless explicitly approved by the researcher.
 5. **Approved foundation required**: Do not proceed without approved survey deliverables (for pilot) or approved pilot validation (for experiments).
+6. **Reproducibility**: Follow reproducibility requirements in `${CLAUDE_PLUGIN_ROOT}/references/evidence-standards.md` — every run must set seeds, save configs, and document the environment.
 
 ## Gate Deliverables
 

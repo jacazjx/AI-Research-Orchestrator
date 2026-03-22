@@ -1,7 +1,7 @@
 """Version and version history constants."""
 
 # System version
-SYSTEM_VERSION = "1.20.0"
+SYSTEM_VERSION = "1.21.0"
 SYSTEM_VERSION_NAME = "Research Orchestrator"
 
 VERSION_HISTORY = [
@@ -95,5 +95,10 @@ VERSION_HISTORY = [
         "1.20.0",
         "2026-03-22",
         "Closed-loop flow: abandon command, status available-actions, escalation abandon option, auto-transition safety guard",
+    ),
+    (
+        "1.21.0",
+        "2026-03-22",
+        "Post-submission workflow (self-review, rebuttal, post-acceptance), security guard hook, reproducibility rules, anti-AI writing detection, conference venue templates",
     ),
 ]

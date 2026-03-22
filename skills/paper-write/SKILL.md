@@ -139,6 +139,16 @@ Baseline B & 87.4 $\pm$ 0.4 & 74.3 $\pm$ 0.6 \\
 | Figures | `paper/figures/*.pdf` | Vector figures |
 | Tables | `paper/tables/*.tex` | Table source files |
 
+## Venue-Specific Formatting
+
+Before finalizing the manuscript, consult `${CLAUDE_PLUGIN_ROOT}/references/venue-requirements.md` for:
+- Page limits and formatting requirements for the target venue
+- Required checklists (reproducibility, ethics, limitations)
+- Common rejection reasons to address proactively
+- Pre-submission checklist items
+
+If the user has specified a target venue in the project configuration, enforce that venue's specific requirements.
+
 ## Key Rules
 
 1. **IMRAD Structure**: Follow Introduction, Methods, Results, Discussion structure
@@ -147,7 +157,7 @@ Baseline B & 87.4 $\pm$ 0.4 & 74.3 $\pm$ 0.6 \\
 4. **Statistical Rigor**: Report means, standard deviations, and significance
 5. **Reproducibility**: Methods must be detailed enough for replication
 6. **De-AI Polish**: Remove AI-typical phrases before final output
-7. **Venue Compliance**: Match specific venue requirements
+7. **Venue Compliance**: Match specific venue requirements (see `references/venue-requirements.md`)
 
 ## References
 
@@ -155,3 +165,4 @@ Baseline B & 87.4 $\pm$ 0.4 & 74.3 $\pm$ 0.6 \\
 - `references/academic_writing_style.md` - Writing style guidelines
 - `references/figure_table_guidelines.md` - Visualization standards
 - `references/citation-standards.md` - Citation verification
+- `references/venue-requirements.md` - Venue-specific formatting, checklists, and submission requirements

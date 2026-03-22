@@ -358,3 +358,116 @@ Before submitting for Gate 3:
 4. Check statistical calculations
 5. Review baseline implementations
 6. Look for red flags
+
+---
+
+## Experiment Reproducibility Requirements
+
+This section specifies concrete, actionable requirements that every experiment run MUST satisfy. These rules apply to all phases that produce experimental results (pilot and experiments).
+
+### Random Seed Management
+
+```python
+# Mandatory seed setting for ML experiments
+import random
+import numpy as np
+import torch
+
+def set_global_seed(seed: int = 42):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+```
+
+- All experiments MUST set seeds at the start
+- Seed value MUST be recorded in run metadata
+- Multi-GPU: use `torch.cuda.manual_seed_all()`
+- For JAX: `jax.random.PRNGKey(seed)`
+- Document any operations that are inherently non-deterministic (e.g., atomicAdd in CUDA)
+
+### Configuration Tracking
+
+- Every experiment run MUST save its full configuration as YAML/JSON alongside results
+- Use Hydra, OmegaConf, or equivalent for structured configs
+- Config diffs between runs MUST be explicitly documented
+- Command-line overrides MUST be logged
+- Template:
+
+```yaml
+# run-config.yaml
+experiment:
+  name: "ablation-lr"
+  seed: 42
+  timestamp: "2026-03-22T10:00:00Z"
+model:
+  architecture: "transformer"
+  hidden_size: 768
+  num_layers: 12
+training:
+  learning_rate: 1e-4
+  batch_size: 32
+  epochs: 100
+  optimizer: "adamw"
+  weight_decay: 0.01
+data:
+  dataset: "dataset-v2"
+  split_seed: 42
+  train_ratio: 0.8
+```
+
+### Environment Documentation
+
+- Every first run MUST capture:
+  - `pip freeze > requirements-frozen.txt`
+  - `python --version`
+  - `nvidia-smi` output (GPU model, driver, CUDA version)
+  - `uname -a` (OS info)
+  - Git commit hash of code
+- Store in `.autoresearch/runtime/environment-snapshot.txt`
+
+### Checkpoint Preservation
+
+- Checkpoints MUST include: model weights, optimizer state, scheduler state, epoch/step number, best metric, full config
+- Naming: `checkpoint-{epoch:04d}-{metric:.4f}.pt`
+- Keep at minimum: best checkpoint + last checkpoint
+- Record checkpoint metadata in `code/checkpoints/checkpoint-index.md`
+
+### Dataset Versioning
+
+- Record SHA-256 hash of each data file used
+- If using DVC: commit `.dvc` files alongside code
+- If using HuggingFace datasets: pin exact revision/commit
+- Document any preprocessing steps as executable scripts, not prose
+- Template for `code/data/dataset-manifest.yaml`:
+
+```yaml
+datasets:
+  - name: "training-data"
+    source: "huggingface/dataset-name"
+    revision: "abc123"
+    sha256: "..."
+    preprocessing: "scripts/preprocess.py"
+  - name: "eval-data"
+    source: "local"
+    path: "data/eval.jsonl"
+    sha256: "..."
+    rows: 5000
+```
+
+### Run Registry Standards
+
+Every experiment run in `docs/experiments/run-registry.md` MUST include:
+
+- Run ID (auto-generated UUID or sequential)
+- Timestamp (ISO 8601)
+- Config file path
+- Git commit hash
+- Seed
+- Key hyperparameters (inline)
+- Result metrics
+- Status (running/completed/failed/killed)
+- GPU hours consumed
+- Notes

@@ -23,6 +23,7 @@ Runtime reference documents for the AI Research Orchestrator. Design documents l
 | `scientific-rigor.md` | HOW to design: experimental methodology, hypothesis testing, bias avoidance |
 | `statistical-reporting.md` | HOW to report: statistical tests, effect sizes, confidence intervals, APA format |
 | `reporting_standards.md` | CONSORT, PRISMA, STROBE, ARRIVE, MIAME reporting standards |
+| `venue-requirements.md` | Venue-specific formatting, page limits, checklists, and pre-submission requirements for major ML/AI conferences |
 
 ## Operations
 

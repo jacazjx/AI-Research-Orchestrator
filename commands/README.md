@@ -17,6 +17,7 @@ commands/
 ├── write-paper.md      # Paper writing and submission preparation
 ├── reflect.md          # Lessons learned and project evolution
 ├── abandon.md          # Gracefully archive and exit a project
+├── post-submission.md  # Post-submission: self-review, rebuttal, post-acceptance
 └── README.md           # This file
 ```
 
@@ -35,6 +36,7 @@ commands/
 | `/write-paper` | Paper | Writer, Reviewer | "write paper", "写论文" |
 | `/reflect` | Reflection | Reflector, Curator | "reflect", "反思总结" |
 | `/abandon` | Any | - | "abandon", "stop project", "archive project" |
+| `/post-submission` | Post-Paper | Writer | "self review", "write rebuttal", "post acceptance", "投稿自查", "写rebuttal" |
 
 ## Workflow Order
 
@@ -52,6 +54,7 @@ These commands can be used at any point in the workflow:
 - **`/status`** - Show live project status with gate scores and blockers
 - **`/pivot`** - Propose, review, or execute a research direction pivot
 - **`/abandon`** - Gracefully archive and exit a project at any phase
+- **`/post-submission`** - Post-submission workflow: self-review, rebuttal, post-acceptance materials
 
 > **Note**: Project state is automatically reloaded on session start via the `SessionStart` hook.
 
@@ -113,6 +116,9 @@ The commands delegate to these skills:
 - `skills/run-experiment/` - Experiment execution (pilot and full scale)
 - `skills/paper-write/` - Paper planning and LaTeX writing
 - `skills/external-review/` - External review via Codex MCP (single-shot or multi-round)
+- `skills/self-review/` - Pre-submission self-review checklist
+- `skills/rebuttal/` - Structured rebuttal writing for reviewer responses
+- `skills/post-acceptance/` - Post-acceptance dissemination materials
 
 ## Configuration
 
