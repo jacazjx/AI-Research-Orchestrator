@@ -45,6 +45,7 @@ from .phases import (
     SEMANTIC_TO_LEGACY_PHASE,
     get_all_phase_aliases,
     get_legacy_phase_name,
+    get_next_phase_for_state,
     get_phase_agents,
     get_phase_sequence_for_research_type,
     normalize_phase_name,
@@ -89,6 +90,7 @@ __all__ = [
     "get_all_phase_aliases",
     "get_phase_agents",
     "get_phase_sequence_for_research_type",
+    "get_next_phase_for_state",
     # ARIS constants
     "REVIEW_STATE_FILENAME",
     "IDEA_STATE_FILENAME",

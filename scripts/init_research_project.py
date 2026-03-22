@@ -8,7 +8,11 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from constants.phases import LEGACY_TO_SEMANTIC_PHASE, PHASE_SEQUENCE
+from constants.phases import (
+    LEGACY_TO_SEMANTIC_PHASE,
+    PHASE_SEQUENCE,
+    get_phase_sequence_for_research_type,
+)
 from user_config import load_user_config
 
 from orchestrator_common import (
@@ -190,6 +194,7 @@ def initialize_research_project(
 
     # Update state with additional fields
     state["research_type"] = research_type
+    state["phase_sequence"] = list(get_phase_sequence_for_research_type(research_type))
     state["user_config_inherited"] = user_config_inherited
     if compute_config:
         state["compute_config"] = compute_config

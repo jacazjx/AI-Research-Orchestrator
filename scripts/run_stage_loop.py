@@ -5,6 +5,7 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
+from constants.phases import get_next_phase_for_state
 from exceptions import PhaseTransitionError
 from quality_gate import evaluate_quality_gate
 
@@ -183,7 +184,7 @@ def run_stage_loop(
             state["progress"]["completion_percent"] = _completion_percent(return_phase)
             state["previous_phase"] = return_phase
     if auto_transition and gate_result["decision"] == "advance":
-        transitioned_to = NEXT_PHASE.get(phase_name)
+        transitioned_to = get_next_phase_for_state(state)
         if transitioned_to:
             state["outer_loop"] = int(state.get("outer_loop", 0)) + 1
             reset_state_for_phase(state, transitioned_to)

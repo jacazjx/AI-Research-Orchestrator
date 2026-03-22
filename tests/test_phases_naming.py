@@ -62,3 +62,63 @@ class TestPhaseAgentNaming:
             assert (
                 "-" not in reviewer
             ), f"Reviewer agent '{reviewer}' in phase '{phase}' contains hyphen"
+
+    def test_research_type_phase_sequences(self):
+        """Each research type should have a valid phase subsequence."""
+        from constants.phases import (
+            PHASE_SEQUENCE,
+            RESEARCH_TYPE_PHASE_SEQUENCE,
+            get_phase_sequence_for_research_type,
+        )
+
+        for rt, seq in RESEARCH_TYPE_PHASE_SEQUENCE.items():
+            assert len(seq) >= 2, f"Research type '{rt}' has fewer than 2 phases"
+            for phase in seq:
+                assert (
+                    phase in PHASE_SEQUENCE
+                ), f"Phase '{phase}' in research type '{rt}' is not in PHASE_SEQUENCE"
+            # Verify order is consistent with PHASE_SEQUENCE
+            indices = [PHASE_SEQUENCE.index(p) for p in seq]
+            assert indices == sorted(
+                indices
+            ), f"Phase order for '{rt}' is not consistent with PHASE_SEQUENCE"
+
+        # get_phase_sequence_for_research_type fallback
+        assert get_phase_sequence_for_research_type("unknown") == PHASE_SEQUENCE
+
+    def test_get_next_phase_for_state_default(self):
+        """get_next_phase_for_state falls back to NEXT_PHASE without phase_sequence."""
+        from constants.phases import NEXT_PHASE, get_next_phase_for_state
+
+        state = {"current_phase": "survey"}
+        assert get_next_phase_for_state(state) == NEXT_PHASE["survey"]
+
+    def test_get_next_phase_for_state_theory(self):
+        """Theory research type skips experiments phase."""
+        from constants.phases import get_next_phase_for_state
+
+        state = {
+            "current_phase": "pilot",
+            "phase_sequence": ["survey", "pilot", "paper", "reflection"],
+        }
+        assert get_next_phase_for_state(state) == "paper"
+
+    def test_get_next_phase_for_state_survey_type(self):
+        """Survey research type goes directly from survey to paper."""
+        from constants.phases import get_next_phase_for_state
+
+        state = {
+            "current_phase": "survey",
+            "phase_sequence": ["survey", "paper", "reflection"],
+        }
+        assert get_next_phase_for_state(state) == "paper"
+
+    def test_get_next_phase_for_state_final(self):
+        """Final phase returns archive."""
+        from constants.phases import get_next_phase_for_state
+
+        state = {
+            "current_phase": "reflection",
+            "phase_sequence": ["survey", "paper", "reflection"],
+        }
+        assert get_next_phase_for_state(state) == "archive"

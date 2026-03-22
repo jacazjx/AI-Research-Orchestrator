@@ -202,7 +202,7 @@ DEFAULT_DELIVERABLES = {
     "archive_index": ".autoresearch/archive/archive-index.md",
 }
 
-# Next phase mapping
+# Next phase mapping (default for ml_experiment)
 NEXT_PHASE = {
     "survey": "pilot",
     "pilot": "experiments",
@@ -210,6 +210,23 @@ NEXT_PHASE = {
     "paper": "reflection",
     "reflection": "archive",
 }
+
+
+def get_next_phase_for_state(state: dict) -> str | None:
+    """Get next phase based on the project's effective phase sequence.
+
+    Uses ``phase_sequence`` stored in state (set at init from research_type).
+    Falls back to the default ``NEXT_PHASE`` mapping if not present.
+    """
+    seq = state.get("phase_sequence")
+    current = state.get("current_phase", state.get("phase"))
+    if seq and current in seq:
+        idx = seq.index(current)
+        if idx + 1 < len(seq):
+            return seq[idx + 1]
+        return "archive"
+    return NEXT_PHASE.get(current)
+
 
 # Phase to review mapping
 PHASE_TO_REVIEW = {

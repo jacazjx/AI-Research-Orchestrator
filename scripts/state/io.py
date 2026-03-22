@@ -124,6 +124,14 @@ def load_state(project_root: Path) -> dict[str, Any]:
     from state.validator import ensure_complete_deliverables
 
     state = ensure_complete_deliverables(state)
+
+    # Auto-fill phase_sequence for backward compatibility
+    if "phase_sequence" not in state:
+        from constants.phases import get_phase_sequence_for_research_type
+
+        rt = state.get("research_type", "ml_experiment")
+        state["phase_sequence"] = list(get_phase_sequence_for_research_type(rt))
+
     return state
 
 
