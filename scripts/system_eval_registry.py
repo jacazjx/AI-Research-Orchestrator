@@ -75,7 +75,8 @@ def record_evaluation(
     registry_path = registry_path or DEFAULT_REGISTRY_PATH
     state = load_state(project_root)
     report_path = str(
-        project_root / state["deliverables"].get(
+        project_root
+        / state["deliverables"].get(
             "system_evaluation_report",
             "docs/reflection/system-evaluation-report.md",
         )
@@ -127,18 +128,22 @@ def compute_trend(
     trend = []
     for entry in evaluations:
         if dimension:
-            trend.append({
-                "project_id": entry.get("project_id"),
-                "evaluated_at": entry.get("evaluated_at"),
-                "value": entry["scores"].get(dimension, 0.0),
-            })
+            trend.append(
+                {
+                    "project_id": entry.get("project_id"),
+                    "evaluated_at": entry.get("evaluated_at"),
+                    "value": entry["scores"].get(dimension, 0.0),
+                }
+            )
         else:
-            trend.append({
-                "project_id": entry.get("project_id"),
-                "evaluated_at": entry.get("evaluated_at"),
-                "scores": entry["scores"],
-                "weighted_total": entry.get("weighted_total", 0.0),
-            })
+            trend.append(
+                {
+                    "project_id": entry.get("project_id"),
+                    "evaluated_at": entry.get("evaluated_at"),
+                    "scores": entry["scores"],
+                    "weighted_total": entry.get("weighted_total", 0.0),
+                }
+            )
     return trend
 
 
