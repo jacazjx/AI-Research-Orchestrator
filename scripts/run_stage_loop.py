@@ -184,7 +184,8 @@ def run_stage_loop(
             state["progress"]["completion_percent"] = _completion_percent(return_phase)
             state["previous_phase"] = return_phase
     if auto_transition and gate_result["decision"] == "advance":
-        # Safety guard: only auto-transition if gate is explicitly approved
+        # Safety guard: only auto-transition if gate is explicitly approved.
+        # This prevents config-driven auto_proceed from bypassing human gates.
         if state["approval_status"].get(gate_key) != "approved":
             logger.warning(
                 "auto_transition requested but gate %s not approved — skipping",
@@ -277,6 +278,14 @@ def _build_escalation_options(
             "command": (
                 f"run_stage_loop --phase {phase_name}" f" --gate-status approved --auto-transition"
             ),
+        }
+    )
+    options.append(
+        {
+            "action": "abandon",
+            "description": "Archive and exit this project",
+            "detail": "Preserves all deliverables; marks project as archived",
+            "command": "/abandon",
         }
     )
     return options
